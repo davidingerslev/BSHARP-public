@@ -2,7 +2,6 @@ project:
     title: "BSHARP"
     type: website
     output-dir: docs
-    lib-dir: lib
 
 author: David Ingerslev
 
