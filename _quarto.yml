@@ -1,7 +1,7 @@
 project:
     title: "BSHARP"
     type: website
-    output-dir: quarto_output
+    output-dir: docs
     lib-dir: lib
 
 author: David Ingerslev
