@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Ingerslev">
+<meta name="dcterms.date" content="2026-02-10">
+
+<title>4.4 Results - Durations – BSHARP</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="lib/quarto-nav/quarto-nav.js"></script>
+<script src="lib/clipboard/clipboard.min.js"></script>
+<script src="lib/quarto-search/autocomplete.umd.js"></script>
+<script src="lib/quarto-search/fuse.min.js"></script>
+<script src="lib/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="lib/quarto-html/quarto.js" type="module"></script>
+<script src="lib/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="lib/quarto-html/popper.min.js"></script>
+<script src="lib/quarto-html/tippy.umd.min.js"></script>
+<script src="lib/quarto-html/anchor.min.js"></script>
+<link href="lib/quarto-html/tippy.css" rel="stylesheet">
+<link href="lib/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="lib/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="lib/bootstrap/bootstrap.min.js"></script>
+<link href="lib/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="lib/bootstrap/bootstrap-1e6c66ebb092a045ff5cb86569894080.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="lib/bootstrap/bootstrap-dark-b1db0ee84b014cd07866e9f85700e252.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content column-page" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">4.4 Results - Durations</h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-page">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Ingerslev </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 10, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="465cd2f6" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Setup code</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> python_scripts <span class="im">import</span> setup</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> python_scripts <span class="im">import</span> services</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> python_scripts <span class="im">import</span> helper</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df, dffp <span class="op">=</span> setup.setup(verbose<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> python_scripts <span class="im">import</span> distinct_pathways</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>dpw_pls <span class="op">=</span> distinct_pathways.get_distinct_pathways_routes(dffp)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>qrows <span class="op">=</span> dpw_pls[<span class="st">"rt_end_cat"</span>] <span class="op">==</span> <span class="st">"[Not ended or invalid end reason]"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>dpw_pls.loc[qrows, <span class="st">"rt_end_cat"</span>] <span class="op">=</span> dpw_pls.loc[qrows, <span class="st">"pl_end_dt"</span>].isna().<span class="bu">map</span>({<span class="va">True</span>: <span class="st">"[Not ended]"</span>, <span class="va">False</span>: <span class="st">"Missing data/error"</span>})</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>dpw_pls[<span class="st">"rt_end_cat"</span>] <span class="op">=</span> dpw_pls[<span class="st">"rt_end_cat"</span>].<span class="bu">str</span>.replace(<span class="st">"To care/hosp."</span>, <span class="st">"To care/hospital"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>dpw_rt_starts <span class="op">=</span> dpw_pls.groupby(<span class="st">"route_id"</span>).head(<span class="dv">1</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>dpw_rt_ends <span class="op">=</span> dpw_pls.groupby(<span class="st">"route_id"</span>).tail(<span class="dv">1</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>dpw_clis <span class="op">=</span> dpw_pls.groupby([<span class="st">"o_cli_id"</span>]).head(<span class="dv">1</span>)  <span class="co"># 1 duplicate client but first entry has more detailed answers</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>matplotlib.rcParams.update({</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'figure.figsize'</span>: (<span class="fl">6.2</span>, <span class="fl">4.1</span>),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'font.size'</span>: <span class="dv">12</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'figure.constrained_layout.use'</span>: <span class="va">True</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>excel_output <span class="op">=</span> {}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="durations-rq4" class="level2">
+<h2 class="anchored" data-anchor-id="durations-rq4">Durations (RQ4)</h2>
+<section id="figure-4.7-route-durations" class="level3">
+<h3 class="anchored" data-anchor-id="figure-4.7-route-durations">Figure 4.7: Route durations</h3>
+<section id="code" class="level4">
+<h4 class="anchored" data-anchor-id="code">Code</h4>
+<div id="ee76e1f6" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn.objects <span class="im">as</span> so</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up data</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#############</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>durations <span class="op">=</span> dpw_pls.set_index(<span class="st">"route_id"</span>)[[<span class="st">"dur"</span>, <span class="st">"pl_start_dt"</span>]]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>durations[<span class="st">"dur_days"</span>] <span class="op">=</span> durations[<span class="st">"dur"</span>].dt.days</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>durations[<span class="st">"dur_days"</span>] <span class="op">=</span> durations[<span class="st">"dur_days"</span>].fillna(<span class="dv">1</span> <span class="op">+</span> (distinct_pathways.dpw_end_dt <span class="op">-</span> durations.pl_start_dt).dt.days)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>durations <span class="op">=</span> durations.drop(columns<span class="op">=</span>[<span class="st">"dur"</span>, <span class="st">"pl_start_dt"</span>])</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>hist_data <span class="op">=</span> (</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    durations.groupby(level<span class="op">=</span><span class="dv">0</span>).dur_days.<span class="bu">sum</span>().to_frame()</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    .join(dpw_rt_ends.set_index(<span class="st">"route_id"</span>)[<span class="st">"pl_end_dt"</span>].notna().rename(<span class="st">"ended"</span>).astype(<span class="st">"category"</span>)))</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>hist_data[<span class="st">"ended"</span>] <span class="op">=</span> pd.Categorical(hist_data[<span class="st">"ended"</span>], categories<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>], ordered<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>hist_data[<span class="st">"dur_years"</span>] <span class="op">=</span> hist_data[<span class="st">"dur_days"</span>] <span class="op">/</span> <span class="fl">365.25</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Utility function to add quantile markers</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>hist_quantiles <span class="op">=</span> hist_data.drop(columns<span class="op">=</span><span class="st">"ended"</span>).quantile([<span class="fl">0.10</span>, <span class="fl">0.90</span>])  <span class="co"># To be used as markers later</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>colours <span class="op">=</span> sns.color_palette(as_cmap<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_quantiles(p, field, x_limits, y_limits):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q, row <span class="kw">in</span> hist_quantiles.iterrows():</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        pct <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span><span class="dv">100</span> <span class="op">*</span> q<span class="sc">:.0f}</span><span class="ss">%"</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> row[field]</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        p <span class="op">=</span> p.add(so.Line(linewidth<span class="op">=</span><span class="fl">0.7</span>, linestyle<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>), alpha<span class="op">=</span><span class="fl">0.35</span>, color<span class="op">=</span>colours[<span class="dv">4</span>]),</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                  data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: [x, x], <span class="st">"y"</span>: y_limits}),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>                  x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        p <span class="op">=</span> p.add(so.Text({<span class="st">"clip_on"</span>: <span class="va">False</span>}, valign<span class="op">=</span><span class="st">"bottom"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span>colours[<span class="dv">4</span>], fontsize<span class="op">=</span><span class="dv">9</span>, offset<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>                  data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: [x], <span class="st">"y"</span>: [y_limits[<span class="dv">1</span>]], <span class="st">"text"</span>: [pct]}),</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>                  x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> p.add(so.Text({<span class="st">"clip_on"</span>: <span class="va">False</span>}, valign<span class="op">=</span><span class="st">"bottom"</span>, halign<span class="op">=</span><span class="st">"right"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span>colours[<span class="dv">4</span>], fontsize<span class="op">=</span><span class="dv">9</span>, offset<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>                data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: [x_limits[<span class="dv">1</span>]], <span class="st">"y"</span>: [y_limits[<span class="dv">1</span>]], <span class="st">"text"</span>: <span class="st">"percentile"</span>}),</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>                x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> p</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate human-readable units and tick positions for log timescales</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">#####################################################################</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>days_logunits <span class="op">=</span> {<span class="st">"day"</span>: <span class="dv">1</span>, <span class="st">"week"</span>: <span class="dv">7</span>, <span class="st">"month"</span>: <span class="fl">365.25</span><span class="op">/</span><span class="dv">12</span>, <span class="st">"year"</span>: <span class="fl">365.25</span>}</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>days_loglists <span class="op">=</span> {</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"days"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>],</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"weeks"</span>: [<span class="dv">1</span>, <span class="dv">2</span>],</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"months"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>],</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"years"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">16</span>]</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>days_logscale <span class="op">=</span> []</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>days_loglabels_u <span class="op">=</span> []</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>days_loglabels_full <span class="op">=</span> []</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>days_loglabels_grp <span class="op">=</span> []</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> u, l <span class="kw">in</span> days_loglists.items():</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    days_logscale.extend(days_logunits[u[:<span class="op">-</span><span class="dv">1</span>]] <span class="op">*</span> i <span class="cf">for</span> i <span class="kw">in</span> l)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    days_loglabels_u.extend(l)</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    days_loglabels_full.extend(<span class="ss">f"</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>u <span class="cf">if</span> i <span class="op">&gt;</span> <span class="dv">1</span> <span class="cf">else</span> u[:<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> l)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    days_loglabels_grp.append(u)</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>days_logformatter <span class="op">=</span> matplotlib.ticker.FixedFormatter(days_loglabels_u)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate positions of separators between groups for log unit labels</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>days_logsep <span class="op">=</span> []</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (a_u, a_l), (b_u, b_l) <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">list</span>(days_loglists.items())[:<span class="op">-</span><span class="dv">1</span>], <span class="bu">list</span>(days_loglists.items())[<span class="dv">1</span>:]):</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    a_end <span class="op">=</span> days_logunits[a_u[:<span class="op">-</span><span class="dv">1</span>]] <span class="op">*</span> a_l[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    b_start <span class="op">=</span> days_logunits[b_u[:<span class="op">-</span><span class="dv">1</span>]] <span class="op">*</span> b_l[<span class="dv">0</span>]</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    log_midpoint <span class="op">=</span> <span class="dv">10</span> <span class="op">**</span> ((np.log10(a_end) <span class="op">+</span> np.log10(b_start))<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    days_logsep.append(log_midpoint)</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate positions of group labels for log units</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>days_loggrp_edges <span class="op">=</span> [<span class="fl">0.8</span>] <span class="op">+</span> days_logsep <span class="op">+</span> [<span class="dv">30</span> <span class="op">*</span> days_logunits[<span class="st">"year"</span>]]</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>days_logpos_grp <span class="op">=</span> <span class="bu">list</span>(<span class="dv">10</span> <span class="op">**</span> ((np.log10(a) <span class="op">+</span> np.log10(b))<span class="op">/</span><span class="dv">2</span>) <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(days_loggrp_edges[:<span class="op">-</span><span class="dv">1</span>], days_loggrp_edges[<span class="dv">1</span>:]))</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up two subplots</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="co">#####################</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>f, axs <span class="op">=</span> plt.subplots(nrows<span class="op">=</span><span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">6.2</span>, <span class="dv">2</span><span class="op">*</span><span class="fl">4.1</span>), dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the log scale chart</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="co">##########################</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axs[<span class="dv">1</span>]</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>limits <span class="op">=</span> {<span class="st">"x"</span>: (<span class="fl">0.7</span>, <span class="dv">10</span><span class="op">**</span><span class="dv">4</span>), <span class="st">"y"</span>: (<span class="dv">0</span>, <span class="dv">831</span>)}</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(right<span class="op">=</span><span class="fl">0.95</span>, top<span class="op">=</span><span class="fl">0.98</span>, bottom<span class="op">=</span><span class="fl">0.09</span>, hspace<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>hist_data, x<span class="op">=</span><span class="st">"dur_days"</span>)</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    .label(x<span class="op">=</span><span class="st">"Duration (log scale)"</span>, y<span class="op">=</span><span class="st">"Routes"</span>)</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    .add(so.Bars(), so.Hist(bins<span class="op">=</span><span class="dv">20</span>), so.Stack(), color<span class="op">=</span><span class="st">"ended"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous(trans<span class="op">=</span><span class="st">"log"</span>).tick(at<span class="op">=</span>days_logscale).label(formatter<span class="op">=</span>days_logformatter), color<span class="op">=</span>so.Nominal(order<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]))</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>limits[<span class="st">"x"</span>], y<span class="op">=</span>limits[<span class="st">"y"</span>])</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="co"># Add extra readable unit labels (rotated 90 degrees) at the top</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.add(</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>        so.Text({<span class="st">"rotation"</span>: <span class="dv">90</span>, <span class="st">"rotation_mode"</span>: <span class="st">"anchor"</span>}, color<span class="op">=</span><span class="st">".7"</span>, fontsize<span class="op">=</span><span class="dv">8</span>, halign<span class="op">=</span><span class="st">"right"</span>, valign<span class="op">=</span><span class="st">"center"</span>, offset<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>        data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: days_logscale, <span class="st">"y"</span>: [limits[<span class="st">"y"</span>][<span class="dv">1</span>]<span class="op">-</span><span class="dv">15</span>] <span class="op">*</span> <span class="bu">len</span>(days_logscale), <span class="st">"text"</span>: days_loglabels_full}),</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="co"># Add quantile indicators</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> add_quantiles(p, <span class="st">"dur_days"</span>, limits[<span class="st">"x"</span>], limits[<span class="st">"y"</span>])</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.on(ax).plot()</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line <span class="kw">in</span> ax.get_lines():</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>    line.zorder<span class="op">=</span><span class="fl">1.1</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Lines between unit groups</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>ax.vlines(days_logsep, <span class="op">-</span><span class="fl">0.04</span>, <span class="op">-</span><span class="fl">0.15</span>, color<span class="op">=</span><span class="st">"black"</span>, lw<span class="op">=</span><span class="fl">0.5</span>, clip_on<span class="op">=</span><span class="va">False</span>, transform<span class="op">=</span>ax.get_xaxis_transform())</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Grouped unit labels</span></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pos, text <span class="kw">in</span> <span class="bu">zip</span>(days_logpos_grp, days_loglabels_grp):</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    ax.text(pos, <span class="op">-</span><span class="fl">0.14</span>, text, ha<span class="op">=</span><span class="st">"center"</span>, clip_on<span class="op">=</span><span class="va">False</span>, transform<span class="op">=</span>ax.get_xaxis_transform())</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="co"># Move x-axis label down</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>ax.xaxis.labelpad <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a><span class="co"># Add rug plot</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>sns.rugplot(ax<span class="op">=</span>ax, data<span class="op">=</span>hist_data, x<span class="op">=</span><span class="st">"dur_days"</span>, hue<span class="op">=</span><span class="st">"ended"</span>, height<span class="op">=-</span><span class="fl">.03</span>, clip_on<span class="op">=</span><span class="va">False</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the linear scale chart</span></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="co">#############################</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axs[<span class="dv">0</span>]</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>hist_data_lt_10y <span class="op">=</span> hist_data[hist_data[<span class="st">"dur_years"</span>] <span class="op">&lt;=</span> <span class="dv">10</span>]</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>limits <span class="op">=</span> {<span class="st">"x"</span>: (<span class="dv">0</span>, <span class="fl">10.5</span>), <span class="st">"y"</span>: (<span class="dv">0</span>, <span class="dv">2000</span>)}</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>hist_data_lt_10y, x<span class="op">=</span><span class="st">"dur_years"</span>)</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>    .label(x<span class="op">=</span><span class="st">"Duration (linear: years)"</span>, y<span class="op">=</span><span class="st">"Routes"</span>)</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>    .add(so.Bars(), so.Hist(binwidth<span class="op">=</span><span class="fl">0.5</span>), so.Stack(), color<span class="op">=</span><span class="st">"ended"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous().tick(every<span class="op">=</span><span class="dv">1</span>).label(like<span class="op">=</span><span class="st">"</span><span class="sc">{x:.0f}</span><span class="st">"</span>), color<span class="op">=</span>so.Nominal(order<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]))</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>limits[<span class="st">"x"</span>], y<span class="op">=</span>limits[<span class="st">"y"</span>])</span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>    .add(</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>        so.Text({<span class="st">"rotation"</span>: <span class="dv">90</span>, <span class="st">"rotation_mode"</span>: <span class="st">"anchor"</span>}, color<span class="op">=</span><span class="st">".7"</span>, fontsize<span class="op">=</span><span class="dv">9</span>, halign<span class="op">=</span><span class="st">"left"</span>, valign<span class="op">=</span><span class="st">"top"</span>, offset<span class="op">=</span><span class="dv">5</span>),</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>        data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: [<span class="dv">10</span>], <span class="st">"y"</span>: [<span class="dv">100</span>], <span class="st">"text"</span>: [<span class="st">"2 routes over 10 years not shown"</span>]}),</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> add_quantiles(p, <span class="st">"dur_years"</span>, limits[<span class="st">"x"</span>], limits[<span class="st">"y"</span>])</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.on(ax).plot()</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>sns.rugplot(ax<span class="op">=</span>ax, data<span class="op">=</span>hist_data_lt_10y, x<span class="op">=</span><span class="st">"dur_years"</span>, hue<span class="op">=</span><span class="st">"ended"</span>, height<span class="op">=-</span><span class="fl">.03</span>, clip_on<span class="op">=</span><span class="va">False</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Add legend</span></span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>colours <span class="op">=</span> sns.color_palette(as_cmap<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> matplotlib.patches.Patch(facecolor<span class="op">=</span>colours[<span class="dv">0</span>], edgecolor<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"Ended"</span>)</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> matplotlib.patches.Patch(facecolor<span class="op">=</span>colours[<span class="dv">1</span>], edgecolor<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"Current"</span>)</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>ax.legend(handles<span class="op">=</span>[F, T], loc<span class="op">=</span><span class="st">"upper right"</span>)</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="co"># Output the chart</span></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a><span class="co">##################</span></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>fig_4_7 <span class="op">=</span> <span class="st">"img_output/Figure_4.7.svg"</span></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>plt.savefig(fig_4_7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="figure-4.7" class="level4">
+<h4 class="anchored" data-anchor-id="figure-4.7">Figure 4.7</h4>
+<p><img src="img_output/Figure_4.7.svg" class="img-fluid"></p>
+<p><sub>Notes: 3,755 people; 5,072 routes. 10% at 35 days, 90% at 3.08 years. Descriptive statistics are in Table A.6.</sub></p>
+</section>
+<section id="table-a.6" class="level4">
+<h4 class="anchored" data-anchor-id="table-a.6">Table A.6</h4>
+<div id="f718c40a" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tbl_data <span class="op">=</span> hist_data.copy()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tbl_data = hist_data[["ended", "dur_years"]]</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>tbl_data[<span class="st">"ended"</span>] <span class="op">=</span> hist_data[<span class="st">"ended"</span>].<span class="bu">map</span>({<span class="va">True</span>: <span class="st">"Ended"</span>, <span class="va">False</span>: <span class="st">"Current"</span>})</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>percentiles <span class="op">=</span> [<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>ta6 <span class="op">=</span> (</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    pd.concat([</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        tbl_data.groupby(<span class="st">"ended"</span>, observed<span class="op">=</span><span class="va">True</span>).describe(percentiles<span class="op">=</span>percentiles),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        tbl_data.describe(percentiles<span class="op">=</span>percentiles).T.assign(ended<span class="op">=</span><span class="st">"All"</span>).set_index(<span class="st">"ended"</span>, append<span class="op">=</span><span class="va">True</span>).stack().unstack(level<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">2</span>])</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>ta6 <span class="op">=</span> ta6.astype(<span class="st">"object"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>int_cols <span class="op">=</span> {<span class="st">"dur_days"</span>: [<span class="st">"count"</span>, <span class="st">"min"</span>, <span class="st">"max"</span>], <span class="st">"dur_years"</span>: [<span class="st">"count"</span>]}</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>float_cols <span class="op">=</span> {k: ta6.columns.levels[<span class="dv">1</span>].difference(v) <span class="cf">for</span> k, v <span class="kw">in</span> int_cols.items()}</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>float_prec <span class="op">=</span> {<span class="st">"dur_days"</span>: <span class="dv">1</span>, <span class="st">"dur_years"</span>: <span class="dv">3</span>}</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> dt <span class="kw">in</span> [<span class="st">"dur_days"</span>, <span class="st">"dur_years"</span>]:</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    fp <span class="op">=</span> float_prec[dt]</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    ta6.loc[:, (dt, float_cols[dt])] <span class="op">=</span> (ta6.loc[:, (dt, float_cols[dt])].<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:,.</span>{fp}f<span class="sc">}</span><span class="ss">"</span>))</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    ta6.loc[:, (dt, int_cols[dt])] <span class="op">=</span> (ta6.loc[:, (dt, int_cols[dt])].<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:,.0f}</span><span class="ss">"</span>))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>ta6 <span class="op">=</span> (</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    ta6.T.reindex((a, b)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> a <span class="kw">in</span> [<span class="st">"dur_years"</span>, <span class="st">"dur_days"</span>]</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> b <span class="kw">in</span> [x <span class="cf">for</span> x <span class="kw">in</span> ta6[<span class="st">"dur_days"</span>].columns <span class="cf">if</span> x <span class="op">!=</span> <span class="st">"count"</span>] <span class="op">+</span> [<span class="st">"count"</span>]).T</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"50%"</span>: <span class="st">"median"</span>})</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>ta6 <span class="op">=</span> pd.concat([ta6[<span class="st">"dur_years"</span>], ta6[<span class="st">"dur_days"</span>]], keys<span class="op">=</span>[<span class="st">"Years"</span>, <span class="st">"Days"</span>])</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>dur_6y <span class="op">=</span> tbl_data[tbl_data[<span class="st">"dur_years"</span>] <span class="op">&gt;</span> <span class="dv">6</span>].ended.value_counts().to_frame()</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>dur_0d <span class="op">=</span> tbl_data[tbl_data[<span class="st">"dur_days"</span>] <span class="op">==</span> <span class="dv">0</span>].ended.value_counts().to_frame()</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>excel_output[<span class="st">"Table A.6: Descriptive statistics for route durations by whether ended/current"</span>] <span class="op">=</span> ta6</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>display(ta6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">std</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">10%</th>
+<th data-quarto-table-cell-role="th">median</th>
+<th data-quarto-table-cell-role="th">90%</th>
+<th data-quarto-table-cell-role="th">max</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ended</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">Years</td>
+<td data-quarto-table-cell-role="th">Ended</td>
+<td>1.115</td>
+<td>1.223</td>
+<td>0.000</td>
+<td>0.090</td>
+<td>0.713</td>
+<td>2.669</td>
+<td>20.118</td>
+<td>4,334</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Current</td>
+<td>2.118</td>
+<td>2.129</td>
+<td>0.003</td>
+<td>0.151</td>
+<td>1.269</td>
+<td>5.472</td>
+<td>9.919</td>
+<td>738</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">All</td>
+<td>1.261</td>
+<td>1.436</td>
+<td>0.000</td>
+<td>0.096</td>
+<td>0.769</td>
+<td>3.080</td>
+<td>20.118</td>
+<td>5,072</td>
+</tr>
+<tr class="even">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">Days</td>
+<td data-quarto-table-cell-role="th">Ended</td>
+<td>407.2</td>
+<td>446.6</td>
+<td>0</td>
+<td>33.0</td>
+<td>260.5</td>
+<td>975.0</td>
+<td>7,348</td>
+<td>4,334</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Current</td>
+<td>773.6</td>
+<td>777.7</td>
+<td>1</td>
+<td>55.0</td>
+<td>463.5</td>
+<td>1,998.8</td>
+<td>3,623</td>
+<td>738</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">All</td>
+<td>460.5</td>
+<td>524.4</td>
+<td>0</td>
+<td>35.0</td>
+<td>281.0</td>
+<td>1,124.8</td>
+<td>7,348</td>
+<td>5,072</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="figure-4.8-route-durations-by-end-reason" class="level3">
+<h3 class="anchored" data-anchor-id="figure-4.8-route-durations-by-end-reason">Figure 4.8: Route durations by end reason</h3>
+<section id="code-1" class="level4">
+<h4 class="anchored" data-anchor-id="code-1">Code</h4>
+<div id="3faadca8" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn.objects <span class="im">as</span> so</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up data</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#############</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>durations <span class="op">=</span> dpw_pls.set_index(<span class="st">"route_id"</span>)[[<span class="st">"dur"</span>, <span class="st">"pl_start_dt"</span>]]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>durations[<span class="st">"dur_days"</span>] <span class="op">=</span> durations[<span class="st">"dur"</span>].dt.days</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>durations[<span class="st">"dur_days"</span>] <span class="op">=</span> durations[<span class="st">"dur_days"</span>].fillna(<span class="dv">1</span> <span class="op">+</span> (distinct_pathways.dpw_end_dt <span class="op">-</span> durations.pl_start_dt).dt.days)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>durations <span class="op">=</span> durations.drop(columns<span class="op">=</span>[<span class="st">"dur"</span>, <span class="st">"pl_start_dt"</span>])</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>hist_data <span class="op">=</span> (</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    durations.groupby(level<span class="op">=</span><span class="dv">0</span>).dur_days.<span class="bu">sum</span>().to_frame()</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    .join(dpw_rt_ends.set_index(<span class="st">"route_id"</span>)[<span class="st">"pl_end_dt"</span>].notna().rename(<span class="st">"ended"</span>).astype(<span class="st">"category"</span>))</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    .join(dpw_rt_ends.set_index(<span class="st">"route_id"</span>)[[<span class="st">"rt_end_cat"</span>, <span class="st">"pl_end_dt"</span>]])</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>hist_data[<span class="st">"ended"</span>] <span class="op">=</span> pd.Categorical(hist_data[<span class="st">"ended"</span>], categories<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>], ordered<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>hist_data[<span class="st">"dur_years"</span>] <span class="op">=</span> hist_data[<span class="st">"dur_days"</span>] <span class="op">/</span> <span class="fl">365.25</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>qrows <span class="op">=</span> hist_data[<span class="st">"rt_end_cat"</span>] <span class="op">==</span> <span class="st">"[Not ended or invalid end reason]"</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>hist_data.loc[qrows, <span class="st">"rt_end_cat"</span>] <span class="op">=</span> hist_data.loc[qrows, <span class="st">"pl_end_dt"</span>].isna().<span class="bu">map</span>({<span class="va">True</span>: <span class="st">"[Not ended]"</span>, <span class="va">False</span>: <span class="st">"Missing data/error"</span>})</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>hist_data <span class="op">=</span> hist_data.drop(columns<span class="op">=</span><span class="st">"pl_end_dt"</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>colours <span class="op">=</span> sns.color_palette(as_cmap<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate positions of group labels for log units</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>days_loggrp_edges <span class="op">=</span> [<span class="fl">0.8</span>] <span class="op">+</span> days_logsep <span class="op">+</span> [<span class="dv">30</span> <span class="op">*</span> days_logunits[<span class="st">"year"</span>]]</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>days_logpos_grp <span class="op">=</span> <span class="bu">list</span>(<span class="dv">10</span> <span class="op">**</span> ((np.log10(a) <span class="op">+</span> np.log10(b))<span class="op">/</span><span class="dv">2</span>) <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(days_loggrp_edges[:<span class="op">-</span><span class="dv">1</span>], days_loggrp_edges[<span class="dv">1</span>:]))</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate order for facets</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>facet_order <span class="op">=</span> (hist_data.groupby(<span class="st">"rt_end_cat"</span>).size().to_frame().reset_index()</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>               .sort_values(<span class="dv">0</span>, ascending<span class="op">=</span><span class="va">False</span>)[<span class="st">"rt_end_cat"</span>].to_list())</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate human-readable units and tick positions for log timescales</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#####################################################################</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>days_logunits <span class="op">=</span> {<span class="st">"day"</span>: <span class="dv">1</span>, <span class="st">"week"</span>: <span class="dv">7</span>, <span class="st">"month"</span>: <span class="fl">365.25</span><span class="op">/</span><span class="dv">12</span>, <span class="st">"year"</span>: <span class="fl">365.25</span>}</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>days_loglists <span class="op">=</span> {</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"weeks"</span>: [<span class="dv">1</span>],</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"months"</span>: [<span class="dv">1</span>, <span class="dv">4</span>],</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"years"</span>: [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">9</span>]</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>days_logscale <span class="op">=</span> []</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>days_loglabels_u <span class="op">=</span> []</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>days_loglabels_full <span class="op">=</span> []</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>days_loglabels_grp <span class="op">=</span> []</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> u, l <span class="kw">in</span> days_loglists.items():</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    days_logscale.extend(days_logunits[u[:<span class="op">-</span><span class="dv">1</span>]] <span class="op">*</span> i <span class="cf">for</span> i <span class="kw">in</span> l)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># days_loglabels_u.extend(l)</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    days_loglabels_u.extend(<span class="ss">f"</span><span class="sc">{</span>x<span class="sc">}{</span>u[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> x <span class="kw">in</span> l)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    days_loglabels_full.extend(<span class="ss">f"</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>u <span class="cf">if</span> i <span class="op">&gt;</span> <span class="dv">1</span> <span class="cf">else</span> u[:<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> l)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    days_loglabels_grp.append(u)</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>days_logformatter <span class="op">=</span> matplotlib.ticker.FixedFormatter(days_loglabels_u)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot log scale charts</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co">#######################</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>limits <span class="op">=</span> {<span class="st">"x"</span>: (<span class="fl">0.014</span><span class="op">*</span><span class="fl">365.25</span>, <span class="dv">10</span><span class="op">*</span><span class="fl">365.25</span>), <span class="st">"y"</span>: (<span class="va">None</span>, <span class="dv">100</span>)}</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>fig_4_8_a <span class="op">=</span> <span class="st">"img_output/Figure_4.8_a.svg"</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>hist_data, x<span class="op">=</span><span class="st">"dur_days"</span>)</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .label(x="Duration (log scale)", y="Routes")</span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>    .add(so.Bars(), so.Hist(bins<span class="op">=</span><span class="dv">20</span>), so.Stack(), color<span class="op">=</span><span class="st">"ended"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous(trans<span class="op">=</span><span class="st">"log"</span>).tick(at<span class="op">=</span>days_logscale).label(formatter<span class="op">=</span>days_logformatter),</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>           color<span class="op">=</span>so.Nominal(order<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]))</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    .facet(<span class="st">"rt_end_cat"</span>, wrap<span class="op">=</span><span class="dv">4</span>, order<span class="op">=</span>facet_order)</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>limits[<span class="st">"x"</span>])</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>    .save(fig_4_8_a)</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>fig_4_8_b <span class="op">=</span> <span class="st">"img_output/Figure_4.8_b.svg"</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>hist_data, x<span class="op">=</span><span class="st">"dur_days"</span>)</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .label(x="Duration (log scale)", y="Routes")</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>    .add(so.Bars(), so.Hist(bins<span class="op">=</span><span class="dv">20</span>), so.Stack(), color<span class="op">=</span><span class="st">"ended"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous(trans<span class="op">=</span><span class="st">"log"</span>).tick(at<span class="op">=</span>days_logscale).label(formatter<span class="op">=</span>days_logformatter),</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>           color<span class="op">=</span>so.Nominal(order<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]))</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>    .facet(<span class="st">"rt_end_cat"</span>, wrap<span class="op">=</span><span class="dv">4</span>, order<span class="op">=</span>facet_order)</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>limits[<span class="st">"x"</span>], y<span class="op">=</span>limits[<span class="st">"y"</span>])</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>    .save(fig_4_8_b)</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="figure-4.8" class="level4">
+<h4 class="anchored" data-anchor-id="figure-4.8">Figure 4.8</h4>
+<p><img src="img_output/Figure_4.8_a.svg" class="img-fluid"> Increased-scale y-axis (zoomed in): <img src="img_output/Figure_4.8_b.svg" class="img-fluid"></p>
+<p><sub>Note: Descriptive statistics are in Table A.7.</sub></p>
+</section>
+<section id="table-a.7" class="level4">
+<h4 class="anchored" data-anchor-id="table-a.7">Table A.7</h4>
+<div id="25a19069" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tbl_data <span class="op">=</span> hist_data.copy()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tbl_data = hist_data[["ended", "dur_years"]]</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>tbl_data[<span class="st">"ended"</span>] <span class="op">=</span> hist_data[<span class="st">"ended"</span>].<span class="bu">map</span>({<span class="va">True</span>: <span class="st">"Ended"</span>, <span class="va">False</span>: <span class="st">"Current"</span>})</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>percentiles <span class="op">=</span> [<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>ta7 <span class="op">=</span> (</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    pd.concat([</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        (tbl_data.groupby(<span class="st">"rt_end_cat"</span>, observed<span class="op">=</span><span class="va">True</span>).describe(percentiles<span class="op">=</span>percentiles)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>         .sort_values((<span class="st">"dur_days"</span>, <span class="st">"mean"</span>), ascending<span class="op">=</span><span class="va">False</span>)),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        tbl_data.describe(percentiles<span class="op">=</span>percentiles).T.assign(rt_end_cat<span class="op">=</span><span class="st">"All"</span>).set_index(<span class="st">"rt_end_cat"</span>, append<span class="op">=</span><span class="va">True</span>).stack().unstack(level<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">2</span>])</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>ta7 <span class="op">=</span> ta7.astype(<span class="st">"object"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>int_cols <span class="op">=</span> {<span class="st">"dur_days"</span>: [<span class="st">"count"</span>, <span class="st">"min"</span>, <span class="st">"max"</span>], <span class="st">"dur_years"</span>: [<span class="st">"count"</span>]}</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>float_cols <span class="op">=</span> {k: ta7.columns.levels[<span class="dv">1</span>].difference(v) <span class="cf">for</span> k, v <span class="kw">in</span> int_cols.items()}</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>float_prec <span class="op">=</span> {<span class="st">"dur_days"</span>: <span class="dv">1</span>, <span class="st">"dur_years"</span>: <span class="dv">3</span>}</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> dt <span class="kw">in</span> [<span class="st">"dur_days"</span>, <span class="st">"dur_years"</span>]:</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    fp <span class="op">=</span> float_prec[dt]</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    ta7.loc[:, (dt, float_cols[dt])] <span class="op">=</span> (ta7.loc[:, (dt, float_cols[dt])].<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:,.</span>{fp}f<span class="sc">}</span><span class="ss">"</span>))</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    ta7.loc[:, (dt, int_cols[dt])] <span class="op">=</span> (ta7.loc[:, (dt, int_cols[dt])].<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:,.0f}</span><span class="ss">"</span>))</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>ta7 <span class="op">=</span> (</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    ta7.T.reindex((a, b)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> a <span class="kw">in</span> [<span class="st">"dur_years"</span>, <span class="st">"dur_days"</span>]</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> b <span class="kw">in</span> [x <span class="cf">for</span> x <span class="kw">in</span> ta7[<span class="st">"dur_days"</span>].columns <span class="cf">if</span> x <span class="op">!=</span> <span class="st">"count"</span>] <span class="op">+</span> [<span class="st">"count"</span>]).T</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"50%"</span>: <span class="st">"median"</span>})</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>ta7 <span class="op">=</span> pd.concat([ta7[<span class="st">"dur_years"</span>], ta7[<span class="st">"dur_days"</span>]], keys<span class="op">=</span>[<span class="st">"Years"</span>, <span class="st">"Days"</span>])</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>excel_output[<span class="st">"Table A.7: Descriptive statistics for route durations by end reasons"</span>] <span class="op">=</span> ta7</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>display(ta7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">std</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">10%</th>
+<th data-quarto-table-cell-role="th">median</th>
+<th data-quarto-table-cell-role="th">90%</th>
+<th data-quarto-table-cell-role="th">max</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rt_end_cat</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="13" data-quarto-table-cell-role="th" data-valign="top">Years</td>
+<td data-quarto-table-cell-role="th">[Not ended]</td>
+<td>2.118</td>
+<td>2.129</td>
+<td>0.003</td>
+<td>0.151</td>
+<td>1.269</td>
+<td>5.472</td>
+<td>9.919</td>
+<td>738</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">To social housing</td>
+<td>1.877</td>
+<td>1.265</td>
+<td>0.027</td>
+<td>0.482</td>
+<td>1.643</td>
+<td>3.569</td>
+<td>7.291</td>
+<td>999</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Died</td>
+<td>1.757</td>
+<td>2.299</td>
+<td>0.008</td>
+<td>0.151</td>
+<td>1.054</td>
+<td>3.595</td>
+<td>20.118</td>
+<td>117</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">To private rented</td>
+<td>1.205</td>
+<td>1.053</td>
+<td>0.000</td>
+<td>0.199</td>
+<td>0.883</td>
+<td>2.471</td>
+<td>5.591</td>
+<td>278</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">To care/hospital</td>
+<td>1.190</td>
+<td>1.581</td>
+<td>0.003</td>
+<td>0.077</td>
+<td>0.665</td>
+<td>2.919</td>
+<td>12.394</td>
+<td>171</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">To external supported</td>
+<td>1.079</td>
+<td>1.246</td>
+<td>0.011</td>
+<td>0.090</td>
+<td>0.665</td>
+<td>2.494</td>
+<td>7.294</td>
+<td>167</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Other</td>
+<td>0.928</td>
+<td>0.956</td>
+<td>0.000</td>
+<td>0.095</td>
+<td>0.575</td>
+<td>2.225</td>
+<td>5.172</td>
+<td>289</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Evicted</td>
+<td>0.923</td>
+<td>1.101</td>
+<td>0.000</td>
+<td>0.118</td>
+<td>0.537</td>
+<td>2.200</td>
+<td>7.885</td>
+<td>867</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Missing data/error</td>
+<td>0.881</td>
+<td>1.126</td>
+<td>0.000</td>
+<td>0.047</td>
+<td>0.444</td>
+<td>2.317</td>
+<td>5.481</td>
+<td>95</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">To friends/family</td>
+<td>0.729</td>
+<td>0.734</td>
+<td>0.003</td>
+<td>0.060</td>
+<td>0.490</td>
+<td>1.789</td>
+<td>3.751</td>
+<td>376</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Abandoned</td>
+<td>0.624</td>
+<td>0.855</td>
+<td>0.000</td>
+<td>0.036</td>
+<td>0.268</td>
+<td>1.691</td>
+<td>6.486</td>
+<td>639</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Custody</td>
+<td>0.616</td>
+<td>0.781</td>
+<td>0.000</td>
+<td>0.051</td>
+<td>0.337</td>
+<td>1.577</td>
+<td>5.325</td>
+<td>336</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">All</td>
+<td>1.261</td>
+<td>1.436</td>
+<td>0.000</td>
+<td>0.096</td>
+<td>0.769</td>
+<td>3.080</td>
+<td>20.118</td>
+<td>5,072</td>
+</tr>
+<tr class="even">
+<td rowspan="13" data-quarto-table-cell-role="th" data-valign="top">Days</td>
+<td data-quarto-table-cell-role="th">[Not ended]</td>
+<td>773.6</td>
+<td>777.7</td>
+<td>1</td>
+<td>55.0</td>
+<td>463.5</td>
+<td>1,998.8</td>
+<td>3,623</td>
+<td>738</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">To social housing</td>
+<td>685.4</td>
+<td>462.1</td>
+<td>10</td>
+<td>176.2</td>
+<td>600.0</td>
+<td>1,303.6</td>
+<td>2,663</td>
+<td>999</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Died</td>
+<td>641.7</td>
+<td>839.6</td>
+<td>3</td>
+<td>55.0</td>
+<td>385.0</td>
+<td>1,313.2</td>
+<td>7,348</td>
+<td>117</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">To private rented</td>
+<td>440.3</td>
+<td>384.5</td>
+<td>0</td>
+<td>72.7</td>
+<td>322.5</td>
+<td>902.6</td>
+<td>2,042</td>
+<td>278</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">To care/hospital</td>
+<td>434.8</td>
+<td>577.5</td>
+<td>1</td>
+<td>28.0</td>
+<td>243.0</td>
+<td>1,066.0</td>
+<td>4,527</td>
+<td>171</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">To external supported</td>
+<td>394.1</td>
+<td>455.0</td>
+<td>4</td>
+<td>33.0</td>
+<td>243.0</td>
+<td>910.8</td>
+<td>2,664</td>
+<td>167</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Other</td>
+<td>339.1</td>
+<td>349.3</td>
+<td>0</td>
+<td>34.6</td>
+<td>210.0</td>
+<td>812.6</td>
+<td>1,889</td>
+<td>289</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Evicted</td>
+<td>337.3</td>
+<td>402.3</td>
+<td>0</td>
+<td>43.0</td>
+<td>196.0</td>
+<td>803.6</td>
+<td>2,880</td>
+<td>867</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Missing data/error</td>
+<td>321.6</td>
+<td>411.3</td>
+<td>0</td>
+<td>17.0</td>
+<td>162.0</td>
+<td>846.2</td>
+<td>2,002</td>
+<td>95</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">To friends/family</td>
+<td>266.2</td>
+<td>268.0</td>
+<td>1</td>
+<td>22.0</td>
+<td>179.0</td>
+<td>653.5</td>
+<td>1,370</td>
+<td>376</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Abandoned</td>
+<td>227.8</td>
+<td>312.3</td>
+<td>0</td>
+<td>13.0</td>
+<td>98.0</td>
+<td>617.6</td>
+<td>2,369</td>
+<td>639</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Custody</td>
+<td>225.1</td>
+<td>285.2</td>
+<td>0</td>
+<td>18.5</td>
+<td>123.0</td>
+<td>576.0</td>
+<td>1,945</td>
+<td>336</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">All</td>
+<td>460.5</td>
+<td>524.4</td>
+<td>0</td>
+<td>35.0</td>
+<td>281.0</td>
+<td>1,124.8</td>
+<td>7,348</td>
+<td>5,072</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="tables-in-an-excel-file" class="level2">
+<h2 class="anchored" data-anchor-id="tables-in-an-excel-file">Tables in an Excel file</h2>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>sheetname <span class="op">=</span> <span class="st">"Sheet1"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>qmdfile <span class="op">=</span> os.getenv(<span class="st">"QUARTO_DOCUMENT_FILE"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>filename <span class="op">=</span> <span class="st">"img_output/"</span><span class="op">+</span>qmdfile[:<span class="op">-</span><span class="dv">4</span>]<span class="op">+</span><span class="st">".xlsx"</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.ExcelWriter(filename) <span class="im">as</span> writer:</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    next_row <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, v <span class="kw">in</span> excel_output.items():</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        pd.DataFrame([k]).to_excel(writer, sheet_name<span class="op">=</span>sheetname, header<span class="op">=</span><span class="va">False</span>, index<span class="op">=</span><span class="va">False</span>, startrow<span class="op">=</span>next_row)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        next_row <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        v.to_excel(writer, sheet_name<span class="op">=</span>sheetname, startrow<span class="op">=</span>next_row, float_format<span class="op">=</span><span class="st">"</span><span class="sc">%.1f</span><span class="st">"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        next_row <span class="op">+=</span> (</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            (<span class="dv">1</span> <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(v.columns, pd.MultiIndex) <span class="cf">else</span> <span class="dv">1</span> <span class="op">+</span> <span class="bu">len</span>(v.columns.levels))</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> <span class="bu">len</span>(v) <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"[Excel file](./</span><span class="sc">{</span>filename<span class="sc">}</span><span class="ss">)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<p><a href="./img_output/4.4_durations.xlsx">Excel file</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="./index.html">
+<p>Back to list</p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

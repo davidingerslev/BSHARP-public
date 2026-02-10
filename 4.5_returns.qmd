@@ -1,0 +1,148 @@
+---
+title: "4.5 Results - Returns"
+date: 2026-02-10
+warning: false
+---
+
+```{python}
+# Setup code
+import pandas as pd
+from python_scripts import setup
+from python_scripts import services
+from python_scripts import helper
+df, dffp = setup.setup(verbose=False)
+
+from python_scripts import distinct_pathways
+dpw_pls = distinct_pathways.get_distinct_pathways_routes(dffp)
+qrows = dpw_pls["rt_end_cat"] == "[Not ended or invalid end reason]"
+dpw_pls.loc[qrows, "rt_end_cat"] = dpw_pls.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+dpw_pls["rt_end_cat"] = dpw_pls["rt_end_cat"].str.replace("To care/hosp.", "To care/hospital")
+dpw_rt_starts = dpw_pls.groupby("route_id").head(1)
+dpw_rt_ends = dpw_pls.groupby("route_id").tail(1)
+dpw_clis = dpw_pls.groupby(["o_cli_id"]).head(1)  # 1 duplicate client but first entry has more detailed answers
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams.update({
+    'figure.figsize': (6.2, 4.1),
+    'font.size': 12,
+    'figure.constrained_layout.use': True
+})
+
+excel_output = {}
+```
+
+## Returns (RQ5)
+
+### Table 4.3: Returns at periods of time after routes ended (per route)
+```{python}
+stable_periods = {x: f"after_rt_ret_within_{x}" for x in distinct_pathways.stable_offsets.keys()}
+stable_period_max_end_dts = {x: distinct_pathways.dpw_end_dt - distinct_pathways.stable_offsets[x]
+                             for x in distinct_pathways.stable_offsets.keys()}
+route_end_grp = (dpw_rt_ends[dpw_rt_ends["pl_end_dt"].notnull() & (dpw_rt_ends["rt_end_cat"] != "Died")]
+                 .assign(All="All").groupby("All"))
+route_outcomes = route_end_grp.size().sort_values(ascending=False).rename(("outcomes", "n")).to_frame()
+route_outcomes[("outcomes", "%")] = (100*route_outcomes[("outcomes", "n")]
+                                     / route_outcomes[("outcomes", "n")].sum())
+for k, v in stable_periods.items():
+    route_outcomes[k, f"<t"] = (route_end_grp["pl_end_dt"]
+                                .apply(lambda x: (x >= stable_period_max_end_dts[k]).sum()).astype("Int64"))
+    route_outcomes[k, f">=t"] = (route_end_grp["pl_end_dt"]
+                                 .apply(lambda x: (x < stable_period_max_end_dts[k]).sum()).astype("Int64"))
+    route_outcomes[k, f"<t ret"] = (route_end_grp
+                                    .apply(lambda x: ((x["pl_end_dt"] >= stable_period_max_end_dts[k])
+                                                      & (x[v] == "Yes")).sum()).astype("Int64"))
+    # route_outcomes[k, f"<t"] = route_end_grp[v].apply(lambda x: (x == "Not yet...").sum()).astype("Int64")
+    for outcome in ["Yes", "No"]:
+        route_outcomes[k, outcome] = (route_end_grp
+                                      .apply(lambda x: ((x["pl_end_dt"] < stable_period_max_end_dts[k])
+                                                        & (x[v] == outcome)).sum()).astype("Int64"))
+    route_outcomes[k, "Y+N"] = (route_outcomes[k, "Yes"]
+                                + route_outcomes[k, "No"])
+    route_outcomes[k, "% Y/(Y+N)"] = (route_outcomes[k, "Yes"]
+                                      .mul(100).div(route_outcomes[k, "Yes"]
+                                                    + route_outcomes[k, "No"]))
+    route_outcomes[k, "% No/sum(n)"] = (route_outcomes[k, "No"]
+                                        .mul(100).div(route_outcomes[("outcomes", "n")].sum()))
+tbl_periods = route_outcomes.astype("object").iloc[:, 2:].stack()
+t4_3 = route_outcomes.astype("object").iloc[:, 2:].stack().loc["All"].loc[[">=t", "Yes", "% Y/(Y+N)"]]
+t4_3.loc["% N/(Y+N)"] = 100 - t4_3.loc["% Y/(Y+N)"]
+t4_3 = t4_3.rename(index={">=t": "Eligible routes",
+                          "Yes": "Subsequent returns",
+                          "% Y/(Y+N)": "% returned",
+                          "% N/(Y+N)": "% not returned"})
+with pd.option_context("display.float_format", "{:,.1f}".format):
+    display(t4_3)
+excel_output["Table 4.3: Returns at periods of time after routes ended (per route)"] = t4_3
+```
+<sup>Notes: 1. Return = new route that started before 30/04/2025.</sup>
+
+### Table 4.4: Returns at periods of time after people’s first routes ended (per person)
+
+```{python}
+stable_periods = {x: f"after_rt_ret_within_{x}" for x in distinct_pathways.stable_offsets.keys()}
+stable_period_max_end_dts = {x: distinct_pathways.dpw_end_dt - distinct_pathways.stable_offsets[x]
+                             for x in distinct_pathways.stable_offsets.keys()}
+pl_before_dpw_start = dffp.loc[(dffp["pl_start_dt"] < distinct_pathways.dpw_start_dt), "o_cli_id"].unique()
+dpw_clis_before_start = dpw_clis.loc[dpw_clis["o_cli_id"].isin(pl_before_dpw_start), "o_cli_id"]
+first_dpw_routes = dpw_pls.groupby("o_cli_id").head(1)["route_id"]
+first_route_end_pls = (dpw_pls[dpw_pls["route_id"].isin(first_dpw_routes)]
+                       .groupby("route_id").tail(1)[lambda x: x["pl_end_dt"].notnull() & (x["rt_end_cat"] != "Died")]
+                       .assign(Group=lambda x: x["o_cli_id"].isin(dpw_clis_before_start).map({True: "Prev", False: "New"})))
+first_route_end_grp = pd.concat([first_route_end_pls, first_route_end_pls.assign(Group="All")]).groupby("Group")
+first_route_outcomes = first_route_end_grp.size().sort_values(ascending=False).rename(("outcomes", "n")).to_frame()
+first_route_outcomes[("outcomes", "%")] = (100*first_route_outcomes[("outcomes", "n")]
+                                           / first_route_outcomes.loc["All", ("outcomes", "n")])
+for k, v in stable_periods.items():
+    first_route_outcomes[k, f"<t"] = (first_route_end_grp["pl_end_dt"]
+                                      .apply(lambda x: (x >= stable_period_max_end_dts[k]).sum()).astype("Int64"))
+    first_route_outcomes[k, f">=t"] = (first_route_end_grp["pl_end_dt"]
+                                       .apply(lambda x: (x < stable_period_max_end_dts[k]).sum()).astype("Int64"))
+    first_route_outcomes[k, f"<t ret"] = (first_route_end_grp
+                                          .apply(lambda x: ((x["pl_end_dt"] >= stable_period_max_end_dts[k])
+                                                            & (x[v] == "Yes")).sum()).astype("Int64"))
+    # first_route_outcomes[k, f"<t"] = first_route_end_grp[v].apply(lambda x: (x == "Not yet...").sum()).astype("Int64")
+    for outcome in ["Yes", "No"]:
+        first_route_outcomes[k, outcome] = (first_route_end_grp
+                                            .apply(lambda x: ((x["pl_end_dt"] < stable_period_max_end_dts[k])
+                                                              & (x[v] == outcome)).sum()).astype("Int64"))
+    first_route_outcomes[k, "Y+N"] = (first_route_outcomes[k, "Yes"]
+                                      + first_route_outcomes[k, "No"])
+    first_route_outcomes[k, "% Y/(Y+N)"] = (first_route_outcomes[k, "Yes"]
+                                            .mul(100).div(first_route_outcomes[k, "Yes"]
+                                                          + first_route_outcomes[k, "No"]))
+    first_route_outcomes[k, "% No/sum(n)"] = (first_route_outcomes[k, "No"]
+                                              .mul(100).div(first_route_outcomes[("outcomes", "n")].sum()))
+
+
+tbl_n = first_route_outcomes.iloc[:, :2].sort_index(ascending=False)
+tbl_periods = first_route_outcomes.astype("object").iloc[:, 2:].stack().sort_index(level=0, ascending=False, sort_remaining=False)
+t4_4 = tbl_periods.loc["All"].loc[[">=t", "Yes", "% Y/(Y+N)"]]
+t4_4.loc["% N/(Y+N)"] = 100 - t4_4.loc["% Y/(Y+N)"]
+t4_4 = t4_4.rename(index={">=t": "Eligible first routes",
+                          "Yes": "Subsequent returns",
+                          "% Y/(Y+N)": "% returned",
+                          "% N/(Y+N)": "% not returned"})
+with pd.option_context("display.float_format", "{:,.1f}".format):
+    display(t4_4)
+```
+
+## Tables in an Excel file
+
+```{python}
+#| output: asis
+import os
+sheetname = "Sheet1"
+qmdfile = os.getenv("QUARTO_DOCUMENT_FILE")
+filename = "img_output/"+qmdfile[:-4]+".xlsx"
+with pd.ExcelWriter(filename) as writer:
+    next_row = 0
+    for k, v in excel_output.items():
+        pd.DataFrame([k]).to_excel(writer, sheet_name=sheetname, header=False, index=False, startrow=next_row)
+        next_row += 1
+        v.to_excel(writer, sheet_name=sheetname, startrow=next_row, float_format="%.1f")
+        next_row += (
+            (1 if not isinstance(v.columns, pd.MultiIndex) else 1 + len(v.columns.levels))
+            + len(v) + 1)
+print(f"[Excel file](./{filename})")
+```

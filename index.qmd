@@ -1,0 +1,7 @@
+---
+listing:
+    sort: 
+        - "title asc"
+        - "date asc"
+    type: table
+---

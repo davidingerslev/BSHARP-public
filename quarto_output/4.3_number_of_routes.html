@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Ingerslev">
+<meta name="dcterms.date" content="2026-02-08">
+
+<title>4.3 Results - Number of routes – BSHARP</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="lib/quarto-nav/quarto-nav.js"></script>
+<script src="lib/clipboard/clipboard.min.js"></script>
+<script src="lib/quarto-search/autocomplete.umd.js"></script>
+<script src="lib/quarto-search/fuse.min.js"></script>
+<script src="lib/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="lib/quarto-html/quarto.js" type="module"></script>
+<script src="lib/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="lib/quarto-html/popper.min.js"></script>
+<script src="lib/quarto-html/tippy.umd.min.js"></script>
+<script src="lib/quarto-html/anchor.min.js"></script>
+<link href="lib/quarto-html/tippy.css" rel="stylesheet">
+<link href="lib/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="lib/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="lib/bootstrap/bootstrap.min.js"></script>
+<link href="lib/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="lib/bootstrap/bootstrap-1e6c66ebb092a045ff5cb86569894080.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="lib/bootstrap/bootstrap-dark-b1db0ee84b014cd07866e9f85700e252.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content column-page" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">4.3 Results - Number of routes</h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-page">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Ingerslev </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 8, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="2fc8687f" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Setup code</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> python_scripts <span class="im">import</span> setup</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> python_scripts <span class="im">import</span> services</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> python_scripts <span class="im">import</span> helper</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df, dffp <span class="op">=</span> setup.setup(verbose<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> python_scripts <span class="im">import</span> distinct_pathways</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>dpw_pls <span class="op">=</span> distinct_pathways.get_distinct_pathways_routes(dffp)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>qrows <span class="op">=</span> dpw_pls[<span class="st">"rt_end_cat"</span>] <span class="op">==</span> <span class="st">"[Not ended or invalid end reason]"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>dpw_pls.loc[qrows, <span class="st">"rt_end_cat"</span>] <span class="op">=</span> dpw_pls.loc[qrows, <span class="st">"pl_end_dt"</span>].isna().<span class="bu">map</span>({<span class="va">True</span>: <span class="st">"[Not ended]"</span>, <span class="va">False</span>: <span class="st">"Missing data/error"</span>})</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>dpw_pls[<span class="st">"rt_end_cat"</span>] <span class="op">=</span> dpw_pls[<span class="st">"rt_end_cat"</span>].<span class="bu">str</span>.replace(<span class="st">"To care/hosp."</span>, <span class="st">"To care/hospital"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>dpw_rt_starts <span class="op">=</span> dpw_pls.groupby(<span class="st">"route_id"</span>).head(<span class="dv">1</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>dpw_rt_ends <span class="op">=</span> dpw_pls.groupby(<span class="st">"route_id"</span>).tail(<span class="dv">1</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>dpw_clis <span class="op">=</span> dpw_pls.groupby([<span class="st">"o_cli_id"</span>]).head(<span class="dv">1</span>)  <span class="co"># 1 duplicate client but first entry has more detailed answers</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>matplotlib.rcParams.update({</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'figure.figsize'</span>: (<span class="fl">6.2</span>, <span class="fl">4.1</span>),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'font.size'</span>: <span class="dv">12</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'figure.constrained_layout.use'</span>: <span class="va">True</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>excel_output <span class="op">=</span> {}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="number-of-routes-rq3" class="level2">
+<h2 class="anchored" data-anchor-id="number-of-routes-rq3">Number of routes (RQ3)</h2>
+<section id="figure-4.6-numbers-of-people-who-experienced-different-quantities-of-routes-by-whether-they-were-new-or-had-returned-after-previously-using-services" class="level3">
+<h3 class="anchored" data-anchor-id="figure-4.6-numbers-of-people-who-experienced-different-quantities-of-routes-by-whether-they-were-new-or-had-returned-after-previously-using-services">Figure 4.6: Numbers of people who experienced different quantities of routes by whether they were ‘new’ or had returned after previously using services</h3>
+<section id="code" class="level4">
+<h4 class="anchored" data-anchor-id="code">Code</h4>
+<div id="3e45cd99" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Table A.5</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>known_apw <span class="op">=</span> dffp.loc[</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    dffp.svc_type.isin(services.adult_pathways_accom_svc_types)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span> (dffp.pl_end_dt <span class="op">&lt;</span> distinct_pathways.dpw_start_dt),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"o_cli_id"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>dpw_pls[<span class="st">"known_apw"</span>] <span class="op">=</span> dpw_pls[<span class="st">"o_cli_id"</span>].isin(known_apw).<span class="bu">map</span>({<span class="va">False</span>: <span class="st">"New"</span>, <span class="va">True</span>: <span class="st">"Returned"</span>})</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>dpw_pls[<span class="st">"current"</span>] <span class="op">=</span> dpw_pls[<span class="st">"o_cli_id"</span>].isin(dpw_pls.loc[dpw_pls.pl_end_dt.isnull(), <span class="st">"o_cli_id"</span>]).<span class="bu">map</span>({<span class="va">True</span>: <span class="st">"Current"</span>, <span class="va">False</span>: <span class="st">"Ended"</span>})</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ta5 <span class="op">=</span> (</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    dpw_pls.groupby([<span class="st">'o_cli_id'</span>, <span class="st">'known_apw'</span>, <span class="st">'current'</span>]).route_id.nunique().rename(<span class="st">"routes"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    .reset_index(level<span class="op">=</span>[<span class="st">"known_apw"</span>, <span class="st">"current"</span>]).value_counts()</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    .unstack([<span class="dv">0</span>, <span class="dv">1</span>], fill_value<span class="op">=</span><span class="dv">0</span>).swaplevel(axis<span class="op">=</span><span class="dv">1</span>).sort_index()</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    .assign(All<span class="op">=</span><span class="kw">lambda</span> x: x.<span class="bu">sum</span>(axis<span class="op">=</span><span class="st">"columns"</span>))</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>ta5.index <span class="op">=</span> ta5.index.astype(<span class="st">"object"</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># ta5.columns = pd.Categorical(ta5.columns, categories=["Returned", "New", "All"], ordered=True)</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ta5 = ta5.rename_axis("Records pre-DPW", axis="columns")</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># ta5 = ta5.sort_index(axis="columns")</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>ta5.loc[<span class="st">"n"</span>, :] <span class="op">=</span> ta5.<span class="bu">sum</span>()</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>ta5_pct_col <span class="op">=</span> ta5.<span class="bu">apply</span>(<span class="kw">lambda</span> x: (x<span class="op">/</span>x.loc[<span class="st">"n"</span>]).mul(<span class="dv">100</span>))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>grp_sum <span class="op">=</span> ta5.T.groupby(<span class="st">"current"</span>).transform(<span class="st">"sum"</span>).T</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>grp_sum.iloc[:<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> grp_sum.iloc[<span class="op">-</span><span class="dv">1</span>].values</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>ta5_pct_grp <span class="op">=</span> <span class="dv">100</span> <span class="op">*</span> ta5 <span class="op">/</span> grp_sum</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>ta5_pct_all <span class="op">=</span> ta5[[<span class="st">"Ended"</span>, <span class="st">"Current"</span>]].<span class="bu">apply</span>(<span class="kw">lambda</span> x: (x<span class="op">/</span>ta5[<span class="st">"All"</span>].loc[<span class="st">"n"</span>]).mul(<span class="dv">100</span>))</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>ta5_numeric <span class="op">=</span> (</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    pd.concat([ta5_pct_col, ta5_pct_grp, ta5_pct_all, ta5], keys<span class="op">=</span>[<span class="st">"</span><span class="sc">% c</span><span class="st">ol"</span>, <span class="st">"</span><span class="sc">% g</span><span class="st">rp"</span>, <span class="st">"% All"</span>, <span class="st">"n"</span>], axis<span class="op">=</span><span class="st">"columns"</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    .swaplevel(<span class="dv">0</span>, <span class="dv">2</span>, axis<span class="op">=</span><span class="st">"columns"</span>).swaplevel(<span class="dv">0</span>, <span class="dv">1</span>, axis<span class="op">=</span><span class="st">"columns"</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    .sort_index(axis<span class="op">=</span><span class="st">"columns"</span>, level<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], sort_remaining<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">"Ended"</span>, <span class="st">"Current"</span>, <span class="st">"All"</span>]]</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>).copy()</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>formats <span class="op">=</span> {(a, b, c): <span class="st">"</span><span class="sc">{0:.1f}</span><span class="st">%"</span> <span class="cf">if</span> c[<span class="dv">0</span>] <span class="op">==</span> <span class="st">"%"</span> <span class="cf">else</span> <span class="st">"</span><span class="sc">{0:,.0f}</span><span class="st">"</span> <span class="cf">for</span> a, b, c <span class="kw">in</span> ta5_numeric.columns}</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>ta5 <span class="op">=</span> ta5_numeric.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.<span class="bu">apply</span>(formats[x.name].<span class="bu">format</span>))</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>excel_output[<span class="st">"Table A.5: Routes per person during studied period by current/ended and whether placed in BAHSA before studied period"</span>] <span class="op">=</span> ta5</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Figure 4.6</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn.objects <span class="im">as</span> so</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>()</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>col_x <span class="op">=</span> <span class="st">"n"</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>plotdata <span class="op">=</span> ta5_numeric.swaplevel(<span class="dv">0</span>, <span class="dv">2</span>, axis<span class="op">=</span><span class="dv">1</span>).loc[:<span class="dv">8</span>, col_x][[<span class="st">"New"</span>, <span class="st">"Returned"</span>]].stack([<span class="dv">0</span>, <span class="dv">1</span>]).rename(col_x).reset_index()</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>plotdata[<span class="st">"known_apw"</span>] <span class="op">=</span> plotdata[<span class="st">"known_apw"</span>].astype(<span class="st">"string"</span>)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>maxes <span class="op">=</span> ta5_numeric.swaplevel(<span class="dv">0</span>, <span class="dv">2</span>, axis<span class="op">=</span><span class="dv">1</span>)[<span class="st">"n"</span>].loc[<span class="st">"n"</span>].groupby(level<span class="op">=</span><span class="dv">0</span>).<span class="bu">sum</span>()</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>width_ratios <span class="op">=</span> maxes[[<span class="st">"New"</span>, <span class="st">"Returned"</span>]]</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>width_ratios <span class="op">=</span> width_ratios <span class="op">-</span> (width_ratios.<span class="bu">sum</span>()<span class="op">/</span><span class="fl">52.7</span>)</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>colours <span class="op">=</span> sns.color_palette(as_cmap<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>fig_overall <span class="op">=</span> plt.figure(layout<span class="op">=</span><span class="st">"constrained"</span>, figsize<span class="op">=</span>(<span class="fl">6.2</span>, <span class="fl">3.1</span>))</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>fig_l, fig_r <span class="op">=</span> fig_overall.subfigures(<span class="dv">1</span>, <span class="dv">2</span>, width_ratios<span class="op">=</span>width_ratios)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> grp, fig, col <span class="kw">in</span> [(<span class="st">"Returned"</span>, fig_r, colours[<span class="dv">1</span>]),</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                      (<span class="st">"New"</span>,      fig_l, colours[<span class="dv">0</span>])]:</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    pl_d <span class="op">=</span> plotdata[plotdata[<span class="st">"known_apw"</span>] <span class="op">==</span> grp].reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    pl_d[<span class="st">"routes"</span>] <span class="op">=</span> pl_d[<span class="st">"routes"</span>].astype(<span class="st">"category"</span>)</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    textdata_after <span class="op">=</span> (pl_d.groupby(<span class="st">"routes"</span>, observed<span class="op">=</span><span class="va">False</span>)[col_x].<span class="bu">sum</span>().to_frame()</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>                      .assign(text<span class="op">=</span><span class="kw">lambda</span> x: (x<span class="op">/</span>x.<span class="bu">sum</span>()).mul(<span class="dv">100</span>).<span class="bu">map</span>(<span class="kw">lambda</span> y: <span class="ss">f"</span><span class="sc">{</span>y<span class="sc">:,.1f}</span><span class="ss">%"</span>)))</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    textdata_after.iloc[<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>] <span class="op">+=</span> <span class="ss">f" (of </span><span class="sc">{</span>grp<span class="sc">}</span><span class="ss">)"</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    textdata_during <span class="op">=</span> (pl_d.assign(pct_all<span class="op">=</span>pl_d.groupby(<span class="st">"routes"</span>, observed<span class="op">=</span><span class="va">False</span>)[col_x]</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>                                   .transform(<span class="kw">lambda</span> x: (x<span class="op">/</span>pl_d[col_x].<span class="bu">sum</span>()).mul(<span class="dv">100</span>))))</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    textdata_during <span class="op">=</span> textdata_during[textdata_during[<span class="st">"pct_all"</span>] <span class="op">&gt;</span> <span class="dv">15</span>]</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    textdata_during.loc[textdata_during[<span class="st">"current"</span>] <span class="op">==</span> <span class="st">"Ended"</span>, <span class="st">"x"</span>] <span class="op">=</span> (</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>        textdata_during.loc[textdata_during[<span class="st">"current"</span>] <span class="op">==</span> <span class="st">"Ended"</span>, col_x] <span class="op">/</span> <span class="dv">2</span>)</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    textdata_during.loc[textdata_during[<span class="st">"current"</span>] <span class="op">==</span> <span class="st">"Current"</span>, <span class="st">"x"</span>] <span class="op">=</span> (</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        textdata_during.loc[textdata_during[<span class="st">"current"</span>] <span class="op">==</span> <span class="st">"Current"</span>].join(</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>            textdata_during.loc[textdata_during[<span class="st">"current"</span>] <span class="op">==</span> <span class="st">"Ended"</span>].set_index(<span class="st">"routes"</span>)[col_x],</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>            on<span class="op">=</span><span class="st">"routes"</span>, rsuffix<span class="op">=</span><span class="st">"_end"</span>)</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[col_x<span class="op">+</span><span class="st">"_end"</span>] <span class="op">+</span> x[col_x]<span class="op">/</span><span class="dv">2</span>, axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    textdata_during[<span class="st">"text"</span>] <span class="op">=</span> textdata_during[<span class="st">"pct_all"</span>].<span class="bu">map</span>(<span class="kw">lambda</span> y: <span class="ss">f"</span><span class="sc">{</span>y<span class="sc">:,.1f}</span><span class="ss">%"</span>)</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> grp <span class="op">==</span> <span class="st">"New"</span>:</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>        textdata_during.iloc[<span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>] <span class="op">+=</span> <span class="ss">f" of </span><span class="sc">{</span>grp<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span><span class="dv">100</span><span class="op">*</span>textdata_during<span class="sc">.</span>iloc[<span class="dv">0</span>][col_x]<span class="op">/</span>plotdata[col_x]<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:.1f}</span><span class="ss">% of all)"</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> (</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>        so.Plot(data<span class="op">=</span>pl_d, y<span class="op">=</span><span class="st">"routes"</span>, x<span class="op">=</span>col_x)</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>        .add(so.Bars(), so.Stack(), color<span class="op">=</span><span class="st">"current"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>        .add(so.Text(color<span class="op">=</span><span class="st">".4"</span>, fontsize<span class="op">=</span><span class="dv">11</span>, halign<span class="op">=</span><span class="st">"left"</span>, offset<span class="op">=</span><span class="dv">2</span>, alpha<span class="op">=</span><span class="fl">0.7</span>), data<span class="op">=</span>textdata_after, x<span class="op">=</span>col_x, y<span class="op">=</span><span class="st">"routes"</span>, text<span class="op">=</span><span class="st">"text"</span>)</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>        .label(x<span class="op">=</span><span class="st">"People"</span>, title<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>grp<span class="sc">}</span><span class="ss">"</span> <span class="op">+</span> <span class="st">" ($</span><span class="sc">{n}</span><span class="st">$="</span> <span class="op">+</span> <span class="ss">f"</span><span class="sc">{</span><span class="bu">int</span>(maxes[grp])<span class="sc">:,}</span><span class="ss">)"</span>, y<span class="op">=</span><span class="st">""</span>)</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>        .limit(x<span class="op">=</span>(<span class="dv">0</span>, maxes[grp]))</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>        .layout(engine<span class="op">=</span><span class="st">"constrained"</span>)</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        .on(fig)</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>        .plot()</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> fig.axes[<span class="dv">0</span>]</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> grp <span class="op">==</span> <span class="st">"New"</span>:</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>        colours <span class="op">=</span> sns.color_palette(as_cmap<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>        T <span class="op">=</span> matplotlib.patches.Patch(facecolor<span class="op">=</span>colours[<span class="dv">0</span>], edgecolor<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"Ended"</span>)</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>        F <span class="op">=</span> matplotlib.patches.Patch(facecolor<span class="op">=</span>colours[<span class="dv">1</span>], edgecolor<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"Current"</span>)</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>        ax.legend(handles<span class="op">=</span>[F, T], loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>    minor_ticks <span class="op">=</span> [((b<span class="op">-</span>a)<span class="op">/</span><span class="dv">2</span> <span class="op">+</span> a) <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(ax.get_yticks()[:<span class="op">-</span><span class="dv">1</span>], ax.get_yticks()[<span class="dv">1</span>:])]</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>    <span class="co"># labels = ta5.swaplevel(axis=1)["% col"][grp].iloc[:-1].map(lambda x: x[:-1])</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks([maxes[grp]], labels<span class="op">=</span>[<span class="st">"$</span><span class="sc">{n}</span><span class="st">$"</span>])</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks(<span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">int</span>(maxes[grp]), <span class="dv">500</span>), labels<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">int</span>(maxes[grp]), <span class="dv">500</span>))[:<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> [<span class="st">".."</span>], minor<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>    ax.tick_params(<span class="st">"x"</span>, which<span class="op">=</span><span class="st">"minor"</span>, pad<span class="op">=</span><span class="dv">3</span>, bottom<span class="op">=</span><span class="va">True</span>, width<span class="op">=</span><span class="fl">0.5</span>, length<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    ax.tick_params(<span class="st">"x"</span>, which<span class="op">=</span><span class="st">"major"</span>, pad<span class="op">=</span><span class="dv">3</span>, bottom<span class="op">=</span><span class="va">True</span>, width<span class="op">=</span><span class="fl">0.5</span>, length<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>    ax.set_yticks(ax.get_yticks(), labels<span class="op">=</span>[])</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>    ax.set_yticks(minor_ticks, minor<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>    ax.grid(which<span class="op">=</span><span class="st">"minor"</span>, axis<span class="op">=</span><span class="st">"y"</span>)</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>    ax.grid(which<span class="op">=</span><span class="st">"minor"</span>, axis<span class="op">=</span><span class="st">"x"</span>)</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>yticks <span class="op">=</span> fig_l.axes[<span class="dv">0</span>].get_yticks()</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>sec <span class="op">=</span> fig_l.axes[<span class="dv">0</span>].secondary_yaxis(location<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>sec.set_yticks(yticks, labels<span class="op">=</span>[y <span class="op">+</span> <span class="dv">1</span> <span class="cf">for</span> y <span class="kw">in</span> yticks])</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>sec.tick_params(<span class="st">"y"</span>, length<span class="op">=</span><span class="dv">0</span>, which<span class="op">=</span><span class="st">"both"</span>, pad<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>sec.set_ylabel(<span class="st">"Routes"</span>, labelpad<span class="op">=</span><span class="dv">6</span>)</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>fig_4_6 <span class="op">=</span> <span class="st">"img_output/Figure_4.6.svg"</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>plt.savefig(fig_4_6)</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a><span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="figure-4.6" class="level4">
+<h4 class="anchored" data-anchor-id="figure-4.6">Figure 4.6</h4>
+<p><img src="img_output/Figure_4.6.svg" class="img-fluid"></p>
+<p><sub>Notes: X-axis scales are proportionate to New/Returned counts. ‘New’ means no record of using services since April 2009. Full data table is Table A.5.</sub></p>
+</section>
+<section id="table-a.5" class="level4">
+<h4 class="anchored" data-anchor-id="table-a.5">Table A.5</h4>
+<div id="7594f32c" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">current</th>
+<th colspan="8" data-quarto-table-cell-role="th" data-halign="left">Ended</th>
+<th colspan="8" data-quarto-table-cell-role="th" data-halign="left">Current</th>
+<th colspan="3" data-quarto-table-cell-role="th" data-halign="left">All</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">known_apw</th>
+<th colspan="4" data-quarto-table-cell-role="th" data-halign="left">New</th>
+<th colspan="4" data-quarto-table-cell-role="th" data-halign="left">Returned</th>
+<th colspan="4" data-quarto-table-cell-role="th" data-halign="left">New</th>
+<th colspan="4" data-quarto-table-cell-role="th" data-halign="left">Returned</th>
+<th colspan="3" data-quarto-table-cell-role="th" data-halign="left"></th>
+</tr>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">% col</th>
+<th data-quarto-table-cell-role="th">% grp</th>
+<th data-quarto-table-cell-role="th">% All</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">% col</th>
+<th data-quarto-table-cell-role="th">% grp</th>
+<th data-quarto-table-cell-role="th">% All</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">% col</th>
+<th data-quarto-table-cell-role="th">% grp</th>
+<th data-quarto-table-cell-role="th">% All</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">% col</th>
+<th data-quarto-table-cell-role="th">% grp</th>
+<th data-quarto-table-cell-role="th">% All</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">% col</th>
+<th data-quarto-table-cell-role="th">% grp</th>
+<th data-quarto-table-cell-role="th">n</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">routes</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>83.4%</td>
+<td>56.0%</td>
+<td>45.0%</td>
+<td>1,690</td>
+<td>70.0%</td>
+<td>23.0%</td>
+<td>18.5%</td>
+<td>694</td>
+<td>79.3%</td>
+<td>63.3%</td>
+<td>12.4%</td>
+<td>467</td>
+<td>51.7%</td>
+<td>10.4%</td>
+<td>2.1%</td>
+<td>77</td>
+<td>78.0%</td>
+<td>78.0%</td>
+<td>2,928</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>12.4%</td>
+<td>8.3%</td>
+<td>6.7%</td>
+<td>251</td>
+<td>16.5%</td>
+<td>5.4%</td>
+<td>4.4%</td>
+<td>164</td>
+<td>13.8%</td>
+<td>11.0%</td>
+<td>2.2%</td>
+<td>81</td>
+<td>24.2%</td>
+<td>4.9%</td>
+<td>1.0%</td>
+<td>36</td>
+<td>14.2%</td>
+<td>14.2%</td>
+<td>532</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3.0%</td>
+<td>2.0%</td>
+<td>1.6%</td>
+<td>60</td>
+<td>7.9%</td>
+<td>2.6%</td>
+<td>2.1%</td>
+<td>78</td>
+<td>3.1%</td>
+<td>2.4%</td>
+<td>0.5%</td>
+<td>18</td>
+<td>13.4%</td>
+<td>2.7%</td>
+<td>0.5%</td>
+<td>20</td>
+<td>4.7%</td>
+<td>4.7%</td>
+<td>176</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>0.8%</td>
+<td>0.6%</td>
+<td>0.5%</td>
+<td>17</td>
+<td>2.9%</td>
+<td>1.0%</td>
+<td>0.8%</td>
+<td>29</td>
+<td>2.4%</td>
+<td>1.9%</td>
+<td>0.4%</td>
+<td>14</td>
+<td>6.7%</td>
+<td>1.4%</td>
+<td>0.3%</td>
+<td>10</td>
+<td>1.9%</td>
+<td>1.9%</td>
+<td>70</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>0.3%</td>
+<td>0.2%</td>
+<td>0.2%</td>
+<td>6</td>
+<td>1.4%</td>
+<td>0.5%</td>
+<td>0.4%</td>
+<td>14</td>
+<td>1.0%</td>
+<td>0.8%</td>
+<td>0.2%</td>
+<td>6</td>
+<td>2.0%</td>
+<td>0.4%</td>
+<td>0.1%</td>
+<td>3</td>
+<td>0.8%</td>
+<td>0.8%</td>
+<td>29</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>0.1%</td>
+<td>0.1%</td>
+<td>0.1%</td>
+<td>2</td>
+<td>0.7%</td>
+<td>0.2%</td>
+<td>0.2%</td>
+<td>7</td>
+<td>0.5%</td>
+<td>0.4%</td>
+<td>0.1%</td>
+<td>3</td>
+<td>1.3%</td>
+<td>0.3%</td>
+<td>0.1%</td>
+<td>2</td>
+<td>0.4%</td>
+<td>0.4%</td>
+<td>14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>0.4%</td>
+<td>0.1%</td>
+<td>0.1%</td>
+<td>4</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>0.7%</td>
+<td>0.1%</td>
+<td>0.0%</td>
+<td>1</td>
+<td>0.1%</td>
+<td>0.1%</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>0.1%</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>1</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">n</td>
+<td>100.0%</td>
+<td>67.2%</td>
+<td>54.0%</td>
+<td>2,026</td>
+<td>100.0%</td>
+<td>32.8%</td>
+<td>26.4%</td>
+<td>991</td>
+<td>100.0%</td>
+<td>79.8%</td>
+<td>15.7%</td>
+<td>589</td>
+<td>100.0%</td>
+<td>20.2%</td>
+<td>4.0%</td>
+<td>149</td>
+<td>100.0%</td>
+<td>100.0%</td>
+<td>3,755</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="tables-in-an-excel-file" class="level2">
+<h2 class="anchored" data-anchor-id="tables-in-an-excel-file">Tables in an Excel file</h2>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sheetname <span class="op">=</span> <span class="st">"Sheet1"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>qmdfile <span class="op">=</span> os.getenv(<span class="st">"QUARTO_DOCUMENT_FILE"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>filename <span class="op">=</span> <span class="st">"img_output/"</span><span class="op">+</span>qmdfile[:<span class="op">-</span><span class="dv">4</span>]<span class="op">+</span><span class="st">".xlsx"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.ExcelWriter(filename) <span class="im">as</span> writer:</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    next_row <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, v <span class="kw">in</span> excel_output.items():</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        pd.DataFrame([k]).to_excel(writer, sheet_name<span class="op">=</span>sheetname, header<span class="op">=</span><span class="va">False</span>, index<span class="op">=</span><span class="va">False</span>, startrow<span class="op">=</span>next_row)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        next_row <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        v.to_excel(writer, sheet_name<span class="op">=</span>sheetname, startrow<span class="op">=</span>next_row, float_format<span class="op">=</span><span class="st">"</span><span class="sc">%.1f</span><span class="st">"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        next_row <span class="op">+=</span> (</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            (<span class="dv">1</span> <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(v.columns, pd.MultiIndex) <span class="cf">else</span> <span class="dv">1</span> <span class="op">+</span> <span class="bu">len</span>(v.columns.levels))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> <span class="bu">len</span>(v) <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"[Excel file](./</span><span class="sc">{</span>filename<span class="sc">}</span><span class="ss">)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<p><a href="./img_output/4.3_number_of_routes.xlsx">Excel file</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="./index.html">
+<p>Back to list</p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

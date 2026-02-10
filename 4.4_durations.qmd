@@ -1,0 +1,340 @@
+---
+title: "4.4 Results - Durations"
+date: 2026-02-10
+warning: false
+---
+
+```{python}
+# Setup code
+import pandas as pd
+from python_scripts import setup
+from python_scripts import services
+from python_scripts import helper
+df, dffp = setup.setup(verbose=False)
+
+from python_scripts import distinct_pathways
+dpw_pls = distinct_pathways.get_distinct_pathways_routes(dffp)
+qrows = dpw_pls["rt_end_cat"] == "[Not ended or invalid end reason]"
+dpw_pls.loc[qrows, "rt_end_cat"] = dpw_pls.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+dpw_pls["rt_end_cat"] = dpw_pls["rt_end_cat"].str.replace("To care/hosp.", "To care/hospital")
+dpw_rt_starts = dpw_pls.groupby("route_id").head(1)
+dpw_rt_ends = dpw_pls.groupby("route_id").tail(1)
+dpw_clis = dpw_pls.groupby(["o_cli_id"]).head(1)  # 1 duplicate client but first entry has more detailed answers
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams.update({
+    'figure.figsize': (6.2, 4.1),
+    'font.size': 12,
+    'figure.constrained_layout.use': True
+})
+
+excel_output = {}
+```
+
+## Durations (RQ4)
+
+### Figure 4.7: Route durations
+
+#### Code
+```{python}
+#| output: false
+import numpy as np
+import seaborn as sns
+import seaborn.objects as so
+sns.set()
+# Set up data
+#############
+durations = dpw_pls.set_index("route_id")[["dur", "pl_start_dt"]]
+durations["dur_days"] = durations["dur"].dt.days
+durations["dur_days"] = durations["dur_days"].fillna(1 + (distinct_pathways.dpw_end_dt - durations.pl_start_dt).dt.days)
+durations = durations.drop(columns=["dur", "pl_start_dt"])
+hist_data = (
+    durations.groupby(level=0).dur_days.sum().to_frame()
+    .join(dpw_rt_ends.set_index("route_id")["pl_end_dt"].notna().rename("ended").astype("category")))
+hist_data["ended"] = pd.Categorical(hist_data["ended"], categories=[True, False], ordered=True)
+hist_data["dur_years"] = hist_data["dur_days"] / 365.25
+# Utility function to add quantile markers
+hist_quantiles = hist_data.drop(columns="ended").quantile([0.10, 0.90])  # To be used as markers later
+colours = sns.color_palette(as_cmap=False)
+def add_quantiles(p, field, x_limits, y_limits):
+    for q, row in hist_quantiles.iterrows():
+        pct = f"{100 * q:.0f}%"
+        x = row[field]
+        p = p.add(so.Line(linewidth=0.7, linestyle=(10, 6), alpha=0.35, color=colours[4]),
+                  data=pd.DataFrame({"x": [x, x], "y": y_limits}),
+                  x="x", y="y")
+        p = p.add(so.Text({"clip_on": False}, valign="bottom", alpha=0.7, color=colours[4], fontsize=9, offset=0),
+                  data=pd.DataFrame({"x": [x], "y": [y_limits[1]], "text": [pct]}),
+                  x="x", y="y", text="text")
+    p = p.add(so.Text({"clip_on": False}, valign="bottom", halign="right", alpha=0.7, color=colours[4], fontsize=9, offset=0),
+                data=pd.DataFrame({"x": [x_limits[1]], "y": [y_limits[1]], "text": "percentile"}),
+                x="x", y="y", text="text")
+    return p
+# Generate human-readable units and tick positions for log timescales
+#####################################################################
+days_logunits = {"day": 1, "week": 7, "month": 365.25/12, "year": 365.25}
+days_loglists = {
+    "days": [1, 2, 4],
+    "weeks": [1, 2],
+    "months": [1, 2, 4, 8],
+    "years": [1, 2, 4, 8, 16]
+}
+days_logscale = []
+days_loglabels_u = []
+days_loglabels_full = []
+days_loglabels_grp = []
+for u, l in days_loglists.items():
+    days_logscale.extend(days_logunits[u[:-1]] * i for i in l)
+    days_loglabels_u.extend(l)
+    days_loglabels_full.extend(f"{i} {u if i > 1 else u[:-1]}" for i in l)
+    days_loglabels_grp.append(u)
+days_logformatter = matplotlib.ticker.FixedFormatter(days_loglabels_u)
+# Calculate positions of separators between groups for log unit labels
+days_logsep = []
+for (a_u, a_l), (b_u, b_l) in zip(list(days_loglists.items())[:-1], list(days_loglists.items())[1:]):
+    a_end = days_logunits[a_u[:-1]] * a_l[-1]
+    b_start = days_logunits[b_u[:-1]] * b_l[0]
+    log_midpoint = 10 ** ((np.log10(a_end) + np.log10(b_start))/2)
+    days_logsep.append(log_midpoint)
+# Calculate positions of group labels for log units
+days_loggrp_edges = [0.8] + days_logsep + [30 * days_logunits["year"]]
+days_logpos_grp = list(10 ** ((np.log10(a) + np.log10(b))/2) for a, b in zip(days_loggrp_edges[:-1], days_loggrp_edges[1:]))
+# Set up two subplots
+#####################
+f, axs = plt.subplots(nrows=2, figsize=(6.2, 2*4.1), dpi=150)
+# Plot the log scale chart
+##########################
+ax = axs[1]
+limits = {"x": (0.7, 10**4), "y": (0, 831)}
+plt.subplots_adjust(right=0.95, top=0.98, bottom=0.09, hspace=0.3)
+p = (
+    so.Plot(data=hist_data, x="dur_days")
+    .label(x="Duration (log scale)", y="Routes")
+    .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
+    .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter), color=so.Nominal(order=[True, False]))
+    .limit(x=limits["x"], y=limits["y"])
+)
+# Add extra readable unit labels (rotated 90 degrees) at the top
+p = p.add(
+        so.Text({"rotation": 90, "rotation_mode": "anchor"}, color=".7", fontsize=8, halign="right", valign="center", offset=0),
+        data=pd.DataFrame({"x": days_logscale, "y": [limits["y"][1]-15] * len(days_logscale), "text": days_loglabels_full}),
+        x="x", y="y", text="text", legend=False
+)
+# Add quantile indicators
+p = add_quantiles(p, "dur_days", limits["x"], limits["y"])
+p = p.on(ax).plot()
+for line in ax.get_lines():
+    line.zorder=1.1
+# Lines between unit groups
+ax.vlines(days_logsep, -0.04, -0.15, color="black", lw=0.5, clip_on=False, transform=ax.get_xaxis_transform())
+# Grouped unit labels
+for pos, text in zip(days_logpos_grp, days_loglabels_grp):
+    ax.text(pos, -0.14, text, ha="center", clip_on=False, transform=ax.get_xaxis_transform())
+# Move x-axis label down
+ax.xaxis.labelpad = 20
+# Add rug plot
+sns.rugplot(ax=ax, data=hist_data, x="dur_days", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
+# Plot the linear scale chart
+#############################
+ax = axs[0]
+hist_data_lt_10y = hist_data[hist_data["dur_years"] <= 10]
+limits = {"x": (0, 10.5), "y": (0, 2000)}
+p = (
+    so.Plot(data=hist_data_lt_10y, x="dur_years")
+    .label(x="Duration (linear: years)", y="Routes")
+    .add(so.Bars(), so.Hist(binwidth=0.5), so.Stack(), color="ended", legend=False)
+    .scale(x=so.Continuous().tick(every=1).label(like="{x:.0f}"), color=so.Nominal(order=[True, False]))
+    .limit(x=limits["x"], y=limits["y"])
+    .add(
+        so.Text({"rotation": 90, "rotation_mode": "anchor"}, color=".7", fontsize=9, halign="left", valign="top", offset=5),
+        data=pd.DataFrame({"x": [10], "y": [100], "text": ["2 routes over 10 years not shown"]}),
+        x="x", y="y", text="text", legend=False)
+)
+p = add_quantiles(p, "dur_years", limits["x"], limits["y"])
+p = p.on(ax).plot()
+sns.rugplot(ax=ax, data=hist_data_lt_10y, x="dur_years", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
+# Add legend
+colours = sns.color_palette(as_cmap=False)
+T = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="Ended")
+F = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="Current")
+ax.legend(handles=[F, T], loc="upper right")
+# Output the chart
+##################
+fig_4_7 = "img_output/Figure_4.7.svg"
+plt.savefig(fig_4_7)
+```
+
+#### Figure 4.7
+![](`{python} fig_4_7`)
+
+<sub>Notes: 3,755 people; 5,072 routes. 10% at 35 days, 90% at 3.08 years. Descriptive statistics are in Table A.6.</sub>
+
+#### Table A.6
+```{python}
+tbl_data = hist_data.copy()
+# tbl_data = hist_data[["ended", "dur_years"]]
+tbl_data["ended"] = hist_data["ended"].map({True: "Ended", False: "Current"})
+percentiles = [0.1, 0.5, 0.9]
+ta6 = (
+    pd.concat([
+        tbl_data.groupby("ended", observed=True).describe(percentiles=percentiles),
+        tbl_data.describe(percentiles=percentiles).T.assign(ended="All").set_index("ended", append=True).stack().unstack(level=[0,2])
+    ])
+)
+ta6 = ta6.astype("object")
+int_cols = {"dur_days": ["count", "min", "max"], "dur_years": ["count"]}
+float_cols = {k: ta6.columns.levels[1].difference(v) for k, v in int_cols.items()}
+float_prec = {"dur_days": 1, "dur_years": 3}
+for dt in ["dur_days", "dur_years"]:
+    fp = float_prec[dt]
+    ta6.loc[:, (dt, float_cols[dt])] = (ta6.loc[:, (dt, float_cols[dt])].map(lambda x: f"{x:,.{fp}f}"))
+    ta6.loc[:, (dt, int_cols[dt])] = (ta6.loc[:, (dt, int_cols[dt])].map(lambda x: f"{x:,.0f}"))
+ta6 = (
+    ta6.T.reindex((a, b)
+                    for a in ["dur_years", "dur_days"]
+                    for b in [x for x in ta6["dur_days"].columns if x != "count"] + ["count"]).T
+    .rename(columns={"50%": "median"})
+)
+ta6 = pd.concat([ta6["dur_years"], ta6["dur_days"]], keys=["Years", "Days"])
+dur_6y = tbl_data[tbl_data["dur_years"] > 6].ended.value_counts().to_frame()
+dur_0d = tbl_data[tbl_data["dur_days"] == 0].ended.value_counts().to_frame()
+excel_output["Table A.6: Descriptive statistics for route durations by whether ended/current"] = ta6
+display(ta6)
+```
+
+### Figure 4.8: Route durations by end reason
+
+#### Code
+```{python}
+import numpy as np
+import seaborn as sns
+import seaborn.objects as so
+sns.set()
+# Set up data
+#############
+durations = dpw_pls.set_index("route_id")[["dur", "pl_start_dt"]]
+durations["dur_days"] = durations["dur"].dt.days
+durations["dur_days"] = durations["dur_days"].fillna(1 + (distinct_pathways.dpw_end_dt - durations.pl_start_dt).dt.days)
+durations = durations.drop(columns=["dur", "pl_start_dt"])
+hist_data = (
+    durations.groupby(level=0).dur_days.sum().to_frame()
+    .join(dpw_rt_ends.set_index("route_id")["pl_end_dt"].notna().rename("ended").astype("category"))
+    .join(dpw_rt_ends.set_index("route_id")[["rt_end_cat", "pl_end_dt"]])
+)
+hist_data["ended"] = pd.Categorical(hist_data["ended"], categories=[True, False], ordered=True)
+hist_data["dur_years"] = hist_data["dur_days"] / 365.25
+qrows = hist_data["rt_end_cat"] == "[Not ended or invalid end reason]"
+hist_data.loc[qrows, "rt_end_cat"] = hist_data.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+hist_data = hist_data.drop(columns="pl_end_dt")
+colours = sns.color_palette(as_cmap=False)
+# Calculate positions of group labels for log units
+days_loggrp_edges = [0.8] + days_logsep + [30 * days_logunits["year"]]
+days_logpos_grp = list(10 ** ((np.log10(a) + np.log10(b))/2) for a, b in zip(days_loggrp_edges[:-1], days_loggrp_edges[1:]))
+# Calculate order for facets
+facet_order = (hist_data.groupby("rt_end_cat").size().to_frame().reset_index()
+               .sort_values(0, ascending=False)["rt_end_cat"].to_list())
+# Generate human-readable units and tick positions for log timescales
+#####################################################################
+days_logunits = {"day": 1, "week": 7, "month": 365.25/12, "year": 365.25}
+days_loglists = {
+    "weeks": [1],
+    "months": [1, 4],
+    "years": [1, 3, 9]
+}
+days_logscale = []
+days_loglabels_u = []
+days_loglabels_full = []
+days_loglabels_grp = []
+for u, l in days_loglists.items():
+    days_logscale.extend(days_logunits[u[:-1]] * i for i in l)
+    # days_loglabels_u.extend(l)
+    days_loglabels_u.extend(f"{x}{u[0]}" for x in l)
+    days_loglabels_full.extend(f"{i} {u if i > 1 else u[:-1]}" for i in l)
+    days_loglabels_grp.append(u)
+days_logformatter = matplotlib.ticker.FixedFormatter(days_loglabels_u)
+# Plot log scale charts
+#######################
+limits = {"x": (0.014*365.25, 10*365.25), "y": (None, 100)}
+fig_4_8_a = "img_output/Figure_4.8_a.svg"
+p = (
+    so.Plot(data=hist_data, x="dur_days")
+    # .label(x="Duration (log scale)", y="Routes")
+    .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
+    .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter),
+           color=so.Nominal(order=[True, False]))
+    .facet("rt_end_cat", wrap=4, order=facet_order)
+    .limit(x=limits["x"])
+    .save(fig_4_8_a)
+)
+fig_4_8_b = "img_output/Figure_4.8_b.svg"
+p = (
+    so.Plot(data=hist_data, x="dur_days")
+    # .label(x="Duration (log scale)", y="Routes")
+    .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
+    .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter),
+           color=so.Nominal(order=[True, False]))
+    .facet("rt_end_cat", wrap=4, order=facet_order)
+    .limit(x=limits["x"], y=limits["y"])
+    .save(fig_4_8_b)
+)
+```
+
+#### Figure 4.8
+![](`{python} fig_4_8_a`)
+Increased-scale y-axis (zoomed in):
+![](`{python} fig_4_8_b`)
+
+<sub>Note: Descriptive statistics are in Table A.7.</sub>
+
+#### Table A.7
+```{python}
+tbl_data = hist_data.copy()
+# tbl_data = hist_data[["ended", "dur_years"]]
+tbl_data["ended"] = hist_data["ended"].map({True: "Ended", False: "Current"})
+percentiles = [0.1, 0.5, 0.9]
+ta7 = (
+    pd.concat([
+        (tbl_data.groupby("rt_end_cat", observed=True).describe(percentiles=percentiles)
+         .sort_values(("dur_days", "mean"), ascending=False)),
+        tbl_data.describe(percentiles=percentiles).T.assign(rt_end_cat="All").set_index("rt_end_cat", append=True).stack().unstack(level=[0,2])
+    ])
+)
+ta7 = ta7.astype("object")
+int_cols = {"dur_days": ["count", "min", "max"], "dur_years": ["count"]}
+float_cols = {k: ta7.columns.levels[1].difference(v) for k, v in int_cols.items()}
+float_prec = {"dur_days": 1, "dur_years": 3}
+for dt in ["dur_days", "dur_years"]:
+    fp = float_prec[dt]
+    ta7.loc[:, (dt, float_cols[dt])] = (ta7.loc[:, (dt, float_cols[dt])].map(lambda x: f"{x:,.{fp}f}"))
+    ta7.loc[:, (dt, int_cols[dt])] = (ta7.loc[:, (dt, int_cols[dt])].map(lambda x: f"{x:,.0f}"))
+ta7 = (
+    ta7.T.reindex((a, b)
+                    for a in ["dur_years", "dur_days"]
+                    for b in [x for x in ta7["dur_days"].columns if x != "count"] + ["count"]).T
+    .rename(columns={"50%": "median"})
+)
+ta7 = pd.concat([ta7["dur_years"], ta7["dur_days"]], keys=["Years", "Days"])
+excel_output["Table A.7: Descriptive statistics for route durations by end reasons"] = ta7
+display(ta7)
+```
+
+## Tables in an Excel file
+
+```{python}
+#| output: asis
+import os
+sheetname = "Sheet1"
+qmdfile = os.getenv("QUARTO_DOCUMENT_FILE")
+filename = "img_output/"+qmdfile[:-4]+".xlsx"
+with pd.ExcelWriter(filename) as writer:
+    next_row = 0
+    for k, v in excel_output.items():
+        pd.DataFrame([k]).to_excel(writer, sheet_name=sheetname, header=False, index=False, startrow=next_row)
+        next_row += 1
+        v.to_excel(writer, sheet_name=sheetname, startrow=next_row, float_format="%.1f")
+        next_row += (
+            (1 if not isinstance(v.columns, pd.MultiIndex) else 1 + len(v.columns.levels))
+            + len(v) + 1)
+print(f"[Excel file](./{filename})")
+```

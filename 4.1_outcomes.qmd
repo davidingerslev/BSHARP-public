@@ -1,0 +1,198 @@
+---
+title: "4.1 Results - Outcomes"
+date: 2026-02-06
+warning: false
+---
+
+```{python}
+# Setup code
+import pandas as pd
+from python_scripts import setup
+from python_scripts import services
+from python_scripts import helper
+df, dffp = setup.setup(verbose=False)
+
+from python_scripts import distinct_pathways
+dpw_pls = distinct_pathways.get_distinct_pathways_routes(dffp)
+qrows = dpw_pls["rt_end_cat"] == "[Not ended or invalid end reason]"
+dpw_pls.loc[qrows, "rt_end_cat"] = dpw_pls.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+dpw_pls["rt_end_cat"] = dpw_pls["rt_end_cat"].str.replace("To care/hosp.", "To care/hospital")
+dpw_rt_starts = dpw_pls.groupby("route_id").head(1)
+dpw_rt_ends = dpw_pls.groupby("route_id").tail(1)
+dpw_clis = dpw_pls.groupby(["o_cli_id"]).head(1)  # 1 duplicate client but first entry has more detailed answers
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams.update({
+    'figure.figsize': (6.2, 4.1),
+    'font.size': 12,
+    'figure.constrained_layout.use': True
+})
+
+excel_output = {}
+```
+
+## Outcomes (RQ1)
+
+### Figure 4.1: Route end reason proportions
+
+#### Code
+```{python}
+# Generate Table A.3
+ta3_data = dpw_rt_ends.copy()
+ta3 = ta3_data["rt_end_cat"].value_counts(dropna=False).rename("all_routes").to_frame()
+ta3 = ta3.assign(latest_route=ta3_data.groupby("o_cli_id").tail(1)["rt_end_cat"].value_counts(dropna=False))
+ta3_end_rows = ["Missing data/error", "[Not ended]"]
+ta3 = ta3.reindex([x for x in ta3.index if x not in ta3_end_rows] + ta3_end_rows)
+prop_include = ta3.index.difference(["Missing data/error", "[Not ended]"])
+ta3_prop = ta3.loc[prop_include].apply(lambda x: x/x.sum()).mul(100)
+ta3 = pd.concat([ta3, ta3_prop], keys=["n", "%"], axis="columns").swaplevel(axis="columns")
+lvl1 = ["all_routes", "latest_route"]
+ta3 = ta3.reindex(((a, b) for a in lvl1 for b in ["n", "%"]), axis="columns")
+ta3_numeric = ta3.copy()
+ta3_total = ta3.sum()
+ta3_total.loc[slice(None), "%"] = pd.NA
+ta3.loc["Valid ended (n)"] = ta3.loc[prop_include].sum()
+ta3.loc["Total (n)"] = ta3_total
+ta3.loc[:, (lvl1, "n")] = ta3.loc[:, (lvl1, "n")].map(lambda x: f"{x:,.0f}" if not pd.isna(x) else pd.NA)
+ta3.loc[:, (lvl1, "%")] = ta3.loc[:, (lvl1, "%")].map(lambda x: f"{x:.1f}%" if not pd.isna(x) else pd.NA)
+end_props_order = ta3.index
+excel_output["Table A.3: Route end reasons"] = ta3
+
+# Generate Figure 4.1
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import seaborn.objects as so
+relevant_numeric = ta3_numeric
+missing = ["Missing data/error", "[Not ended]"]
+total_n = relevant_numeric.swaplevel(axis="columns")["n"].sum()
+total_na = relevant_numeric.swaplevel(axis="columns").loc[missing]["n"].sum()
+valid_n = total_n - total_na
+plotdata = (
+    relevant_numeric.drop(index=missing)
+    .swaplevel(axis="columns")["%"].unstack().rename("%").to_frame().reset_index()
+    .rename(columns={"level_0": "routes"})
+    .replace({"all_routes": f"Per route (all ended routes)\n$n$={valid_n["all_routes"]:,}",
+              "latest_route": f"Per person (latest route)\n$n$={valid_n["latest_route"]:,}"})
+)
+plotlabels = pd.DataFrame({"x": -10, "y": plotdata["rt_end_cat"], "text": plotdata["%"].map(lambda x: f"{x:.1f}%")})
+colors = sns.color_palette()
+colors = colors[4:6]
+p = (
+    so.Plot(data=plotdata, y="rt_end_cat", x="%", color="routes")
+    .theme({"ytick.major.pad": 35, "font.size": 12, "axes.titlesize": "medium"})
+    .add(so.Bar(edgewidth=0), legend=False)
+    .add(so.Text({"clip_on": False}, halign="left"), data=plotlabels, x="x", y="y", text="text", legend=False)
+    .label(y=None, x=None)
+    .scale(x=so.Continuous().label(like="{x:.0f}%"), color=colors)
+    .limit(x=(0, None))
+    .facet(col="routes")
+    .layout(size=(7.2, 3.7), engine="constrained")
+)
+fig_4_1 = "img_output/Figure_4.1.svg"
+p.save(fig_4_1)
+pass
+```
+
+#### Figure 4.1
+![](`{python} fig_4_1`)
+
+<sub>Notes: Full data table is Table A.3.    “Latest” is the most recent route for each person.</sub>
+
+#### Table A.3
+```{python}
+#| echo: false
+display(ta3)
+```
+
+### Figure 4.2: End reason proportions for new people’s first routes
+
+#### Code
+```{python}
+# Generate Table A.4
+pl_before_dpw_start = dffp.loc[(dffp["pl_start_dt"] < distinct_pathways.dpw_start_dt), "o_cli_id"].unique()
+dpw_clis_before_start = dpw_clis.loc[dpw_clis["o_cli_id"].isin(pl_before_dpw_start), "o_cli_id"]
+ta4_data = dpw_rt_ends[~dpw_rt_ends["o_cli_id"].isin(dpw_clis_before_start)].groupby("o_cli_id").head(1).copy()
+ta4 = ta4_data["rt_end_cat"].value_counts(dropna=False).rename("all_routes").to_frame()
+ta4_end_rows = ["Missing data/error", "[Not ended]"]
+ta4 = ta4.reindex([x for x in ta4.index if x not in ta4_end_rows] + ta4_end_rows)
+prop_include = ta4.index.difference(["Missing data/error"])
+ta4_prop = ta4.loc[prop_include].apply(lambda x: x/x.sum()).mul(100)
+prop_notended_include = ta4_prop.index.difference(["[Not ended]"])
+ta4_prop_notended = ta4.loc[prop_notended_include].apply(lambda x: x/x.sum()).mul(100)
+ta4 = pd.concat([ta4, ta4_prop_notended], keys=["n", "% of ended"], axis="columns").swaplevel(axis="columns")
+ta4 = ta4.droplevel(0, axis=1)
+ta4_numeric = ta4.copy()
+ta4_numeric = ta4_numeric.reindex(end_props_order).dropna(how="all")
+ta4_total = ta4.sum()
+ta4_total.loc["% of ended"] = pd.NA
+ta4.loc["Valid ended (n)"] = ta4.loc[prop_notended_include].sum()
+ta4.loc["Total (n)"] = ta4_total
+ta4.loc[:, "n"] = ta4.loc[:, "n"].map(lambda x: f"{x:,.0f}" if not pd.isna(x) else pd.NA)
+# ta4.loc[:, "% of all"] = ta4.loc[:, "% of all"].map(lambda x: f"{x:.1f}%" if not pd.isna(x) else pd.NA)
+ta4.loc[:, "% of ended"] = ta4.loc[:, "% of ended"].map(lambda x: f"{x:.1f}%" if not pd.isna(x) else pd.NA)
+ta4 = ta4.reindex(end_props_order).dropna(how="all")
+excel_output["Table A.4: Route end reasons: first routes for people with no records of previously using BAHSA services"] = ta4
+
+# Generate Figure 4.2
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import seaborn.objects as so
+relevant_numeric = ta4_numeric
+missing = ["Missing data/error", "[Not ended]"]
+total_n = relevant_numeric["n"].sum()
+total_na = relevant_numeric.loc[missing]["n"].sum()
+valid_n = (total_n - total_na).astype("int64")
+plotdata = (
+    relevant_numeric.drop(index=missing)["% of ended"].rename("%").to_frame().reset_index()
+)
+plotlabels = pd.DataFrame({"x": -9, "y": plotdata["rt_end_cat"], "text": plotdata["%"].map(lambda x: f"{x:.1f}%")})
+colors = sns.color_palette()
+colors = colors[6:7]
+p = (
+    so.Plot(data=plotdata, y="rt_end_cat", x="%", color=1)
+    .theme({"ytick.major.pad": 35, "font.size": 12, "axes.titlesize": "medium"})
+    .add(so.Bar(edgewidth=0), legend=False)
+    .add(so.Text({"clip_on": False}, halign="left", fontsize=11), data=plotlabels, x="x", y="y", text="text", legend=False)
+    .label(y=None, x=None, title=f"Per person (first route)\n$n$={valid_n:,}")
+    .scale(x=so.Continuous().label(like="{x:.0f}%"), color=colors)
+    .limit(x=(0, 35))
+    .layout(size=(4.2, 3.7), engine="constrained")
+)
+fig_4_2 = "img_output/Figure_4.2.svg"
+p.save(fig_4_2)
+pass
+```
+
+#### Figure 4.2
+![](`{python} fig_4_2`)
+
+<sub>Notes: Full data table is Table A.4.    People with no records of previously using BAHSA services.</sub>
+
+#### Table A.4
+```{python}
+#| echo: false
+display(ta4)
+```
+
+## Tables in an Excel file
+
+```{python}
+#| output: asis
+import os
+sheetname = "Sheet1"
+qmdfile = os.getenv("QUARTO_DOCUMENT_FILE")
+filename = "img_output/"+qmdfile[:-4]+".xlsx"
+with pd.ExcelWriter(filename) as writer:
+    next_row = 0
+    for k, v in excel_output.items():
+        pd.DataFrame([k]).to_excel(writer, sheet_name=sheetname, header=False, index=False, startrow=next_row)
+        next_row += 1
+        v.to_excel(writer, sheet_name=sheetname, startrow=next_row, float_format="%.1f")
+        next_row += (
+            (1 if not isinstance(v.columns, pd.MultiIndex) else 1 + len(v.columns.levels))
+            + len(v) + 1)
+print(f"[Excel file](./{filename})")
+```

@@ -1,0 +1,178 @@
+---
+title: "4.3 Results - Number of routes"
+date: 2026-02-08
+warning: false
+---
+
+```{python}
+# Setup code
+import pandas as pd
+from python_scripts import setup
+from python_scripts import services
+from python_scripts import helper
+df, dffp = setup.setup(verbose=False)
+
+from python_scripts import distinct_pathways
+dpw_pls = distinct_pathways.get_distinct_pathways_routes(dffp)
+qrows = dpw_pls["rt_end_cat"] == "[Not ended or invalid end reason]"
+dpw_pls.loc[qrows, "rt_end_cat"] = dpw_pls.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+dpw_pls["rt_end_cat"] = dpw_pls["rt_end_cat"].str.replace("To care/hosp.", "To care/hospital")
+dpw_rt_starts = dpw_pls.groupby("route_id").head(1)
+dpw_rt_ends = dpw_pls.groupby("route_id").tail(1)
+dpw_clis = dpw_pls.groupby(["o_cli_id"]).head(1)  # 1 duplicate client but first entry has more detailed answers
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams.update({
+    'figure.figsize': (6.2, 4.1),
+    'font.size': 12,
+    'figure.constrained_layout.use': True
+})
+
+excel_output = {}
+```
+
+## Number of routes (RQ3)
+
+### Figure 4.6: Numbers of people who experienced different quantities of routes by whether they were ‘new’ or had returned after previously using services
+
+#### Code
+```{python}
+#| output: false
+# Generate Table A.5
+known_apw = dffp.loc[
+    dffp.svc_type.isin(services.adult_pathways_accom_svc_types)
+    & (dffp.pl_end_dt < distinct_pathways.dpw_start_dt),
+    "o_cli_id",
+]
+dpw_pls["known_apw"] = dpw_pls["o_cli_id"].isin(known_apw).map({False: "New", True: "Returned"})
+dpw_pls["current"] = dpw_pls["o_cli_id"].isin(dpw_pls.loc[dpw_pls.pl_end_dt.isnull(), "o_cli_id"]).map({True: "Current", False: "Ended"})
+ta5 = (
+    dpw_pls.groupby(['o_cli_id', 'known_apw', 'current']).route_id.nunique().rename("routes")
+    .reset_index(level=["known_apw", "current"]).value_counts()
+    .unstack([0, 1], fill_value=0).swaplevel(axis=1).sort_index()
+    .assign(All=lambda x: x.sum(axis="columns"))
+)
+ta5.index = ta5.index.astype("object")
+# ta5.columns = pd.Categorical(ta5.columns, categories=["Returned", "New", "All"], ordered=True)
+# ta5 = ta5.rename_axis("Records pre-DPW", axis="columns")
+# ta5 = ta5.sort_index(axis="columns")
+ta5.loc["n", :] = ta5.sum()
+ta5_pct_col = ta5.apply(lambda x: (x/x.loc["n"]).mul(100))
+grp_sum = ta5.T.groupby("current").transform("sum").T
+grp_sum.iloc[:-1] = grp_sum.iloc[-1].values
+ta5_pct_grp = 100 * ta5 / grp_sum
+ta5_pct_all = ta5[["Ended", "Current"]].apply(lambda x: (x/ta5["All"].loc["n"]).mul(100))
+ta5_numeric = (
+    pd.concat([ta5_pct_col, ta5_pct_grp, ta5_pct_all, ta5], keys=["% col", "% grp", "% All", "n"], axis="columns")
+    .swaplevel(0, 2, axis="columns").swaplevel(0, 1, axis="columns")
+    .sort_index(axis="columns", level=[0, 1], sort_remaining=False)
+    [["Ended", "Current", "All"]]
+).copy()
+formats = {(a, b, c): "{0:.1f}%" if c[0] == "%" else "{0:,.0f}" for a, b, c in ta5_numeric.columns}
+ta5 = ta5_numeric.apply(lambda x: x.apply(formats[x.name].format))
+excel_output["Table A.5: Routes per person during studied period by current/ended and whether placed in BAHSA before studied period"] = ta5
+
+# Generate Figure 4.6
+import numpy as np
+import seaborn as sns
+import seaborn.objects as so
+import matplotlib.pyplot as plt
+sns.set()
+col_x = "n"
+plotdata = ta5_numeric.swaplevel(0, 2, axis=1).loc[:8, col_x][["New", "Returned"]].stack([0, 1]).rename(col_x).reset_index()
+plotdata["known_apw"] = plotdata["known_apw"].astype("string")
+maxes = ta5_numeric.swaplevel(0, 2, axis=1)["n"].loc["n"].groupby(level=0).sum()
+width_ratios = maxes[["New", "Returned"]]
+width_ratios = width_ratios - (width_ratios.sum()/52.7)
+colours = sns.color_palette(as_cmap=False)
+fig_overall = plt.figure(layout="constrained", figsize=(6.2, 3.1))
+fig_l, fig_r = fig_overall.subfigures(1, 2, width_ratios=width_ratios)
+for grp, fig, col in [("Returned", fig_r, colours[1]),
+                      ("New",      fig_l, colours[0])]:
+    pl_d = plotdata[plotdata["known_apw"] == grp].reset_index(drop=True)
+    pl_d["routes"] = pl_d["routes"].astype("category")
+    textdata_after = (pl_d.groupby("routes", observed=False)[col_x].sum().to_frame()
+                      .assign(text=lambda x: (x/x.sum()).mul(100).map(lambda y: f"{y:,.1f}%")))
+    textdata_after.iloc[-1, -1] += f" (of {grp})"
+    textdata_during = (pl_d.assign(pct_all=pl_d.groupby("routes", observed=False)[col_x]
+                                   .transform(lambda x: (x/pl_d[col_x].sum()).mul(100))))
+    textdata_during = textdata_during[textdata_during["pct_all"] > 15]
+    textdata_during.loc[textdata_during["current"] == "Ended", "x"] = (
+        textdata_during.loc[textdata_during["current"] == "Ended", col_x] / 2)
+    textdata_during.loc[textdata_during["current"] == "Current", "x"] = (
+        textdata_during.loc[textdata_during["current"] == "Current"].join(
+            textdata_during.loc[textdata_during["current"] == "Ended"].set_index("routes")[col_x],
+            on="routes", rsuffix="_end")
+        .apply(lambda x: x[col_x+"_end"] + x[col_x]/2, axis=1))
+
+    textdata_during["text"] = textdata_during["pct_all"].map(lambda y: f"{y:,.1f}%")
+    if grp == "New":
+        textdata_during.iloc[0, -1] += f" of {grp} ({100*textdata_during.iloc[0][col_x]/plotdata[col_x].sum():.1f}% of all)"
+    p = (
+        so.Plot(data=pl_d, y="routes", x=col_x)
+        .add(so.Bars(), so.Stack(), color="current", legend=False)
+        .add(so.Text(color=".4", fontsize=11, halign="left", offset=2, alpha=0.7), data=textdata_after, x=col_x, y="routes", text="text")
+        .label(x="People", title=f"{grp}" + " (${n}$=" + f"{int(maxes[grp]):,})", y="")
+        .limit(x=(0, maxes[grp]))
+        .layout(engine="constrained")
+        .on(fig)
+        .plot()
+    )
+    ax = fig.axes[0]
+    if grp == "New":
+        colours = sns.color_palette(as_cmap=False)
+        T = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="Ended")
+        F = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="Current")
+        ax.legend(handles=[F, T], loc="lower right")
+    minor_ticks = [((b-a)/2 + a) for a, b in zip(ax.get_yticks()[:-1], ax.get_yticks()[1:])]
+    # labels = ta5.swaplevel(axis=1)["% col"][grp].iloc[:-1].map(lambda x: x[:-1])
+    ax.set_xticks([maxes[grp]], labels=["${n}$"])
+    ax.set_xticks(range(0, int(maxes[grp]), 500), labels=list(range(0, int(maxes[grp]), 500))[:-1] + [".."], minor=True)
+    ax.tick_params("x", which="minor", pad=3, bottom=True, width=0.5, length=5)
+    ax.tick_params("x", which="major", pad=3, bottom=True, width=0.5, length=5)
+    ax.set_yticks(ax.get_yticks(), labels=[])
+    ax.set_yticks(minor_ticks, minor=True)
+    ax.grid(which="minor", axis="y")
+    ax.grid(which="minor", axis="x")
+yticks = fig_l.axes[0].get_yticks()
+sec = fig_l.axes[0].secondary_yaxis(location=0)
+sec.set_yticks(yticks, labels=[y + 1 for y in yticks])
+sec.tick_params("y", length=0, which="both", pad=8)
+sec.set_ylabel("Routes", labelpad=6)
+fig_4_6 = "img_output/Figure_4.6.svg"
+plt.savefig(fig_4_6)
+pass
+```
+
+#### Figure 4.6
+![](`{python} fig_4_6`)
+
+<sub>Notes: X-axis scales are proportionate to New/Returned counts. ‘New’ means no record of using services
+since April 2009. Full data table is Table A.5.</sub>
+
+#### Table A.5
+```{python}
+#| echo: false
+display(ta5)
+```
+
+## Tables in an Excel file
+
+```{python}
+#| output: asis
+import os
+sheetname = "Sheet1"
+qmdfile = os.getenv("QUARTO_DOCUMENT_FILE")
+filename = "img_output/"+qmdfile[:-4]+".xlsx"
+with pd.ExcelWriter(filename) as writer:
+    next_row = 0
+    for k, v in excel_output.items():
+        pd.DataFrame([k]).to_excel(writer, sheet_name=sheetname, header=False, index=False, startrow=next_row)
+        next_row += 1
+        v.to_excel(writer, sheet_name=sheetname, startrow=next_row, float_format="%.1f")
+        next_row += (
+            (1 if not isinstance(v.columns, pd.MultiIndex) else 1 + len(v.columns.levels))
+            + len(v) + 1)
+print(f"[Excel file](./{filename})")
+```

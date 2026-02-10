@@ -1,0 +1,289 @@
+---
+title: "4.2 Results - Capacity and throughput"
+date: 2026-02-08
+warning: false
+---
+
+```{python}
+%config InlineBackend.figure_formats = ['svg']
+# Setup code
+import pandas as pd
+from python_scripts import setup
+from python_scripts import services
+from python_scripts import helper
+df, dffp = setup.setup(verbose=False)
+
+from python_scripts import distinct_pathways
+dpw_pls = distinct_pathways.get_distinct_pathways_routes(dffp)
+qrows = dpw_pls["rt_end_cat"] == "[Not ended or invalid end reason]"
+dpw_pls.loc[qrows, "rt_end_cat"] = dpw_pls.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+dpw_pls["rt_end_cat"] = dpw_pls["rt_end_cat"].str.replace("To care/hosp.", "To care/hospital")
+dpw_rt_starts = dpw_pls.groupby("route_id").head(1)
+dpw_rt_ends = dpw_pls.groupby("route_id").tail(1)
+dpw_clis = dpw_pls.groupby(["o_cli_id"]).head(1)  # 1 duplicate client but first entry has more detailed answers
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams.update({
+    'figure.figsize': (6.2, 4.1),
+    'font.size': 12,
+    'figure.constrained_layout.use': True
+})
+
+excel_output = {}
+```
+
+## Capacity and throughput (RQ2)
+
+### Figure 4.3: Allocated placements per night
+
+#### Code
+```{python}
+#| output: false
+first_date = pd.Timestamp('2017-10-28')
+last_date = pd.Timestamp('2025-04-30')
+date_range = pd.date_range(first_date, last_date, freq="d")
+
+voidsdf = df.all[
+    (~df.all.cli_id.isin(dffp.cli_id)) &
+    df.all.svc_type.isin(services.distinct_pathways_accom_svc_types + ["Accommodation Based - Supported Move-on"])
+]
+tempdf = dffp
+tempdf = pd.concat([
+    tempdf.loc[
+        tempdf.svc_type.isin(services.distinct_pathways_accom_svc_types + ["Accommodation Based - Supported Move-on"]),
+        ["vac_start_dt", "pl_start_dt", "pl_end_dt", "vac_end_dt", "svc_type"]
+    ],
+    voidsdf.assign(pl_start_dt=pd.NA, pl_end_dt = pd.NA)[["vac_start_dt", "pl_start_dt", "pl_end_dt", "vac_end_dt", "svc_type"]]
+])
+tempdf.vac_end_dt = tempdf.vac_end_dt.fillna(last_date + pd.Timedelta(days=1))
+tempdf.pl_end_dt = tempdf.pl_end_dt.fillna(tempdf.vac_end_dt)
+nightly_vac = []
+for day in date_range:
+    dpw_voids = (
+        tempdf.svc_type.isin(services.distinct_pathways_accom_svc_types) &
+        (tempdf.vac_start_dt <= day) & (tempdf.vac_end_dt > day) &
+        (
+            tempdf.pl_start_dt.isnull() |
+            (tempdf.pl_start_dt > day) |
+            (tempdf.pl_end_dt <= day)
+        )
+    ).sum()
+    dpw_stays = (
+        tempdf.svc_type.isin(services.distinct_pathways_accom_svc_types) &
+        (tempdf.pl_start_dt <= day) & (tempdf.pl_end_dt > day)
+    ).sum()
+    non_dpw_voids = (
+        (~tempdf.svc_type.isin(services.distinct_pathways_accom_svc_types)) &
+        (tempdf.vac_start_dt <= day) & (tempdf.vac_end_dt > day) &
+        (
+            tempdf.pl_start_dt.isnull() |
+            (tempdf.pl_start_dt > day) |
+            (tempdf.pl_end_dt <= day)
+        )
+    ).sum()
+    non_dpw_stays = (
+        (~tempdf.svc_type.isin(services.distinct_pathways_accom_svc_types)) &
+        (tempdf.pl_start_dt <= day) & (tempdf.pl_end_dt > day)
+    ).sum()
+    nightly_vac.append({
+        "day": day,
+        "dpw_stays": dpw_stays,
+        "dpw_voids": dpw_voids,
+        "non_dpw_stays": non_dpw_stays,
+        "non_dpw_voids": non_dpw_voids
+    })
+nightly_vac_df = pd.DataFrame.from_dict(nightly_vac)
+
+# Nightly
+nightly_ave = nightly_vac_df.copy().set_index("day")
+nightly_ave = (
+    nightly_ave.groupby(nightly_ave.index.to_period("d").start_time)
+    .mean().reset_index()
+)
+
+# Prepare graph
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+# ymax = 1060
+ymax = 920
+ratio = 5
+edgecolor = "white"
+alpha = 0.8
+axs = [None]
+# fig, axs = plt.subplots(2, 1, sharey=False, sharex=False, height_ratios=[ratio, 1], figsize=(12, 8))
+plt.rcParams.update({'font.size': 12, 'figure.figsize': (7.1, 4.8), 'figure.constrained_layout.use': True})
+fig, axs[0] = plt.subplots()
+plt.subplots_adjust(bottom=0.13, left=0.13, right=0.95, top=0.95)
+axs[0].stackplot(
+    nightly_ave.day,
+    [nightly_ave.dpw_stays], #, nightly_ave.non_dpw_stays],
+    colors=["C2", "C4"],
+    alpha=alpha,
+    lw=0,
+)
+axs[0].set_ylim(0, ymax)
+axs[0].yaxis.set_label_text("Allocated placements")
+axs[0].xaxis.set_label_text("Date")
+axs[0].legend(loc="lower right", reverse=True)
+
+for ax in axs:
+    ax.set_xlim(first_date, last_date)
+    ax.yaxis.set_minor_locator(locator=matplotlib.ticker.MultipleLocator(100))
+    ax.yaxis.grid(True, which="minor")
+    ax.xaxis.set_major_locator(locator=matplotlib.dates.YearLocator(base=1))
+    ax.xaxis.set_minor_locator(locator=matplotlib.dates.MonthLocator(bymonth=7))
+    ax.xaxis.grid(True, which="minor")
+    ax.tick_params(bottom=True, left=True, color="lightgrey", labelcolor="grey")
+
+fig_4_3 = "img_output/Figure_4.3.svg"
+plt.savefig(fig_4_3)
+pass
+```
+
+#### Figure 4.3
+![](`{python} fig_4_3`)
+
+<sub>Notes: Date range 28/10/2017–30/04/2025</sub>
+
+### Figure 4.4: Exits from BAHSA by calendar year
+
+#### Code
+```{python}
+# Prepare data
+df_route_ends = dpw_pls.groupby('route_id').tail(1)
+ct_df = df_route_ends.copy().assign(end_yr=df_route_ends.pl_end_dt.dt.year)
+ct_df.end_yr = ct_df.end_yr.astype("Int64")
+ct_df.loc[
+    ct_df.rt_end_cat.isin(["[Not ended or invalid end reason]", "Missing data/error"]),
+    "rt_end_cat"
+] = "Missing data/errors"
+ct_df["Pathway"] = ct_df.svc_type_short.rename(
+    {"Male Only Pathway": "M", "Female Only Pathway": "F",
+    "Mixed Pathway": "M/F", "Substance Misuse Pathway": "SU"})
+
+# Plot the chart
+import seaborn.objects as so
+plotdata = (
+    ct_df.groupby("end_yr").size().drop([2017,2025]).to_frame(name="exits")
+    .reset_index()
+    .rename(columns={"end_yr": "x", "exits": "y"})
+)
+limits = (plotdata["y"].min(), plotdata["y"].max())
+p = (
+    so.Plot(plotdata, x="x", y="y")
+    .label(x="Year", y="Exits")
+    .limit(y=(0, 725), x=(2018, 2024))
+)
+limpos = 2022.5
+for lim in limits:
+    p = p.add(so.Line(linestyle=(3,6), color=".6", linewidth=0.8), data=pd.DataFrame({"x": [2018, 2024], "y": [lim] * 2}))
+p = (
+    p.add(so.Line(linewidth=3))
+    .add(so.Dot())
+    .add(so.Area())
+    .add(
+        so.Text({"clip_on": False}, halign="right", valign="center", fontsize=9, color=".6", offset=1),
+        data=pd.DataFrame({"x": [2018] * 2, "y": list(limits), "text": [str(x) for x in limits]}),
+        x="x", y="y", text="text"
+    )
+)
+fig_4_4 = "img_output/Figure_4.4.svg"
+p.save(fig_4_4)
+pass
+```
+
+#### Figure 4.4
+![](`{python} fig_4_4`)
+
+<sub>Notes: Full data table is Table A.2. People can have more than one exit in a year. Moves within or between
+services and incomplete years (2017 and 2025) are excluded.</sub>
+
+### Figure 4.5: Exits from BAHSA by calendar year and end reason
+
+#### Code
+```{python}
+ct = (
+    pd.crosstab(
+        ct_df.end_yr.rename("Year"),
+        [ct_df.rt_end_cat.rename("End reason"), ct_df["Pathway"]],
+        normalize=False,
+        margins=True
+    ).drop(index=[2017, 2025])  # Drop incomplete/unusual years
+    .sort_values(by="All", axis=1, ascending=False)
+    .drop(index="All", columns="All")
+    .unstack()
+    .rename("exits")
+    .reset_index()
+)
+ct_all = ct.drop(columns="Pathway").groupby(["End reason", "Year"], sort=False).sum().reset_index().assign(Pathway="All")
+n_ends = ct["End reason"].nunique()
+order = ["Social housing", "Private rented", "Friends/family", "Supported¹",
+         "Evicted", "Abandoned", "Custody", "Care/hospital",
+         "Other", "Died", "Missing data/errors"]
+p = (
+    so.Plot(data=ct_all, x="Year", y="exits")
+    .theme({"axes.grid.which": "both"})
+    .label(x="", y="")
+    .layout(size=(7, 4.1))
+    .limit(y=(0, 200), x=(2018, 2024))
+    .add(so.Dot(pointsize=3), legend=False)
+    .add(so.Line(), legend=False)
+    .add(so.Line(color=".6", linestyle=(4, 2)), so.PolyFit(1), legend=False)
+    .scale(x=so.Continuous().tick(every=9, minor=8))
+    .facet("End reason", wrap=4, order=order)
+)
+fig_4_5 = "img_output/Figure_4.5.svg"
+p.save(fig_4_5)
+pass
+```
+
+#### Figure 4.5
+![](`{python} fig_4_5`)
+
+<sub>Notes: Period covered is 2018-2024, vertical gridlines represent years 2019-2023, as in Figure 4.4. Full data
+table is Table A.2. 1. ‘Supported’ is moves to support services outside BAHSA.</sub>
+
+#### Table A.2
+```{python}
+ta2 = (
+    pd.crosstab(
+        ct_df.rt_end_cat.rename("Exit reason"), 
+        ct_df.end_yr.rename("Year"),
+        normalize=False,
+        margins=True
+    )
+    .sort_values(by="All", axis=0, ascending=False)
+    .pipe(lambda df: df.reindex(list(df.index.drop("All")) + ["All"]))  # Move total back to bottom
+)
+years = ta2.columns.values[:-1]
+days = ([(pd.Timestamp(f"{years[0]+1}-01-01") - distinct_pathways.dpw_start_dt).days] +
+        [(pd.Timestamp(f"{y+1}-01-01") - pd.Timestamp(f"{y}-01-01")).days for y in years[1:-1]] +
+        [(distinct_pathways.dpw_end_dt - pd.Timestamp(f"{years[-1]}-01-01")).days])
+ta2.columns = pd.MultiIndex.from_arrays([ta2.columns.values, days + [sum(days)]], names=("Year", "Days"))
+excel_output["Table A.2: Exits from BAHSA per calendar year by end reasons"] = ta2
+display(ta2)
+```
+
+## Tables in an Excel file
+
+```{python}
+#| output: asis
+import os
+sheetname = "Sheet1"
+qmdfile = os.getenv("QUARTO_DOCUMENT_FILE")
+filename = "img_output/"+qmdfile[:-4]+".xlsx"
+with pd.ExcelWriter(filename) as writer:
+    next_row = 0
+    for k, v in excel_output.items():
+        pd.DataFrame([k]).to_excel(writer, sheet_name=sheetname, header=False, index=False, startrow=next_row)
+        next_row += 1
+        v.to_excel(writer, sheet_name=sheetname, startrow=next_row, float_format="%.1f")
+        next_row += (
+            (1 if not isinstance(v.columns, pd.MultiIndex) else 1 + len(v.columns.levels))
+            + len(v) + 1)
+print(f"[Excel file](./{filename})")
+```
+
