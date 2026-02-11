@@ -1,0 +1,102 @@
+---
+title: "4.6 Results - Moves between services"
+date: 2026-02-10
+warning: false
+---
+
+```{python}
+# Setup code
+import pandas as pd
+from python_scripts import setup
+from python_scripts import services
+from python_scripts import helper
+df, dffp = setup.setup(verbose=False)
+
+from python_scripts import distinct_pathways
+dpw_pls = distinct_pathways.get_distinct_pathways_routes(dffp)
+qrows = dpw_pls["rt_end_cat"] == "[Not ended or invalid end reason]"
+dpw_pls.loc[qrows, "rt_end_cat"] = dpw_pls.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+dpw_pls["rt_end_cat"] = dpw_pls["rt_end_cat"].str.replace("To care/hosp.", "To care/hospital")
+dpw_rt_starts = dpw_pls.groupby("route_id").head(1)
+dpw_rt_ends = dpw_pls.groupby("route_id").tail(1)
+dpw_clis = dpw_pls.groupby(["o_cli_id"]).head(1)  # 1 duplicate client but first entry has more detailed answers
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams.update({
+    'figure.figsize': (6.2, 4.1),
+    'font.size': 12,
+    'figure.constrained_layout.use': True
+})
+
+excel_output = {}
+```
+
+## Moves between services (RQ6)
+
+```{python}
+# Set up networks
+from IPython.display import Image, display
+from python_scripts.graphics import showImg
+from python_scripts import networks
+from python_scripts import network_graphs
+
+extant = dpw_pls.groupby("o_cli_id").head(1)[
+    lambda x: x.pl_start_dt < distinct_pathways.dpw_start_dt
+]
+network_definitions = [
+    {"title": "all", "df": dpw_pls},
+]
+DGs = []
+min_n = 3
+nt = "svc_typelvl"
+for i in network_definitions:
+    title_i, df_i = (i.get(key) for key in ["title", "df"])
+    sorted_end_cats = distinct_pathways.get_sorted_end_cats(df_i)
+    adj_list_i, edge_list_i = networks.mkAdjEdgeLists(dffp, df_i, [nt])
+    DG = network_graphs.mkDgraph(edge_list_i[nt], title=title_i, threshold=0.07,
+                                 min_n=min_n, sorted_end_cats=sorted_end_cats, capacities=distinct_pathways.capacities,
+                                 individuals=df_i.o_cli_id.nunique())
+    DGs.append(DG)
+    DG = network_graphs.mkDgraph(adj_list_i[nt], title=title_i, threshold=(0.020 * adj_list_i[nt].weight.max()),
+                                 min_n=min_n, sorted_end_cats=sorted_end_cats, capacities=distinct_pathways.capacities,
+                                 individuals=df_i.o_cli_id.nunique())
+    DGs.append(DG)
+
+fig_4_11_svg = "img_output/Figure_4.11.svg"
+fig_4_11_png = "img_output/Figure_4.11.png"
+DGs[0].draw(format="png", prog="neato", path=fig_4_11_png)
+DGs[0].draw(format="svg", prog="neato", path=fig_4_11_svg)
+fig_4_12_svg = "img_output/Figure_4.12.svg"
+fig_4_12_png = "img_output/Figure_4.12.png"
+DGs[1].draw(format="png", prog="neato", path=fig_4_12_png)
+DGs[1].draw(format="svg", prog="neato", path=fig_4_12_svg)
+```
+
+### Figure 4.11: Network diagram: proportions of moves out of each node for all BAHSA placements
+
+#### PNG file
+
+![](`{python} fig_4_11_png`)
+
+#### SVG file
+
+![](`{python} fig_4_11_svg`)
+
+<sup>Notes: Oval nodes are levels of services in BAHSA with sizes proportionate to the number of allocated placements on night 1 of the studied period. Rounded rectangles are descriptions of starting points or outcomes. Arrows are moves, with line thickness
+proportionate to the count/proportion of moves represented. Pathways: F=Female-only, M/F=Mixed, SU=Substance Use, M=Male-only. Levels: L1 (except for SU) is 24-hour hostels, L2 (L1 in SU) is semi-independent supported housing, L3 and L4 (L2 in SU) is
+mostly accommodation with floating/visiting support.</sup>
+
+### Figure 4.12: Network diagram: counts of moves for all BAHSA placements
+
+#### PNG file
+
+![](`{python} fig_4_12_png`)
+
+#### SVG file
+
+![](`{python} fig_4_12_svg`)
+
+<sup>Notes: Oval nodes are levels of services in BAHSA with sizes proportionate to the number of allocated placements on night 1 of the studied period. Rounded rectangles are descriptions of starting points or outcomes. Arrows are moves, with line thickness
+proportionate to the count/proportion of moves represented. Pathways: F=Female-only, M/F=Mixed, SU=Substance Use, M=Male-only. Levels: L1 (except for SU) is 24-hour hostels, L2 (L1 in SU) is semi-independent supported housing, L3 and L4 (L2 in SU) is
+mostly accommodation with floating/visiting support.</sup>

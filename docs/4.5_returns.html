@@ -324,7 +324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="1c946162" class="cell" data-execution_count="1">
+<div id="1bd201ae" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Setup code</span></span>
@@ -358,7 +358,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="returns-rq5">Returns (RQ5)</h2>
 <section id="table-4.3-returns-at-periods-of-time-after-routes-ended-per-route" class="level3">
 <h3 class="anchored" data-anchor-id="table-4.3-returns-at-periods-of-time-after-routes-ended-per-route">Table 4.3: Returns at periods of time after routes ended (per route)</h3>
-<div id="53f84bfd" class="cell" data-execution_count="2">
+<div id="90922b97" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stable_periods <span class="op">=</span> {x: <span class="ss">f"after_rt_ret_within_</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> x <span class="kw">in</span> distinct_pathways.stable_offsets.keys()}</span>
@@ -463,7 +463,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="table-4.4-returns-at-periods-of-time-after-peoples-first-routes-ended-per-person" class="level3">
 <h3 class="anchored" data-anchor-id="table-4.4-returns-at-periods-of-time-after-peoples-first-routes-ended-per-person">Table 4.4: Returns at periods of time after people’s first routes ended (per person)</h3>
-<div id="274119ff" class="cell" data-execution_count="3">
+<div id="bffd91b4" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>stable_periods <span class="op">=</span> {x: <span class="ss">f"after_rt_ret_within_</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> x <span class="kw">in</span> distinct_pathways.stable_offsets.keys()}</span>
@@ -572,25 +572,470 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="figure-4.9-returns-at-periods-of-time-after-exits" class="level3">
+<h3 class="anchored" data-anchor-id="figure-4.9-returns-at-periods-of-time-after-exits">Figure 4.9: Returns at periods of time after exits</h3>
+<div id="ded3724e" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn.objects <span class="im">as</span> so</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>periodMult <span class="op">=</span> {<span class="st">"d"</span>: <span class="dv">1</span>, <span class="st">"m"</span>: <span class="fl">365.25</span><span class="op">/</span><span class="dv">12</span>, <span class="st">"y"</span>: <span class="fl">365.25</span>}</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>periodYears <span class="op">=</span> {x: <span class="bu">int</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="op">*</span> periodMult[x[<span class="op">-</span><span class="dv">1</span>]] <span class="op">/</span> periodMult[<span class="st">"y"</span>] <span class="cf">for</span> x <span class="kw">in</span> distinct_pathways.stable_offsets.keys()}</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>plotdata <span class="op">=</span> (</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    pd.concat([</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        t4_3.loc[<span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>].to_frame()</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        .assign(years<span class="op">=</span><span class="kw">lambda</span> x: x.index.<span class="bu">map</span>(periodYears), grp<span class="op">=</span><span class="st">"Per route (all exits)"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        .reset_index(),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        t4_4.loc[<span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>].to_frame()</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        .assign(years<span class="op">=</span><span class="kw">lambda</span> x: x.index.<span class="bu">map</span>(periodYears), grp<span class="op">=</span><span class="st">"Per person (first exits)"</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        .reset_index()</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>grps <span class="op">=</span> plotdata[<span class="st">"grp"</span>].unique()</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>plotdata <span class="op">=</span> (</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    pd.concat([pd.DataFrame({<span class="st">"index"</span>: <span class="st">""</span>, <span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>: <span class="dv">0</span>, <span class="st">"years"</span>: <span class="dv">0</span>, <span class="st">"grp"</span>: grps}, index<span class="op">=</span>[<span class="st">""</span>]<span class="op">*</span><span class="bu">len</span>(grps)), plotdata])</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>plotdata, y<span class="op">=</span><span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>, x<span class="op">=</span><span class="st">"years"</span>, text<span class="op">=</span><span class="st">"index"</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    .facet(col<span class="op">=</span><span class="st">"grp"</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    .label(x<span class="op">=</span><span class="st">"years since exit"</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    .add(so.Dot(), data<span class="op">=</span>plotdata[plotdata[<span class="st">"index"</span>] <span class="op">!=</span> <span class="st">""</span>])</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    .add(so.Line())</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    .add(so.Area(edgewidth<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    .add(so.Text(halign<span class="op">=</span><span class="st">"left"</span>, valign<span class="op">=</span><span class="st">"top"</span>))</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">5.5</span>), y<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">40</span>))</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous().tick(minor<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    .theme({<span class="st">"axes.grid.which"</span>: <span class="st">"both"</span>})</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    .layout(size<span class="op">=</span>(<span class="fl">6.2</span>, <span class="fl">3.6</span>), engine<span class="op">=</span><span class="st">"constrained"</span>)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>fig_4_9 <span class="op">=</span> <span class="st">"img_output/Figure_4.9.svg"</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>p.save(fig_4_9)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><img src="img_output/Figure_4.9.svg" class="img-fluid"></p>
+<p><sup>Note: Data tables are Table 4.3 and Table 4.4.</sup></p>
+</section>
+<section id="table-a.8-returns-at-periods-of-time-after-exit-by-end-reason" class="level3">
+<h3 class="anchored" data-anchor-id="table-a.8-returns-at-periods-of-time-after-exit-by-end-reason">Table A.8: Returns at periods of time after exit by end reason</h3>
+<div id="d9ee2aa8" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate table</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>stable_periods <span class="op">=</span> {x: <span class="ss">f"after_rt_ret_within_</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> x <span class="kw">in</span> distinct_pathways.stable_offsets.keys()}</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>stable_period_max_end_dts <span class="op">=</span> {x: distinct_pathways.dpw_end_dt <span class="op">-</span> distinct_pathways.stable_offsets[x]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                             <span class="cf">for</span> x <span class="kw">in</span> distinct_pathways.stable_offsets.keys()}</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>route_end_grp <span class="op">=</span> (dpw_rt_ends[dpw_rt_ends[<span class="st">"pl_end_dt"</span>].notnull() <span class="op">&amp;</span> (dpw_rt_ends[<span class="st">"rt_end_cat"</span>] <span class="op">!=</span> <span class="st">"Died"</span>)]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                 .assign(All<span class="op">=</span><span class="st">"All"</span>).groupby(<span class="st">"rt_end_cat"</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>route_outcomes <span class="op">=</span> route_end_grp.size().sort_values(ascending<span class="op">=</span><span class="va">False</span>).rename((<span class="st">"outcomes"</span>, <span class="st">"n"</span>)).to_frame()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>route_outcomes[(<span class="st">"outcomes"</span>, <span class="st">"%"</span>)] <span class="op">=</span> (<span class="dv">100</span><span class="op">*</span>route_outcomes[(<span class="st">"outcomes"</span>, <span class="st">"n"</span>)]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                                     <span class="op">/</span> route_outcomes[(<span class="st">"outcomes"</span>, <span class="st">"n"</span>)].<span class="bu">sum</span>())</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, v <span class="kw">in</span> stable_periods.items():</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    route_outcomes[k, <span class="ss">f"Eligible (n)"</span>] <span class="op">=</span> (route_end_grp[<span class="st">"pl_end_dt"</span>]</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                                 .<span class="bu">apply</span>(<span class="kw">lambda</span> x: (x <span class="op">&lt;</span> stable_period_max_end_dts[k]).<span class="bu">sum</span>()).astype(<span class="st">"Int64"</span>))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> outcome <span class="kw">in</span> [<span class="st">"Yes"</span>, <span class="st">"No"</span>]:</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        route_outcomes[k, outcome] <span class="op">=</span> (route_end_grp</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                                      .<span class="bu">apply</span>(<span class="kw">lambda</span> x: ((x[<span class="st">"pl_end_dt"</span>] <span class="op">&lt;</span> stable_period_max_end_dts[k])</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                                                        <span class="op">&amp;</span> (x[v] <span class="op">==</span> outcome)).<span class="bu">sum</span>()).astype(<span class="st">"Int64"</span>))</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    route_outcomes[k, <span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>] <span class="op">=</span> (route_outcomes[k, <span class="st">"Yes"</span>]</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>                                       .mul(<span class="dv">100</span>).div(route_outcomes[k, <span class="st">"Yes"</span>]</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>                                                     <span class="op">+</span> route_outcomes[k, <span class="st">"No"</span>]))</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    route_outcomes <span class="op">=</span> route_outcomes.drop(columns<span class="op">=</span>(k, <span class="st">"No"</span>))</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    route_outcomes <span class="op">=</span> route_outcomes.rename(columns<span class="op">=</span>{<span class="st">"Yes"</span>: <span class="st">"Returned (n)"</span>}, level<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>na_cols <span class="op">=</span> [<span class="st">"[Not ended]"</span>, <span class="st">"Died"</span>]</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>route_outcomes <span class="op">=</span> route_outcomes.sort_values((<span class="st">"outcomes"</span>, <span class="st">"%"</span>), ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>ta8_n <span class="op">=</span> route_outcomes.iloc[:, :<span class="dv">2</span>]</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>route_outcomes <span class="op">=</span> route_outcomes.sort_values((<span class="st">"2y"</span>, <span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>), ascending<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>ta8_periods <span class="op">=</span> (route_outcomes.astype(<span class="st">"object"</span>)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>               .loc[[x <span class="cf">for</span> x <span class="kw">in</span> route_outcomes.index.to_list() <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> na_cols]]</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>               .iloc[:, <span class="dv">2</span>:].stack(sort<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>ta8 <span class="op">=</span> ta8_periods</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>ta8.index <span class="op">=</span> ta8.index.set_names((<span class="st">"End reason"</span>, <span class="st">"Statistic"</span>))</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.option_context(<span class="st">"display.float_format"</span>, <span class="st">"</span><span class="sc">{:,.1f}</span><span class="st">"</span>.<span class="bu">format</span>):</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    display(ta8)</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>excel_output[<span class="st">"Table A.8: Returns at periods of time after exit by end reason"</span>] <span class="op">=</span> ta8</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">90d</th>
+<th data-quarto-table-cell-role="th">6m</th>
+<th data-quarto-table-cell-role="th">15m</th>
+<th data-quarto-table-cell-role="th">18m</th>
+<th data-quarto-table-cell-role="th">2y</th>
+<th data-quarto-table-cell-role="th">5y</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">End reason</th>
+<th data-quarto-table-cell-role="th">Statistic</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">To social housing</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>979</td>
+<td>954</td>
+<td>885</td>
+<td>870</td>
+<td>822</td>
+<td>418</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>1</td>
+<td>1</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>0.1</td>
+<td>0.1</td>
+<td>0.5</td>
+<td>0.7</td>
+<td>1.0</td>
+<td>2.4</td>
+</tr>
+<tr class="even">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">To private rented</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>273</td>
+<td>267</td>
+<td>239</td>
+<td>234</td>
+<td>224</td>
+<td>103</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>1</td>
+<td>5</td>
+<td>9</td>
+<td>10</td>
+<td>16</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>0.4</td>
+<td>1.9</td>
+<td>3.8</td>
+<td>4.3</td>
+<td>7.1</td>
+<td>11.7</td>
+</tr>
+<tr class="odd">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">To friends/family</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>364</td>
+<td>358</td>
+<td>345</td>
+<td>339</td>
+<td>322</td>
+<td>177</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>12</td>
+<td>26</td>
+<td>59</td>
+<td>68</td>
+<td>77</td>
+<td>60</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>3.3</td>
+<td>7.3</td>
+<td>17.1</td>
+<td>20.1</td>
+<td>23.9</td>
+<td>33.9</td>
+</tr>
+<tr class="even">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">Missing data/error</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>74</td>
+<td>74</td>
+<td>70</td>
+<td>68</td>
+<td>62</td>
+<td>42</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>11</td>
+<td>17</td>
+<td>17</td>
+<td>17</td>
+<td>15</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>14.9</td>
+<td>23.0</td>
+<td>24.3</td>
+<td>25.0</td>
+<td>24.2</td>
+<td>35.7</td>
+</tr>
+<tr class="odd">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">To external supported</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>161</td>
+<td>155</td>
+<td>142</td>
+<td>138</td>
+<td>130</td>
+<td>66</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>13</td>
+<td>27</td>
+<td>36</td>
+<td>36</td>
+<td>39</td>
+<td>26</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>8.1</td>
+<td>17.4</td>
+<td>25.4</td>
+<td>26.1</td>
+<td>30.0</td>
+<td>39.4</td>
+</tr>
+<tr class="even">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">Other</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>275</td>
+<td>266</td>
+<td>232</td>
+<td>227</td>
+<td>213</td>
+<td>96</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>34</td>
+<td>48</td>
+<td>61</td>
+<td>61</td>
+<td>71</td>
+<td>42</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>12.4</td>
+<td>18.0</td>
+<td>26.3</td>
+<td>26.9</td>
+<td>33.3</td>
+<td>43.8</td>
+</tr>
+<tr class="odd">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">To care/hospital</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>163</td>
+<td>154</td>
+<td>139</td>
+<td>138</td>
+<td>127</td>
+<td>65</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>27</td>
+<td>42</td>
+<td>51</td>
+<td>53</td>
+<td>50</td>
+<td>31</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>16.6</td>
+<td>27.3</td>
+<td>36.7</td>
+<td>38.4</td>
+<td>39.4</td>
+<td>47.7</td>
+</tr>
+<tr class="even">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">Abandoned</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>626</td>
+<td>609</td>
+<td>553</td>
+<td>528</td>
+<td>477</td>
+<td>234</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>59</td>
+<td>126</td>
+<td>218</td>
+<td>230</td>
+<td>223</td>
+<td>152</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>9.4</td>
+<td>20.7</td>
+<td>39.4</td>
+<td>43.6</td>
+<td>46.8</td>
+<td>65.0</td>
+</tr>
+<tr class="odd">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">Evicted</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>835</td>
+<td>801</td>
+<td>726</td>
+<td>688</td>
+<td>621</td>
+<td>292</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>164</td>
+<td>246</td>
+<td>328</td>
+<td>334</td>
+<td>323</td>
+<td>191</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>19.6</td>
+<td>30.7</td>
+<td>45.2</td>
+<td>48.5</td>
+<td>52.0</td>
+<td>65.4</td>
+</tr>
+<tr class="even">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">Custody</td>
+<td data-quarto-table-cell-role="th">Eligible (n)</td>
+<td>327</td>
+<td>321</td>
+<td>301</td>
+<td>297</td>
+<td>277</td>
+<td>124</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Returned (n)</td>
+<td>32</td>
+<td>69</td>
+<td>131</td>
+<td>146</td>
+<td>148</td>
+<td>86</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">% returned</td>
+<td>9.8</td>
+<td>21.5</td>
+<td>43.5</td>
+<td>49.2</td>
+<td>53.4</td>
+<td>69.4</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="figure-4.10-return-proportions-at-periods-of-time-after-eligible-exits-by-end-reason" class="level3">
+<h3 class="anchored" data-anchor-id="figure-4.10-return-proportions-at-periods-of-time-after-eligible-exits-by-end-reason">Figure 4.10: Return proportions at periods of time after eligible exits by end reason</h3>
+<div id="cc8d731e" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot chart</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn.objects <span class="im">as</span> so</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>periodMult <span class="op">=</span> {<span class="st">"d"</span>: <span class="dv">1</span>, <span class="st">"m"</span>: <span class="fl">365.25</span><span class="op">/</span><span class="dv">12</span>, <span class="st">"y"</span>: <span class="fl">365.25</span>}</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>periodYears <span class="op">=</span> {x: <span class="bu">int</span>(x[:<span class="op">-</span><span class="dv">1</span>]) <span class="op">*</span> periodMult[x[<span class="op">-</span><span class="dv">1</span>]] <span class="op">/</span> periodMult[<span class="st">"y"</span>] <span class="cf">for</span> x <span class="kw">in</span> distinct_pathways.stable_offsets.keys()}</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plotdata <span class="op">=</span> (</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    ta8.unstack(<span class="dv">0</span>).loc[<span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>].reset_index(<span class="dv">1</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    .assign(years<span class="op">=</span><span class="kw">lambda</span> x: x.index.<span class="bu">map</span>(periodYears))</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>zeroes <span class="op">=</span> pd.DataFrame({<span class="st">"index"</span>: <span class="st">""</span>, <span class="st">"End reason"</span>: plotdata[<span class="st">"End reason"</span>].unique(), <span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>: <span class="dv">0</span>, <span class="st">"years"</span>: <span class="dv">0</span>},</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                      index<span class="op">=</span><span class="bu">range</span>(<span class="bu">len</span>(plotdata), <span class="bu">len</span>(plotdata) <span class="op">+</span> plotdata[<span class="st">"End reason"</span>].nunique()))</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>plotdata <span class="op">=</span> pd.concat([zeroes, plotdata])</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>facet_order <span class="op">=</span> ta8_n.index.to_list()</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>plotdata, y<span class="op">=</span><span class="st">"</span><span class="sc">% r</span><span class="st">eturned"</span>, x<span class="op">=</span><span class="st">"years"</span>, text<span class="op">=</span><span class="st">"index"</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    .facet(<span class="st">"End reason"</span>, wrap<span class="op">=</span><span class="dv">4</span>, order<span class="op">=</span>facet_order)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    .label(x<span class="op">=</span><span class="st">""</span>, y<span class="op">=</span><span class="st">""</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    .add(so.Dot(), data<span class="op">=</span>plotdata[plotdata[<span class="st">"index"</span>] <span class="op">!=</span> <span class="st">""</span>])</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    .add(so.Line())</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    .add(so.Area(edgewidth<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">5</span>), y<span class="op">=</span>(<span class="dv">0</span>, <span class="va">None</span>))</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>(so.Continuous()</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>              .tick(every<span class="op">=</span><span class="dv">1</span>, minor<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>              .label(like<span class="op">=</span><span class="kw">lambda</span> x, pos: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:.0f}</span><span class="ss">"</span> <span class="cf">if</span> x <span class="op">!=</span> <span class="dv">5</span> <span class="cf">else</span> <span class="st">"5y"</span>)),</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>           y<span class="op">=</span>so.Continuous().tick(minor<span class="op">=</span><span class="dv">1</span>).label(unit<span class="op">=</span>(<span class="st">""</span>, <span class="st">"%"</span>)))</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    .theme({<span class="st">"axes.grid.which"</span>: <span class="st">"both"</span>})</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    .layout(size<span class="op">=</span>(<span class="fl">7.2</span>, <span class="fl">4.1</span>), engine<span class="op">=</span><span class="st">"constrained"</span>)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>fig_4_10 <span class="op">=</span> <span class="st">"img_output/Figure_4.10.svg"</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>p.save(fig_4_10)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><img src="img_output/Figure_4.10.svg" class="img-fluid"></p>
+<p><sup>Note: Data table is Table A.8. Figure B.1 shows return and eligible exit counts per end reason.</sup></p>
+</section>
 </section>
 <section id="tables-in-an-excel-file" class="level2">
 <h2 class="anchored" data-anchor-id="tables-in-an-excel-file">Tables in an Excel file</h2>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sheetname <span class="op">=</span> <span class="st">"Sheet1"</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>qmdfile <span class="op">=</span> os.getenv(<span class="st">"QUARTO_DOCUMENT_FILE"</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>filename <span class="op">=</span> <span class="st">"img_output/"</span><span class="op">+</span>qmdfile[:<span class="op">-</span><span class="dv">4</span>]<span class="op">+</span><span class="st">".xlsx"</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.ExcelWriter(filename) <span class="im">as</span> writer:</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    next_row <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, v <span class="kw">in</span> excel_output.items():</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        pd.DataFrame([k]).to_excel(writer, sheet_name<span class="op">=</span>sheetname, header<span class="op">=</span><span class="va">False</span>, index<span class="op">=</span><span class="va">False</span>, startrow<span class="op">=</span>next_row)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        next_row <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        v.to_excel(writer, sheet_name<span class="op">=</span>sheetname, startrow<span class="op">=</span>next_row, float_format<span class="op">=</span><span class="st">"</span><span class="sc">%.1f</span><span class="st">"</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        next_row <span class="op">+=</span> (</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            (<span class="dv">1</span> <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(v.columns, pd.MultiIndex) <span class="cf">else</span> <span class="dv">1</span> <span class="op">+</span> <span class="bu">len</span>(v.columns.levels))</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> <span class="bu">len</span>(v) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"[Excel file](./</span><span class="sc">{</span>filename<span class="sc">}</span><span class="ss">)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>sheetname <span class="op">=</span> <span class="st">"Sheet1"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>qmdfile <span class="op">=</span> os.getenv(<span class="st">"QUARTO_DOCUMENT_FILE"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>filename <span class="op">=</span> <span class="st">"img_output/"</span><span class="op">+</span>qmdfile[:<span class="op">-</span><span class="dv">4</span>]<span class="op">+</span><span class="st">".xlsx"</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pd.ExcelWriter(filename) <span class="im">as</span> writer:</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    next_row <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, v <span class="kw">in</span> excel_output.items():</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        pd.DataFrame([k]).to_excel(writer, sheet_name<span class="op">=</span>sheetname, header<span class="op">=</span><span class="va">False</span>, index<span class="op">=</span><span class="va">False</span>, startrow<span class="op">=</span>next_row)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        next_row <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        v.to_excel(writer, sheet_name<span class="op">=</span>sheetname, startrow<span class="op">=</span>next_row, float_format<span class="op">=</span><span class="st">"</span><span class="sc">%.1f</span><span class="st">"</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        next_row <span class="op">+=</span> (</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>            (<span class="dv">1</span> <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(v.columns, pd.MultiIndex) <span class="cf">else</span> <span class="dv">1</span> <span class="op">+</span> <span class="bu">len</span>(v.columns.levels))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> <span class="bu">len</span>(v) <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"[Excel file](./</span><span class="sc">{</span>filename<span class="sc">}</span><span class="ss">)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <p><a href="./img_output/4.5_returns.xlsx">Excel file</a></p>
 

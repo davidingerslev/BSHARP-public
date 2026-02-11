@@ -282,7 +282,9 @@ p = (
 
 #### Figure 4.8
 ![](`{python} fig_4_8_a`)
+
 Increased-scale y-axis (zoomed in):
+
 ![](`{python} fig_4_8_b`)
 
 <sub>Note: Descriptive statistics are in Table A.7.</sub>

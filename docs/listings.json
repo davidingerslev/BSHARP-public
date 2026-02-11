@@ -6,7 +6,8 @@
       "/4.2_capacity_and_throughput.html",
       "/4.3_number_of_routes.html",
       "/4.4_durations.html",
-      "/4.5_returns.html"
+      "/4.5_returns.html",
+      "/4.6_moves_between_services.html"
     ]
   }
 ]

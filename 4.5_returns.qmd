@@ -127,6 +127,132 @@ with pd.option_context("display.float_format", "{:,.1f}".format):
     display(t4_4)
 ```
 
+### Figure 4.9: Returns at periods of time after exits
+
+```{python}
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import seaborn.objects as so
+periodMult = {"d": 1, "m": 365.25/12, "y": 365.25}
+periodYears = {x: int(x[:-1]) * periodMult[x[-1]] / periodMult["y"] for x in distinct_pathways.stable_offsets.keys()}
+plotdata = (
+    pd.concat([
+        t4_3.loc["% returned"].to_frame()
+        .assign(years=lambda x: x.index.map(periodYears), grp="Per route (all exits)")
+        .reset_index(),
+        t4_4.loc["% returned"].to_frame()
+        .assign(years=lambda x: x.index.map(periodYears), grp="Per person (first exits)")
+        .reset_index()
+    ])
+)
+grps = plotdata["grp"].unique()
+plotdata = (
+    pd.concat([pd.DataFrame({"index": "", "% returned": 0, "years": 0, "grp": grps}, index=[""]*len(grps)), plotdata])
+    .reset_index(drop=True))
+p = (
+    so.Plot(data=plotdata, y="% returned", x="years", text="index")
+    .facet(col="grp")
+    .label(x="years since exit")
+    .add(so.Dot(), data=plotdata[plotdata["index"] != ""])
+    .add(so.Line())
+    .add(so.Area(edgewidth=0))
+    .add(so.Text(halign="left", valign="top"))
+    .limit(x=(0, 5.5), y=(0, 40))
+    .scale(x=so.Continuous().tick(minor=1))
+    .theme({"axes.grid.which": "both"})
+    .layout(size=(6.2, 3.6), engine="constrained")
+)
+fig_4_9 = "img_output/Figure_4.9.svg"
+p.save(fig_4_9)
+pass
+```
+
+![](`{python} fig_4_9`)
+
+<sup>Note: Data tables are Table 4.3 and Table 4.4.</sup>
+
+### Table A.8: Returns at periods of time after exit by end reason
+
+```{python}
+# Generate table
+stable_periods = {x: f"after_rt_ret_within_{x}" for x in distinct_pathways.stable_offsets.keys()}
+stable_period_max_end_dts = {x: distinct_pathways.dpw_end_dt - distinct_pathways.stable_offsets[x]
+                             for x in distinct_pathways.stable_offsets.keys()}
+route_end_grp = (dpw_rt_ends[dpw_rt_ends["pl_end_dt"].notnull() & (dpw_rt_ends["rt_end_cat"] != "Died")]
+                 .assign(All="All").groupby("rt_end_cat"))
+route_outcomes = route_end_grp.size().sort_values(ascending=False).rename(("outcomes", "n")).to_frame()
+route_outcomes[("outcomes", "%")] = (100*route_outcomes[("outcomes", "n")]
+                                     / route_outcomes[("outcomes", "n")].sum())
+for k, v in stable_periods.items():
+    route_outcomes[k, f"Eligible (n)"] = (route_end_grp["pl_end_dt"]
+                                 .apply(lambda x: (x < stable_period_max_end_dts[k]).sum()).astype("Int64"))
+    for outcome in ["Yes", "No"]:
+        route_outcomes[k, outcome] = (route_end_grp
+                                      .apply(lambda x: ((x["pl_end_dt"] < stable_period_max_end_dts[k])
+                                                        & (x[v] == outcome)).sum()).astype("Int64"))
+    route_outcomes[k, "% returned"] = (route_outcomes[k, "Yes"]
+                                       .mul(100).div(route_outcomes[k, "Yes"]
+                                                     + route_outcomes[k, "No"]))
+    route_outcomes = route_outcomes.drop(columns=(k, "No"))
+    route_outcomes = route_outcomes.rename(columns={"Yes": "Returned (n)"}, level=1)
+na_cols = ["[Not ended]", "Died"]
+route_outcomes = route_outcomes.sort_values(("outcomes", "%"), ascending=False)
+ta8_n = route_outcomes.iloc[:, :2]
+route_outcomes = route_outcomes.sort_values(("2y", "% returned"), ascending=True)
+ta8_periods = (route_outcomes.astype("object")
+               .loc[[x for x in route_outcomes.index.to_list() if x not in na_cols]]
+               .iloc[:, 2:].stack(sort=False))
+ta8 = ta8_periods
+ta8.index = ta8.index.set_names(("End reason", "Statistic"))
+with pd.option_context("display.float_format", "{:,.1f}".format):
+    display(ta8)
+
+excel_output["Table A.8: Returns at periods of time after exit by end reason"] = ta8
+```
+
+### Figure 4.10: Return proportions at periods of time after eligible exits by end reason
+```{python}
+# Plot chart
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import seaborn.objects as so
+periodMult = {"d": 1, "m": 365.25/12, "y": 365.25}
+periodYears = {x: int(x[:-1]) * periodMult[x[-1]] / periodMult["y"] for x in distinct_pathways.stable_offsets.keys()}
+plotdata = (
+    ta8.unstack(0).loc["% returned"].reset_index(1)
+    .assign(years=lambda x: x.index.map(periodYears))
+    .reset_index()
+)
+zeroes = pd.DataFrame({"index": "", "End reason": plotdata["End reason"].unique(), "% returned": 0, "years": 0},
+                      index=range(len(plotdata), len(plotdata) + plotdata["End reason"].nunique()))
+plotdata = pd.concat([zeroes, plotdata])
+facet_order = ta8_n.index.to_list()
+p = (
+    so.Plot(data=plotdata, y="% returned", x="years", text="index")
+    .facet("End reason", wrap=4, order=facet_order)
+    .label(x="", y="")
+    .add(so.Dot(), data=plotdata[plotdata["index"] != ""])
+    .add(so.Line())
+    .add(so.Area(edgewidth=0))
+    .limit(x=(0, 5), y=(0, None))
+    .scale(x=(so.Continuous()
+              .tick(every=1, minor=0)
+              .label(like=lambda x, pos: f"{x:.0f}" if x != 5 else "5y")),
+           y=so.Continuous().tick(minor=1).label(unit=("", "%")))
+    .theme({"axes.grid.which": "both"})
+    .layout(size=(7.2, 4.1), engine="constrained")
+)
+fig_4_10 = "img_output/Figure_4.10.svg"
+p.save(fig_4_10)
+pass
+```
+
+![](`{python} fig_4_10`)
+
+<sup>Note: Data table is Table A.8. Figure B.1 shows return and eligible exit counts per end reason.</sup>
+
 ## Tables in an Excel file
 
 ```{python}
