@@ -1,5 +1,5 @@
 ---
-title: "4.1 Results - Table A.1"
+title: "A (Appendix) - Table A.1"
 date: 2026-02-11
 warning: false
 ---
