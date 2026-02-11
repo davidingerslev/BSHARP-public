@@ -3,6 +3,8 @@
     "listing": "/index.html",
     "items": [
       "/4.1_outcomes.html",
+      "/Table_A.1.html",
+      "/Tables_A.9_A.10_A.11.html",
       "/4.2_capacity_and_throughput.html",
       "/4.3_number_of_routes.html",
       "/4.4_durations.html",
