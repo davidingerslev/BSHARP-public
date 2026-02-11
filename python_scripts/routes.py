@@ -31,14 +31,14 @@ end_reasons_map = {
     "(FS) Died": ("Died", "Unplanned"),
     "Evicted (Unplanned)": ("Evicted", "Unplanned"),
     "(FS) Evicted": ("Evicted", "Unplanned"),
-    "Hospital, Care Home or Hospice (Planned)": ("To care/hosp.", "Planned"),
-    "Psychiatric Hospital (Planned)": ("To care/hosp.", "Planned"),
+    "Hospital, Care Home or Hospice (Planned)": ("To care/hospital", "Planned"),
+    "Psychiatric Hospital (Planned)": ("To care/hospital", "Planned"),
     "Moved into Sheltered Housing (Planned)": ("To sheltered", "Planned"),
-    "Moved into Care Home (Planned)": ("To care/hosp.", "Planned"),
+    "Moved into Care Home (Planned)": ("To care/hospital", "Planned"),
     "Moved into Sheltered Housing (Unplanned)": ("To sheltered", "Unplanned"),
-    "(FS) Entered a long-stay hosp": ("To care/hosp.", "Planned"),
-    "Hospital, Care Home or Hospice (Unplanned)": ("To care/hosp.", "Unplanned"),
-    "Psychiatric Hospital (Unplanned)": ("To care/hosp.", "Unplanned"),
+    "(FS) Entered a long-stay hosp": ("To care/hospital", "Planned"),
+    "Hospital, Care Home or Hospice (Unplanned)": ("To care/hospital", "Unplanned"),
+    "Psychiatric Hospital (Unplanned)": ("To care/hospital", "Unplanned"),
     "Staying with Friends or Family (Planned)": ("To friends/family", "Planned"),
     "Staying with Friends (Planned)": ("To friends/family", "Planned"),
     "(FS) Moved in with family or relatives (planned)": (
@@ -186,7 +186,7 @@ grouped_cats = {
         "Unplanned": {"Returned to Previous Home (Unplanned)"},
         "Planned": {"Returned to Previous Home (Planned)"},
     },
-    "To care/hosp.": {
+    "To care/hospital": {
         "Unplanned": {
             "Hospital, Care Home or Hospice (Unplanned)",
             "Psychiatric Hospital (Unplanned)",

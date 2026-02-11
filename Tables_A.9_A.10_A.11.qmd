@@ -1,0 +1,160 @@
+---
+title: "4.1 Results - Tables A.9, A.10, A.11"
+date: 2026-02-11
+warning: false
+---
+
+```{python}
+# Setup code
+import pandas as pd
+from python_scripts import setup
+from python_scripts import services
+from python_scripts import helper
+df, dffp = setup.setup(verbose=False)
+
+from python_scripts import distinct_pathways
+dpw_pls = distinct_pathways.get_distinct_pathways_routes(dffp)
+qrows = dpw_pls["rt_end_cat"] == "[Not ended or invalid end reason]"
+dpw_pls.loc[qrows, "rt_end_cat"] = dpw_pls.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+dpw_pls["rt_end_cat"] = dpw_pls["rt_end_cat"].str.replace("To care/hosp.", "To care/hospital")
+dpw_rt_starts = dpw_pls.groupby("route_id").head(1)
+dpw_rt_ends = dpw_pls.groupby("route_id").tail(1)
+dpw_clis = dpw_pls.groupby(["o_cli_id"]).head(1)  # 1 duplicate client but first entry has more detailed answers
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams.update({
+    'figure.figsize': (6.2, 4.1),
+    'font.size': 12,
+    'figure.constrained_layout.use': True
+})
+
+excel_output = {}
+```
+
+## Additional Tables
+
+### Table A.9: Cumulative returns at a sample of time periods by preceding exit reasons 
+
+```{python}
+from python_scripts import routes
+# Generate Table A.9
+hist_data = ((dpw_rt_starts.loc[dpw_rt_starts["gap"].notna(), "gap"].dt.days.astype("float64")).rename("Days").to_frame()
+             .assign(Previous_End_Reason=dpw_rt_starts["prev_pl_end_reason"].map(routes.get_end_cats_map())))
+before_DPW_era=(dpw_rt_starts["prev_pl_end_dt"] < distinct_pathways.dpw_start_dt).value_counts().rename("Before_DPW_Era").to_frame()
+ta9_data = hist_data.groupby(["Previous_End_Reason", "Days"]).size().rename("Count").groupby("Previous_End_Reason").cumsum().to_frame()
+max_counts = (ta9_data.reset_index().groupby("Previous_End_Reason")["Count"].max()
+              .to_frame().assign(Days=ta9_data.reset_index()["Days"].max())
+              .set_index("Days", append=True))
+ta9_data = pd.concat([ta9_data, max_counts]).reset_index().drop_duplicates().set_index(["Previous_End_Reason", "Days"])
+ta9 = []
+for x_val in [x * 365.25 for x in [0.5, 1, 2, 3, 4, 5, 6]] + [ta9_data.reset_index()["Days"].max()]:
+    ta9 = ta9 + [(hist_data.groupby("Previous_End_Reason")["Days"].agg(lambda x: (x <= x_val).sum())
+                         .rename("Count").to_frame().assign(Days=x_val).set_index("Days", append=True))]
+ta9 = pd.concat(ta9)
+ta9 = ta9.assign(Pct=(100 * ta9 / max_counts.droplevel("Days")).map(lambda x: f"{x:.0f}%"))
+ta9 = ta9.reset_index()
+ta9 = ta9.assign(Years=(ta9["Days"]/365.25))
+ta9 = ta9.set_index(["Previous_End_Reason", "Years"])[["Count", "Pct"]].sort_index().stack().unstack([1, 2])
+ta9 = ta9.sort_values((6, "Count"), ascending=False)
+ta9 = ta9.rename(columns={"Count": "n", "Pct": "%"})
+with pd.option_context("display.float_format", "{:,.1f}".format):
+    display(ta9)
+excel_output["Table A.9: Cumulative returns at a sample of time periods by preceding exit reasons"] = ta9
+```
+
+### Table A.10: Descriptive statistics for durations before returning by preceding end reason
+
+```{python}
+ta10_data = (dpw_rt_starts.loc[dpw_rt_starts["gap"].notna(), ["route_id", "o_cli_id"]]
+            .assign(Days=dpw_rt_starts["gap"].dt.days.astype("Int64"),
+                    Years=dpw_rt_starts["gap"].dt.days / 365.25,
+                    prev_rt_end_cat=dpw_rt_starts["prev_pl_end_reason"].map(routes.get_end_cats_map())))
+percentiles = [0.1, 0.5, 0.9]
+ta10 = ta10_data.groupby("prev_rt_end_cat")[["Days", "Years"]].describe(percentiles=percentiles).sort_values(("Days", "mean"))
+ta10 = ta10.astype("object")
+int_vals = {"Days": ["count", "min", "max"], "Years": ["count"]}
+float_cols = {k: ta10[k].columns.difference(v) for k, v in int_vals.items()}
+float_prec = {"Days": 1, "Years": 3}
+for dt in ["Days", "Years"]:
+    fp = float_prec[dt]
+    ta10.loc[:, (dt, float_cols[dt])] = (ta10.loc[:, (dt, float_cols[dt])].map(lambda x: f"{x:,.{fp}f}"))
+    ta10.loc[:, (dt, int_vals[dt])] = (ta10.loc[:, (dt, int_vals[dt])].map(lambda x: f"{x:,.0f}"))
+ta10 = (
+    ta10.T.reindex((a, b)
+                    for a in ["Years", "Days"]
+                    for b in [x for x in ta10["Days"].columns if x != "count"] + ["count"]).T
+    .rename(index={"50%": "median"})
+)
+ta10 = pd.concat([ta10["Years"], ta10["Days"]], keys=["Years", "Days"])
+with pd.option_context("display.float_format", "{:,.1f}".format):
+    display(ta10)
+excel_output["Table A.10: Descriptive statistics for durations before returning by preceding end reason"] = ta10
+```
+
+### Table A.11: Descriptive statistics for backward moves within routes by end reason
+
+```{python}
+import numpy as np
+dpw_moves = dpw_pls[dpw_pls["prev_svc_id"].notnull() & (dpw_pls["prev_svc_id"] != dpw_pls["svc_id"])]
+dpw_moves["level_diff"] = dpw_moves[["prev_pathway_level", "pathway_level"]].astype("Int64").diff(axis=1)["pathway_level"]
+dpw_moves["level_dir"] = dpw_moves["level_diff"].apply(np.sign).map({-1: "backwards", 0: "sideways", 1: "forwards"})
+dpw_no_moves = dpw_pls[~dpw_pls["vac_id"].isin(dpw_moves["vac_id"])].assign(level_diff=pd.NA, level_dir=pd.NA)
+dpw_pls_with_moves = pd.concat([dpw_moves, dpw_no_moves])
+ta11_people = (dpw_pls_with_moves.groupby(["o_cli_id"])["level_dir"]
+               .apply(lambda x: (x == "backwards").sum())
+               .agg({
+                        "1+ backwards %": lambda x: 100 * (x > 0).sum()/x.count(),
+                        "mean backwards": "mean",
+                        "std_dev": "std",
+                        "max": "max",
+                        "n": "count"})
+               .rename("all people")
+               .to_frame().T
+               )
+ta11_routes = (dpw_pls_with_moves.groupby(["route_id"])["level_dir"]
+               .apply(lambda x: (x == "backwards").sum())
+               .agg(**{
+                        "1+ backwards %": lambda x: 100 * (x > 0).sum()/x.count(),
+                        "mean backwards": "mean",
+                        "std_dev": "std",
+                        "max": "max",
+                        "n": "count"})
+               .rename("all routes")
+               .to_frame().T
+               )
+ta11 = (dpw_pls_with_moves.groupby(["rt_end_cat", "route_id"])["level_dir"]
+        .apply(lambda x: (x == "backwards").sum())
+        .groupby("rt_end_cat")
+        .agg(**{
+                 "1+ backwards %": lambda x: 100 * (x > 0).sum()/x.count(),
+                 "mean backwards": "mean",
+                 "std_dev": "std",
+                 "max": "max",
+                 "n": "count"})
+        .sort_values("1+ backwards %"))
+ta11 = pd.concat([ta11, ta11_routes, ta11_people])
+with pd.option_context("display.float_format", "{:,.3f}".format):
+    display(ta11)
+excel_output["Table A.11: Descriptive statistics for backward moves within routes by end reason"] = ta11
+```
+
+## Tables in an Excel file
+
+```{python}
+#| output: asis
+import os
+sheetname = "Sheet1"
+qmdfile = os.getenv("QUARTO_DOCUMENT_FILE")
+filename = "img_output/"+qmdfile[:-4]+".xlsx"
+with pd.ExcelWriter(filename) as writer:
+    next_row = 0
+    for k, v in excel_output.items():
+        pd.DataFrame([k]).to_excel(writer, sheet_name=sheetname, header=False, index=False, startrow=next_row)
+        next_row += 1
+        v.to_excel(writer, sheet_name=sheetname, startrow=next_row, float_format="%.1f")
+        next_row += (
+            (1 if not isinstance(v.columns, pd.MultiIndex) else 1 + len(v.columns.levels))
+            + len(v) + 1)
+print(f"[Excel file](./{filename})")
+```

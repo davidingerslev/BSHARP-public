@@ -253,6 +253,142 @@ pass
 
 <sup>Note: Data table is Table A.8. Figure B.1 shows return and eligible exit counts per end reason.</sup>
 
+### Figure B.1: Number of returns at periods of time after eligible exits by end reason
+
+```{python}
+#| output: false
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import seaborn.objects as so
+sns.set_theme()
+periodMult = {"d": 1, "m": 365.25/12, "y": 365.25}
+periodYears = {x: int(x[:-1]) * periodMult[x[-1]] / periodMult["y"] for x in distinct_pathways.stable_offsets.keys()}
+plotdata = (
+    ta8_periods.unstack(0).loc[["Eligible (n)", "Returned (n)"]].T.reset_index(1)
+    .assign(Yes=lambda x: x["Returned (n)"], No=lambda x: x["Eligible (n)"])[["End reason", "Yes", "No"]]
+    .assign(years=lambda x: x.index.map(periodYears))
+)
+zeroes = pd.DataFrame({"End reason": ta8_n.index, "Yes": 0, "No": ta8_n[("outcomes", "n")].values, "years": 0},
+                      index=[""] * len(ta8_n))
+plotdata = pd.concat([zeroes, plotdata])
+facet_order = ta8_n.index.to_list()
+plotdata = (plotdata.reset_index().set_index(["index", "years", "End reason"]).stack().reset_index()
+            .rename(columns={"level_3": "Returned", 0: "n"}))
+fig = plt.figure(figsize=[7.2, 4.1])
+p = (
+    so.Plot(data=plotdata, y="n", x="years", color="Returned", text="index")
+    .facet("End reason", wrap=4, order=facet_order)
+    .label(x="", y="")
+    .add(so.Dot(), so.Stack(), legend=False)
+    .add(so.Line(), so.Stack(), legend=False)
+    .add(so.Area(edgewidth=0), so.Stack(), legend=False)
+    .limit(x=(0, 5), y=(0, None))
+    .scale(x=(so.Continuous()
+              .tick(every=1, minor=0)
+              .label(like=lambda x, pos: f"{x:.0f}" if x != 5 else "5y")),
+           y=so.Continuous().tick(minor=3))
+    # .scale(x=so.Continuous().tick(every=5, minor=4).label(unit=("", "y")), y=so.Continuous().tick(minor=3))
+    .theme({"axes.grid.which": "both"})
+    .layout(size=(7.2, 4.1), engine="constrained")
+    .on(fig)
+)
+colours = sns.color_palette(as_cmap=False)
+Y = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="$\mathregular{n_{returned}}$")
+N = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="$\mathregular{n_{eligible}}$")
+fig.legend(loc="lower right", handles=[N, Y])
+fig_b_1 = "img_output/Figure_B.1.svg"
+p.save(fig_b_1)
+pass
+```
+
+![](`{python} fig_b_1`)
+
+Figure B.1 shows eligible exits and returns, highlighting the effect of lower numbers of
+eligible exits over longer time periods. Figure 4.9 is derived from this set of charts by
+dividing the number of returns by the number of eligible exits, i.e. normalising by *n*<sub>eligible</sub>,
+to show the proportions of returns at different times after exits for different end reasons.
+
+### Figure B.2: Number of returns (cumulative) by time since exits for preceding end reasons
+
+```{python}
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import seaborn.objects as so
+from python_scripts import routes
+hist_data = ((dpw_rt_starts.loc[dpw_rt_starts["gap"].notna(), "gap"].dt.days.astype("float64")).rename("Days").to_frame()
+             .assign(Previous_End_Reason=dpw_rt_starts["prev_pl_end_reason"].map(routes.get_end_cats_map())))
+plotdata = hist_data.groupby(["Previous_End_Reason", "Days"]).size().rename("Count").groupby("Previous_End_Reason").cumsum().to_frame()
+max_counts = (plotdata.reset_index().groupby("Previous_End_Reason")["Count"].max()
+              .to_frame().assign(Days=plotdata.reset_index()["Days"].max())
+              .set_index("Days", append=True))
+plotdata = pd.concat([plotdata, max_counts]).reset_index().drop_duplicates().set_index(["Previous_End_Reason", "Days"])
+markers = []
+for x_val in [x * 365.25 for x in [0.5, 1, 2, 3, 4]]:
+    markers = markers + [(hist_data.groupby("Previous_End_Reason")["Days"].agg(lambda x: (x <= x_val).sum())
+                         .rename("Count").to_frame().assign(Days=x_val).set_index("Days", append=True))]
+markers = pd.concat(markers)
+markers = markers.assign(Pct=(100 * markers / max_counts.droplevel("Days")).map(lambda x: f"{x:.0f}%"))
+zeroes = pd.DataFrame(plotdata.index.levels[0]).assign(Days=0, Count=0, Marker=False).set_index(["Previous_End_Reason", "Days"])
+plotdata = pd.concat([zeroes, plotdata.assign(Pct="", Marker=False), markers.assign(Marker=True)])
+facet_order=hist_data["Previous_End_Reason"].value_counts().index.to_list()
+figs = []
+for y_max, y_tick, suffix, fig in [(None, 150, "", "Figure_B.2_a"), (100, 25, " (zoomed)", "Figure_B.2_b")]:
+    limits = {"x": (0, hist_data["Days"].max()), "y": (None, y_max)}
+    markers_max = y_max if y_max is not None else markers["Count"].max()
+    markers_data = plotdata[plotdata["Marker"] & (plotdata["Count"] < markers_max)]
+    p = (
+        so.Plot(data=plotdata, x="Days", y="Count")
+        .label(x="", y="")
+        .add(so.Area(edgewidth=0))
+        .add(so.Line())
+        .scale(x=so.Continuous().tick(every=365.25).label(like=lambda x, y: f"{x/365.25:.0f}"),
+            y=so.Continuous().tick(every=y_tick))
+        .limit(x=limits["x"], y=limits["y"])
+        .layout(size=(7.2, 4.1), engine="constrained")
+        .facet(col="Previous_End_Reason", wrap=4, order=facet_order)
+    )
+    p.save(f"img_output/{fig}.svg")
+    figs.append(f"img_output/{fig}.svg")
+extrafigs = []
+for y_max, y_tick, suffix, plotdata, markers in [(None,
+                                                  5,
+                                                  " (social or private)",
+                                                  plotdata.loc[["To private rented", "To social housing"]].reset_index().set_index(["Previous_End_Reason", "Days"]),
+                                                  markers.loc[["To private rented", "To social housing"]].reset_index().set_index(["Previous_End_Reason", "Days"]))]:
+    limits = {"x": (0, hist_data["Days"].max()), "y": (None, y_max)}
+    markers_max = y_max if y_max is not None else markers["Count"].max()
+    markers_data = plotdata[plotdata["Marker"] & (plotdata["Count"] < markers_max)]
+    p = (
+        so.Plot(data=plotdata, x="Days", y="Count")
+        .label(x="Preceding gap in years", y="Returns (cumulative count)")
+        .add(so.Area(edgewidth=0))
+        .add(so.Line())
+        # .add(so.Dot(pointsize=4.5), data=markers_data)
+        # .add(so.Text({"clip_on": False}, fontsize=7, halign="left", valign="top", offset=2), data=markers_data, text="Pct")
+        .scale(x=so.Continuous().tick(every=365.25).label(like=lambda x, y: f"{x/365.25:.0f}"),
+            y=so.Continuous().tick(every=y_tick))
+        .limit(x=limits["x"], y=limits["y"])
+        .layout(size=(7.2, 4.1), engine="constrained")
+        .facet(col="Previous_End_Reason")
+    )
+    p.save("img_output/Figure_B.3.svg")
+    extrafigs.append("img_output/Figure_B.3.svg")
+```
+
+![](`{python} figs[0]`)
+
+Increased y-scale (zoomed-in)
+
+![](`{python} figs[1]`)
+
+### Extra figure: Number of returns (cumulative) by time since exits for social and private rented housing outcomes
+
+Further increased y-scale (zoomed-in to maximum)
+
+![](`{python} extrafigs[0]`)
+
 ## Tables in an Excel file
 
 ```{python}

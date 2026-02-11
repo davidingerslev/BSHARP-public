@@ -1,0 +1,947 @@
+---
+title: "4.1 Results - Table A.1"
+date: 2026-02-11
+warning: false
+---
+
+```{python}
+# Setup code
+import pandas as pd
+from python_scripts import setup
+from python_scripts import services
+from python_scripts import helper
+df, dffp = setup.setup(verbose=False)
+
+from python_scripts import distinct_pathways
+dpw_pls = distinct_pathways.get_distinct_pathways_routes(dffp)
+qrows = dpw_pls["rt_end_cat"] == "[Not ended or invalid end reason]"
+dpw_pls.loc[qrows, "rt_end_cat"] = dpw_pls.loc[qrows, "pl_end_dt"].isna().map({True: "[Not ended]", False: "Missing data/error"})
+dpw_pls["rt_end_cat"] = dpw_pls["rt_end_cat"].str.replace("To care/hosp.", "To care/hospital")
+dpw_rt_starts = dpw_pls.groupby("route_id").head(1)
+dpw_rt_ends = dpw_pls.groupby("route_id").tail(1)
+dpw_clis = dpw_pls.groupby(["o_cli_id"]).head(1)  # 1 duplicate client but first entry has more detailed answers
+
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.rcParams.update({
+    'figure.figsize': (6.2, 4.1),
+    'font.size': 12,
+    'figure.constrained_layout.use': True
+})
+
+excel_output = {}
+
+datelist = list((
+    (
+        distinct_pathways.dpw_start_dt +
+        i * (distinct_pathways.dpw_end_dt - distinct_pathways.dpw_start_dt)/5
+    ).round("d") for i in range(1, 6)
+))  # 6 dates between start and end (inclusive): 3 Octobers, 3 Aprils.
+dpw_snapshots = pd.concat(helper.get_snapshot(dpw_pls, d).assign(snapshot_dt=d.strftime("%Y-%m-%d")) for d in datelist)
+dpw_snapshots = pd.concat([dpw_clis.assign(snapshot_dt="Longitudinal"), dpw_snapshots])
+characteristics = {}
+```
+
+## Additional Tables
+
+### Table A.1: Individual characteristics of BAHSA population with comparable reference data 
+
+#### Approximate age
+```{python}
+ref = {"<18": 1, "18-25": 14, "26-39": 36, "40-64": 46, ">=65": 3}
+ref_n = 1044
+comp_dt = dpw_snapshots.snapshot_dt
+comp_dt[dpw_snapshots.snapshot_dt == "Longitudinal"] = dpw_snapshots.pl_start_dt
+comp_dt = comp_dt.astype("datetime64[ns]")
+chr = dpw_snapshots.assign(
+    age_cat=helper.age_cats_bgp(comp_dt.dt.year - dpw_snapshots.yob)
+)[["snapshot_dt", "age_cat"]]
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+if n.index.isna().sum() != 0: pct.loc["<NA> (n)", :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc["Total (n)",:] = n.sum().map(lambda x: f"{x:,.0f}")
+pct = pct.assign(Ref_HSH=list(f"{x}%" for x in ref.values()) + [f"{ref_n:,}"])
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Ages"] = pct
+display(pct)
+```
+
+#### Gender
+```{python}
+ref = {"Female": 22, "Male": 76, "Non-binary": 0, "Other": 1}
+ref_n = 1044
+chr = dpw_snapshots[["snapshot_dt", "gender"]]
+chr.gender = chr.gender.cat.reorder_categories(["Female", "Male", "Non-Binary", "Other", "Transgender", "Prefer not to say", "Don't Know"])
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+if n.index.isna().sum() != 0: pct.loc["<NA> (n)", :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc["Total (n)",:] = n.sum().map(lambda x: f"{x:,.0f}")
+pct = pct.assign(Ref_HSH=list(f"{x}%" for x in ref.values()) + ["-"]*4 + [f"{ref_n:,}"])
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Gender"] = pct
+display(pct)
+```
+
+#### Global majority background
+```{python}
+from collections import defaultdict
+ref = {"Yes": 16, "No": 82, "Don't know": 2}
+ref_n = 1044
+chr = dpw_snapshots[["snapshot_dt", "ethnicity"]]
+chr["global_majority"] = chr["ethnicity"].map(defaultdict(
+                                              lambda: "Yes",
+                                              {
+                                                "English/Welsh/Scottish/Northern Irish/British": "No",
+                                                "White British": "No",
+                                                "White Other Origin": "No",
+                                                "Any other White background": "No",
+                                                "White European": "No",
+                                                "Eastern European": "No",
+                                                "Turkish": "No",
+                                                "White Irish": "No",
+                                                "Irish": "No",
+                                                "White Gypsy/Irish Traveller": "No",
+                                                "Gypsy (inc English, Scottish or Roma Gypsy) or Irish Traveller": "No",
+                                                "Don't know": "Don't know",
+                                                "Prefer not to say": "Don't know",
+                                                "Refused to answer question": "Don't know"
+                                              }))
+chr = chr.drop("ethnicity", axis=1)
+chr["global_majority"] = chr["global_majority"].astype("category").cat.reorder_categories(["Yes", "No", "Don't know"])
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+if n.index.isna().sum() != 0: pct.loc["<NA> (n)", :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc["Total (n)",:] = n.sum().map(lambda x: f"{x:,.0f}")
+pct = pct.assign(Ref_HSH=list(f"{x}%" for x in ref.values()) + ["-"] +[f"{ref_n:,}"])
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Global Majority"] = pct
+display(pct)
+```
+
+#### Ethnicity
+```{python}
+import numpy as np
+chr = dpw_snapshots[["snapshot_dt", "ethnicity"]]
+cats = chr["ethnicity"].cat.categories
+cat_map = {
+    "White British": [
+        "English/Welsh/Scottish/Northern Irish/British"
+    ],
+    "Unknown": [
+        "Don't know",
+        "Prefer not to say",
+        "Refused to answer question"
+    ],
+    "Black/Black British - African": [
+        "African (non Somali)",
+        "Somali",
+        "Black/Black British - Somali",
+        "Black or Black British Ghanaian"
+    ],
+    "Black/Black British - Caribbean": [
+        "Caribbean"
+    ],
+    "White Other": [
+        "White Other Origin",
+        "Any other White background",
+        "White Irish",
+        "Irish",
+        "White European",
+        "Eastern European",
+        "Turkish"
+    ],
+    "Mixed/Dual Heritage - White+Black Caribbean": [
+        "White and Black Caribbean"
+    ],
+    "Black/Black British - Other": [
+        "Black/Black British - Other",
+        "Any other Black/African/Caribbean background"
+    ],
+    "Arab": [
+        "Iranian",
+        "Iraqi",
+    ],
+    "Asian/Asian British": [
+        "Asian/Asian British - Other",
+        "Pakistani",
+        "Bangladeshi",
+        "Asian/Asian British - Chinese",
+        "Asian/Asian British - Bangladeshi",
+        "Asian/Asian British - Indian",
+        "Indian",
+        "Asian/Asian British - Asian African",
+        "Chinese",
+        "Asian/Asian British - Pakistani",
+        "Asian or Asian British Sri Lankan",
+        "Any other Asian background",
+    ],
+    "Any other Mixed/multiple ethnic background": [
+        "Mixed/Dual Heritage - White+Asian",
+        "Mixed/Dual Heritage - Other",
+        "White and Asian",
+        "Mixed/Dual Heritage - White+Chinese"
+    ],
+    "Mixed/Dual Heritage - White+Black African": [
+        "White and Black African (non Somali)"
+    ],
+    "Other": [
+        "Any other ethnic group",
+        "Kurdish"
+    ],
+    "White Gypsy/Irish Traveller": [
+        "Gypsy (inc English, Scottish or Roma Gypsy) or Irish Traveller"
+    ]
+}
+mapper = {k:v for v,k in pd.Series(cat_map).explode().items()}
+chr["ethnicity"] = chr["ethnicity"].replace(mapper).astype("string").astype("category")
+cat_grp_map = {
+    "White": [
+        "White British",
+        "White Other",
+        "White Gypsy/Irish Traveller",
+    ],
+    "Black": [
+        "Black/Black British - African",
+        "Black/Black British - Caribbean",
+        "Black/Black British - Other",
+    ],
+    "Mixed Heritage": [
+        "Mixed/Dual Heritage - White+Black African",
+        "Mixed/Dual Heritage - White+Black Caribbean",
+        "Any other Mixed/multiple ethnic background",
+    ]
+}
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+for tbl in [n, pct]:
+    mapper = {k:v for v,k in pd.Series(cat_grp_map).explode().items()}
+    idx = tbl.index.to_frame()
+    idx.insert(0, 'eth_grp', idx.ethnicity.replace(mapper))
+    tbl.index = pd.MultiIndex.from_frame(idx.astype("string"), names=["Ethnicity",None])
+pct = pct.sort_values("Longitudinal", ascending=False)
+grp = pct.groupby(level=0)
+grp_sum = grp.sum().sort_values("Longitudinal", ascending=False)
+idx = grp_sum.index.to_frame()
+idx.insert(1, None, '')
+grp_sum.index = pd.MultiIndex.from_frame(idx)
+pct = pd.concat([grp_sum, pct])
+pct = pct[pct.index.get_level_values(0).isin(grp.size()[lambda x: x > 1].index) | (pct.index.get_level_values(1) == "")]
+grp_order = [i for i in grp_sum.index.get_level_values(0) if i != "Unknown"] + ["Unknown"]
+pct = pct.sort_index(level=0, key=lambda x: x.map(grp_order.index), sort_remaining=False)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct.loc[("<NA> (n)", ""), :] = n.loc[n.index.get_level_values(0).isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc[("Total (n)", ""), :] = n.sum().map(lambda x: f"{x:,.0f}")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Ethnicity"] = pct
+display(pct)
+```
+
+#### Experiences (risk: ever)
+```{python}
+from collections import defaultdict
+ref = {
+    "Offending": 54,
+    "<NA> 1": pd.NA,
+    "<NA> 2": pd.NA,
+    "Domestic abuse": 26,
+    "Women: domestic abuse": 61,
+    "<NA> 3": pd.NA,
+    "<NA> 4": pd.NA,
+    "<NA> 5": pd.NA,
+    "<NA> 6": pd.NA,
+    "<NA> 7": pd.NA,
+    "<NA> 8": pd.NA,
+    "<NA> 9": pd.NA,
+    "Long-term/repeat homelessness": 19,
+    "Looked-after-child": 12,
+}
+ref_n = 1044
+# chr = dpw_snapshots[["snapshot_dt", "risk_crime_yn", "hsn_risk_of_violenceabuse_victim", "gender", "hsn_rough_sleeper", "hsn_care_leaver"]]
+chr = dpw_snapshots["snapshot_dt"].to_frame()
+risk_rows = []
+chr["Criminal conviction/investigation"] = (
+    dpw_snapshots["risk_crime_yn"].eq("Yes").mask(dpw_snapshots["risk_crime_yn"].isna()))
+risk_rows.append("Criminal conviction/investigation")
+chr["Been violent or discriminatory"] = (
+    dpw_snapshots["risk_violence_hatecrime_yn"].eq("Yes").mask(dpw_snapshots["risk_violence_hatecrime_yn"].isna()))
+risk_rows.append("Been violent or discriminatory")
+chr["Prison leaver, probation or offending"] = dpw_snapshots["hsn_prison_leaveron_probationrisk_of_offending"]
+chr["Domestic abuse (victim)"] = dpw_snapshots["hsn_risk_of_violenceabuse_victim"]
+chr["Women: domestic abuse (victim)"] = (
+    dpw_snapshots["hsn_risk_of_violenceabuse_victim"].where(dpw_snapshots["gender"] == "Female"))
+chr["Men: domestic abuse (victim)"] = (
+    dpw_snapshots["hsn_risk_of_violenceabuse_victim"].where(dpw_snapshots["gender"] == "Male"))
+chr["Sexual abuse/assault (perpetrator)"] = (
+    dpw_snapshots["risk_sexual_yn"].eq("Yes").mask(dpw_snapshots["risk_sexual_yn"].isna()))
+risk_rows.append("Sexual abuse/assault (perpetrator)")
+chr["Women: Sexual abuse/assault (perpetrator)"] = (
+    dpw_snapshots["risk_sexual_yn"].eq("Yes").mask(dpw_snapshots["risk_sexual_yn"].isna())).where(dpw_snapshots["gender"] == "Female")
+risk_rows.append("Women: Sexual abuse/assault (perpetrator)")
+chr["Men: Sexual abuse/assault (perpetrator)"] = (
+    dpw_snapshots["risk_sexual_yn"].eq("Yes").mask(dpw_snapshots["risk_sexual_yn"].isna())).where(dpw_snapshots["gender"] == "Male")
+risk_rows.append("Women: Sexual abuse/assault (perpetrator)")
+chr["Domestic abuse (perpetrator)"] = dpw_snapshots["hsn_risk_of_violenceabuse_perpetrator"]
+chr["Women: Domestic abuse (perpetrator)"] = dpw_snapshots["hsn_risk_of_violenceabuse_perpetrator"].where(dpw_snapshots["gender"] == "Female")
+chr["Men: Domestic abuse (perpetrator)"] = dpw_snapshots["hsn_risk_of_violenceabuse_perpetrator"].where(dpw_snapshots["gender"] == "Male")
+chr["<NA> 1"] = -1
+chr["Care leaver"] = dpw_snapshots["hsn_care_leaver"]
+chr["Rough sleeping"] = dpw_snapshots["hsn_rough_sleeper"]
+chr["Self harmed or attempted suicide"] = (
+    dpw_snapshots["risk_suicide_selfharm_yn"].eq("Yes").mask(dpw_snapshots["risk_suicide_selfharm_yn"].isna()))
+risk_rows.append("Self harmed or attempted suicide")
+chr["Suicide attempts"] = dpw_snapshots["hsn_suicide_attempts"]
+chr["Self harm"] = dpw_snapshots["hsn_self_harm"]
+chr["Risk of exploitation"] = dpw_snapshots["hsn_risk_of_exploitation"]
+chr["Setting fires"] = (
+    dpw_snapshots["risk_fire_yn"].eq("Yes").mask(dpw_snapshots["risk_fire_yn"].isna()))
+risk_rows.append("Setting fires")
+chr["Refugee"] = dpw_snapshots["hsn_refugee"]
+chr["Sex working"] = dpw_snapshots["hsn_sex_working"]
+chr["Women: sex working"] = dpw_snapshots["hsn_sex_working"].where(dpw_snapshots["gender"] == "Female")
+chr["Men: sex working"] = dpw_snapshots["hsn_sex_working"].where(dpw_snapshots["gender"] == "Male")
+chr["Total (n)"] = 1
+n = chr.groupby("snapshot_dt", sort=False).sum().T
+pct = chr.groupby("snapshot_dt", sort=False).apply(lambda x: x.sum()/x.count()).T
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+pct.loc["Total (n)"] = n.loc["Total (n)"].map(lambda x: f"{x:,.0f}")
+pct.columns = pct.columns.astype("string")
+pct.insert(0, "Src", "S")
+pct.loc[risk_rows, "Src"] = "R"
+pct[pct.index.str.startswith("<NA>")] = "-"
+ref_df = pd.DataFrame(
+    data=list((f"{v}%", k) for (k, v) in ref.items()) + [(pd.NA, "<NA>")] * 10 + [(f"{ref_n:,}", "")],
+    columns=["Ref_HSH", "Ref_HSH cat"],
+    index=pct.index)
+ref_df[ref_df["Ref_HSH cat"].str.startswith("<NA>")] = "-"
+pct = pd.concat([pct, ref_df], axis=1)
+characteristics["Experiences"] = pct
+display(pct)
+```
+
+#### Experiences (current)
+```{python}
+from collections import defaultdict
+ref = {
+    "Offending": 54,
+    "<NA> 1": pd.NA,
+    "<NA> 2": pd.NA,
+    "Domestic abuse": 26,
+    "Women: domestic abuse": 61,
+    "<NA> 3": pd.NA,
+    "<NA> 4": pd.NA,
+    "<NA> 5": pd.NA,
+    "<NA> 6": pd.NA,
+    "<NA> 7": pd.NA,
+    "<NA> 8": pd.NA,
+    "<NA> 9": pd.NA,
+    "Long-term/repeat homelessness": 19,
+    "Looked-after-child": 12,
+}
+ref_n = 1044
+# chr = dpw_snapshots[["snapshot_dt", "risk_crime_current", "hsn_risk_of_violenceabuse_victim", "gender", "hsn_rough_sleeper", "hsn_care_leaver"]]
+chr = dpw_snapshots["snapshot_dt"].to_frame()
+risk_rows = []
+chr["Criminal conviction/investigation"] = (
+    dpw_snapshots["risk_crime_current"].eq("Current Risk").mask(dpw_snapshots["risk_crime_yn"].isna()))
+risk_rows.append("Criminal conviction/investigation")
+chr["Been violent or discriminatory"] = (
+    dpw_snapshots["risk_violence_hatecrime_current"].eq("Current Risk").mask(dpw_snapshots["risk_violence_hatecrime_yn"].isna()))
+risk_rows.append("Been violent or discriminatory")
+chr["Prison leaver, probation or offending"] = dpw_snapshots["hsn_prison_leaveron_probationrisk_of_offending"]
+chr["Domestic abuse (victim)"] = dpw_snapshots["hsn_risk_of_violenceabuse_victim"]
+chr["Women: domestic abuse (victim)"] = (
+    dpw_snapshots["hsn_risk_of_violenceabuse_victim"].where(dpw_snapshots["gender"] == "Female"))
+chr["Men: domestic abuse (victim)"] = (
+    dpw_snapshots["hsn_risk_of_violenceabuse_victim"].where(dpw_snapshots["gender"] == "Male"))
+chr["Sexual abuse/assault (perpetrator)"] = (
+    dpw_snapshots["risk_sexual_current"].eq("Current Risk").mask(dpw_snapshots["risk_sexual_yn"].isna()))
+risk_rows.append("Sexual abuse/assault (perpetrator)")
+chr["Women: Sexual abuse/assault (perpetrator)"] = (
+    dpw_snapshots["risk_sexual_current"].eq("Current Risk").mask(dpw_snapshots["risk_sexual_yn"].isna())).where(dpw_snapshots["gender"] == "Female")
+risk_rows.append("Women: Sexual abuse/assault (perpetrator)")
+chr["Men: Sexual abuse/assault (perpetrator)"] = (
+    dpw_snapshots["risk_sexual_current"].eq("Current Risk").mask(dpw_snapshots["risk_sexual_yn"].isna())).where(dpw_snapshots["gender"] == "Male")
+risk_rows.append("Women: Sexual abuse/assault (perpetrator)")
+chr["Domestic abuse (perpetrator)"] = dpw_snapshots["hsn_risk_of_violenceabuse_perpetrator"]
+chr["Women: Domestic abuse (perpetrator)"] = dpw_snapshots["hsn_risk_of_violenceabuse_perpetrator"].where(dpw_snapshots["gender"] == "Female")
+chr["Men: Domestic abuse (perpetrator)"] = dpw_snapshots["hsn_risk_of_violenceabuse_perpetrator"].where(dpw_snapshots["gender"] == "Male")
+chr["<NA> 1"] = -1
+chr["Care leaver"] = dpw_snapshots["hsn_care_leaver"]
+chr["Rough sleeping"] = dpw_snapshots["hsn_rough_sleeper"]
+chr["Self harmed or attempted suicide"] = (
+    dpw_snapshots["risk_suicide_selfharm_current"].eq("Current Risk").mask(dpw_snapshots["risk_suicide_selfharm_yn"].isna()))
+risk_rows.append("Self harmed or attempted suicide")
+chr["Suicide attempts"] = dpw_snapshots["hsn_suicide_attempts"]
+chr["Self harm"] = dpw_snapshots["hsn_self_harm"]
+chr["Risk of exploitation"] = dpw_snapshots["hsn_risk_of_exploitation"]
+chr["Setting fires"] = (
+    dpw_snapshots["risk_fire_current"].eq("Current Risk").mask(dpw_snapshots["risk_fire_yn"].isna()))
+risk_rows.append("Setting fires")
+chr["Refugee"] = dpw_snapshots["hsn_refugee"]
+chr["Sex working"] = dpw_snapshots["hsn_sex_working"]
+chr["Women: sex working"] = dpw_snapshots["hsn_sex_working"].where(dpw_snapshots["gender"] == "Female")
+chr["Men: sex working"] = dpw_snapshots["hsn_sex_working"].where(dpw_snapshots["gender"] == "Male")
+chr["Total (n)"] = 1
+n = chr.groupby("snapshot_dt", sort=False).sum().T
+pct = chr.groupby("snapshot_dt", sort=False).apply(lambda x: x.sum()/x.count()).T
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+pct.loc["Total (n)"] = n.loc["Total (n)"].map(lambda x: f"{x:,.0f}")
+pct.columns = pct.columns.astype("string")
+pct.insert(0, "Src", "S")
+pct.loc[risk_rows, "Src"] = "R"
+pct[pct.index.str.startswith("<NA>")] = "-"
+ref_df = pd.DataFrame(
+    data=list((f"{v}%", k) for (k, v) in ref.items()) + [(pd.NA, "<NA>")] * 10 + [(f"{ref_n:,}", "")],
+    columns=["Ref_HSH", "Ref_HSH cat"],
+    index=pct.index)
+ref_df[ref_df["Ref_HSH cat"].str.startswith("<NA>")] = "-"
+pct = pd.concat([pct, ref_df], axis=1)
+characteristics["Experiences"] = pct
+display(pct)
+```
+
+#### Disabilities or conditions (ever)
+```{python}
+from collections import defaultdict
+ref = {
+    "Physical or sensory": 15,
+    "<NA> 1": pd.NA,
+    "<NA> 2": pd.NA,
+    "Mental illness": 53,
+    "Learning disability": 8,
+    "Other long-term health": 22,
+    "<NA> 3": pd.NA,
+    "<NA> 4": pd.NA,
+    "Substance use": 50,
+    "<NA> 5": pd.NA,
+    "Autistic spectrum disorder": 3,
+    "<NA> 6": pd.NA,
+}
+ref_n = 1044
+chr = dpw_snapshots["snapshot_dt"].to_frame()
+chr["Physical health"] = dpw_snapshots["hsn_physical_health"]
+chr["Physical health concerns"] = (
+    dpw_snapshots["risk_physical_health_yn"].eq("Yes").mask(dpw_snapshots["risk_physical_health_yn"].isna()))
+chr["Mental health"] = dpw_snapshots["hsn_mental_health"]
+chr["Mental health concerns"] = (
+    dpw_snapshots["risk_mental_health_yn"].eq("Yes").mask(dpw_snapshots["risk_mental_health_yn"].isna()))
+chr["Learning disabilities"] = dpw_snapshots["hsn_learning_disabilities"]
+chr["<NA> 1"] = -1
+chr["Drug use"] = dpw_snapshots["hsn_drug_use"]
+chr["Alcohol use"] = dpw_snapshots["hsn_alcohol_use"]
+chr["Drug use or Alcohol use"] = dpw_snapshots["hsn_drug_use"] | dpw_snapshots["hsn_alcohol_use"]
+chr["Drug use"] = dpw_snapshots["hsn_drug_use"]
+chr["Alcohol use"] = dpw_snapshots["hsn_alcohol_use"]
+chr["Use/used drugs or alcohol"] = (
+    dpw_snapshots["risk_drugs_alcohol_yn"].eq("Yes").mask(dpw_snapshots["risk_drugs_alcohol_yn"].isna()))
+chr["<NA> 2"] = -1
+chr["Considers self disabled"] = (
+    dpw_snapshots["considers_self_disabled"].eq("Yes").mask(dpw_snapshots["considers_self_disabled"].isna()))
+for row in ["Physical health", "Physical health concerns", "Mental health", "Mental health concerns", "Learning disabilities"]:
+    chr["Considers self disabled: " + row] = (
+        (chr["Considers self disabled"] & chr[row])
+        .mask(chr[["Considers self disabled", row]].isna().any(axis=1)))
+chr["Considers self disabled: physical health concerns"] = chr["Considers self disabled"] & chr["Physical health concerns"]
+chr["R <N/A> (n)"] = dpw_snapshots["risk_mental_health_yn"].isna()
+chr["S <N/A> (n)"] = dpw_snapshots["hsn_mental_health"].isna()
+chr["Total (n)"] = 1
+n = chr.groupby("snapshot_dt", sort=False).sum().T
+pct = chr.groupby("snapshot_dt", sort=False).apply(lambda x: x.sum()/x.count()).T
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct[pct.index.str.contains("(n)", regex=False)] = n.loc[n.index.str.contains("(n)")].map(lambda x: f"{x:,.0f}")
+pct.insert(0, "Src", "S")
+pct.loc[["Physical health concerns", "Mental health concerns", "Use/used drugs or alcohol", "Considers self disabled"], "Src"] = "R"
+pct[pct.index.str.startswith("<NA>")] = "-"
+ref_df = pd.DataFrame(
+    data=list((f"{v}%", k) for (k, v) in ref.items()) + [("<NA>", "<NA>")] * 8 + [(f"{ref_n:,}", "")],
+    columns=["Ref_HSH", "Ref_HSH cat"],
+    index=pct.index)
+ref_df[ref_df["Ref_HSH cat"].str.startswith("<NA>")] = "-"
+pct = pd.concat([pct, ref_df], axis=1)
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Disabilities/conditions"] = pct
+display(pct)
+```
+
+#### Disabilities or conditions (current)
+```{python}
+from collections import defaultdict
+ref = {
+    "Physical or sensory": 15,
+    "<NA> 1": pd.NA,
+    "<NA> 2": pd.NA,
+    "Mental illness": 53,
+    "Learning disability": 8,
+    "Other long-term health": 22,
+    "<NA> 3": pd.NA,
+    "<NA> 4": pd.NA,
+    "Substance use": 50,
+    "<NA> 5": pd.NA,
+    "Autistic spectrum disorder": 3,
+    "<NA> 6": pd.NA,
+}
+ref_n = 1044
+chr = dpw_snapshots["snapshot_dt"].to_frame()
+chr["Physical health"] = dpw_snapshots["hsn_physical_health"]
+chr["Physical health concerns"] = (
+    dpw_snapshots["risk_physical_health_current"].eq("Current Risk").mask(dpw_snapshots["risk_physical_health_yn"].isna()))
+chr["Mental health"] = dpw_snapshots["hsn_mental_health"]
+chr["Mental health concerns"] = (
+    dpw_snapshots["risk_mental_health_current"].eq("Current Risk").mask(dpw_snapshots["risk_mental_health_yn"].isna()))
+chr["Learning disabilities"] = dpw_snapshots["hsn_learning_disabilities"]
+chr["<NA> 1"] = -1
+chr["Drug use"] = dpw_snapshots["hsn_drug_use"]
+chr["Alcohol use"] = dpw_snapshots["hsn_alcohol_use"]
+chr["Drug use or Alcohol use"] = dpw_snapshots["hsn_drug_use"] | dpw_snapshots["hsn_alcohol_use"]
+chr["Drug use"] = dpw_snapshots["hsn_drug_use"]
+chr["Alcohol use"] = dpw_snapshots["hsn_alcohol_use"]
+chr["Use/used drugs or alcohol"] = (
+    dpw_snapshots["risk_drugs_alcohol_current"].eq("Current Risk").mask(dpw_snapshots["risk_drugs_alcohol_yn"].isna()))
+chr["<NA> 2"] = -1
+chr["Considers self disabled"] = (
+    dpw_snapshots["considers_self_disabled"].eq("Current Risk").mask(dpw_snapshots["considers_self_disabled"].isna()))
+for row in ["Physical health", "Physical health concerns", "Mental health", "Mental health concerns", "Learning disabilities"]:
+    chr["Considers self disabled: " + row] = (
+        (chr["Considers self disabled"] & chr[row])
+        .mask(chr[["Considers self disabled", row]].isna().any(axis=1)))
+chr["Considers self disabled: physical health concerns"] = chr["Considers self disabled"] & chr["Physical health concerns"]
+chr["R <N/A> (n)"] = dpw_snapshots["risk_mental_health_current"].isna()
+chr["S <N/A> (n)"] = dpw_snapshots["hsn_mental_health"].isna()
+chr["Total (n)"] = 1
+n = chr.groupby("snapshot_dt", sort=False).sum().T
+pct = chr.groupby("snapshot_dt", sort=False).apply(lambda x: x.sum()/x.count()).T
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct[pct.index.str.contains("(n)", regex=False)] = n.loc[n.index.str.contains("(n)")].map(lambda x: f"{x:,.0f}")
+pct.insert(0, "Src", "S")
+pct.loc[["Physical health concerns", "Mental health concerns", "Use/used drugs or alcohol", "Considers self disabled"], "Src"] = "R"
+pct[pct.index.str.startswith("<NA>")] = "-"
+ref_df = pd.DataFrame(
+    data=list((f"{v}%", k) for (k, v) in ref.items()) + [("<NA>", "<NA>")] * 8 + [(f"{ref_n:,}", "")],
+    columns=["Ref_HSH", "Ref_HSH cat"],
+    index=pct.index)
+ref_df[ref_df["Ref_HSH cat"].str.startswith("<NA>")] = "-"
+pct = pd.concat([pct, ref_df], axis=1)
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Disabilities/conditions"] = pct
+display(pct)
+```
+
+#### Current Severe and Multiple Disadvantage - based on risk assessment, where possible
+```{python}
+from collections import defaultdict
+ref = {
+    "SMD(3D)2-3 Current Bramley England": 5.7,
+    "SMD(3D)2-3 Current Bramley Bristol": 11.2,
+    "SMD(5D)2-5 Current BCC lo": 10.5,
+    "SMD(5D)2-5 Current BCC hi": 11.1,
+    # "SMD(5D)3-5 Ever Blood Homelessness": 366,
+}
+ref_n = 1044
+chr = dpw_snapshots["snapshot_dt"].to_frame()
+
+risk_rows = []
+cols_3d = []
+cols_5d = []
+cols_pd = []
+# Offending
+chr["Criminal conviction/investigation"] = (
+    dpw_snapshots["risk_crime_current"].eq("Current Risk").mask(dpw_snapshots["risk_crime_yn"].isna()))
+for x in [risk_rows, cols_3d, cols_5d]: x.append("Criminal conviction/investigation")
+chr["Prison leaver, probation or offending"] = dpw_snapshots["hsn_prison_leaveron_probationrisk_of_offending"]
+# Substance misuse
+chr["Use/used drugs or alcohol"] = (
+    dpw_snapshots["risk_drugs_alcohol_current"].eq("Current Risk").mask(dpw_snapshots["risk_drugs_alcohol_yn"].isna()))
+for x in [risk_rows, cols_3d, cols_5d, cols_pd]: x.append("Use/used drugs or alcohol")
+chr["Drug use or Alcohol use"] = dpw_snapshots["hsn_drug_use"] | dpw_snapshots["hsn_alcohol_use"]
+# Homelessness
+chr["Homelessness"] = True
+for x in [cols_3d, cols_5d, cols_pd]: x.append("Homelessness")
+# Domestic violence and abuse
+chr["Domestic abuse (victim)"] = dpw_snapshots["hsn_risk_of_violenceabuse_victim"]
+for x in [cols_5d, cols_pd]: x.append("Domestic abuse (victim)")
+# Mental health problems
+chr["Mental health concerns"] = (
+    dpw_snapshots["risk_mental_health_current"].eq("Current Risk").mask(dpw_snapshots["risk_mental_health_yn"].isna()))
+chr["Mental health"] = dpw_snapshots["hsn_mental_health"]
+for x in [risk_rows, cols_5d, cols_pd]: x.append("Mental health concerns")
+chr = chr.convert_dtypes()  # Use nullable booleans so that NA propogates in >=
+chr["SMD(3D)2 O/~SU/H"] = chr["Criminal conviction/investigation"] * (~chr["Use/used drugs or alcohol"]) * chr["Homelessness"]
+chr["SMD(3D)2 ~O/SU/H"] = (~chr["Criminal conviction/investigation"]) * chr["Use/used drugs or alcohol"] * chr["Homelessness"]
+chr["SMD(3D)3 O/SU/H"] = chr["Criminal conviction/investigation"] * chr["Use/used drugs or alcohol"] * chr["Homelessness"]
+chr["SMD(3D)2-3"] = (chr.loc[:, cols_3d].sum(axis=1, skipna=False) >= 2)
+chr["SMD(5D)2-5"] = (chr.loc[:, cols_5d].sum(axis=1, skipna=False) >= 2)
+chr["SMD(5D)3-5"] = (chr.loc[:, cols_5d].sum(axis=1, skipna=False) >= 3)
+chr["PD2-4"] = (chr.loc[:, cols_pd].sum(axis=1, skipna=False) >= 2)
+chr["R <N/A> (n)"] = dpw_snapshots["risk_mental_health_yn"].isna()
+chr["S <N/A> (n)"] = dpw_snapshots["hsn_mental_health"].isna()
+chr["Total (n)"] = 1
+n = chr.groupby("snapshot_dt", sort=False).sum().T
+pct = chr.groupby("snapshot_dt", sort=False).apply(lambda x: x.sum()/x.count()).T
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct[pct.index.str.contains("(n)", regex=False)] = n.loc[n.index.str.contains("(n)")].map(lambda x: f"{x:,.0f}")
+pct.insert(0, "PD", " ")
+pct.insert(0, "5D", " ")
+pct.insert(0, "3D", " ")
+pct.insert(0, "Src", "S")
+pct.loc[risk_rows, "Src"] = "R"
+pct.loc[cols_3d, "3D"] = "*"
+pct.loc[cols_5d, "5D"] = "*"
+pct.loc[cols_pd, "PD"] = "*"
+pct.loc["Homelessness", "Src"] = "1"
+pct.loc[risk_rows, "Src"] = "R"
+pct.loc["Homelessness", "Src"] = "1"
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Current SMD"] = pct
+display(pct)
+```
+
+#### Severe and Multiple Disadvantage (Ever) - based on risk assessment, where possible
+```{python}
+from collections import defaultdict
+ref = {
+    # "SMD(3D)2-3 Current Bramley England": 5.7,
+    # "SMD(3D)2-3 Current Bramley Bristol": 11.2,
+    # "SMD(5D)2-5 Current BCC lo": 10.5,
+    # "SMD(5D)2-5 Current BCC hi": 11.1,
+    "SMD(5D)3-5 Ever Blood Homelessness": 366,
+}
+ref_n = 1044
+chr = dpw_snapshots["snapshot_dt"].to_frame()
+
+risk_rows = []
+cols_3d = []
+cols_5d = []
+cols_pd = []
+# Offending
+chr["Criminal conviction/investigation"] = (
+    dpw_snapshots["risk_crime_yn"].eq("Yes").mask(dpw_snapshots["risk_crime_yn"].isna()))
+for x in [risk_rows, cols_3d, cols_5d]: x.append("Criminal conviction/investigation")
+# Substance misuse
+chr["Use/used drugs or alcohol"] = (
+    dpw_snapshots["risk_drugs_alcohol_yn"].eq("Yes").mask(dpw_snapshots["risk_drugs_alcohol_yn"].isna()))
+for x in [risk_rows, cols_3d, cols_5d, cols_pd]: x.append("Use/used drugs or alcohol")
+# Homelessness
+chr["Homelessness"] = True
+for x in [cols_3d, cols_5d, cols_pd]: x.append("Homelessness")
+# Domestic violence and abuse
+chr["Domestic abuse (victim)"] = dpw_snapshots["hsn_risk_of_violenceabuse_victim"]
+for x in [cols_5d, cols_pd]: x.append("Domestic abuse (victim)")
+# Mental health problems
+chr["Mental health concerns"] = (
+    dpw_snapshots["risk_mental_health_yn"].eq("Yes").mask(dpw_snapshots["risk_mental_health_yn"].isna()))
+for x in [risk_rows, cols_5d, cols_pd]: x.append("Mental health concerns")
+chr = chr.convert_dtypes()  # Use nullable booleans so that NA propogates in >=
+chr["SMD(3D)2 O/~SU/H"] = chr["Criminal conviction/investigation"] * (~chr["Use/used drugs or alcohol"]) * chr["Homelessness"]
+chr["SMD(3D)2 ~O/SU/H"] = (~chr["Criminal conviction/investigation"]) * chr["Use/used drugs or alcohol"] * chr["Homelessness"]
+chr["SMD(3D)3 O/SU/H"] = chr["Criminal conviction/investigation"] * chr["Use/used drugs or alcohol"] * chr["Homelessness"]
+chr["SMD(3D)2-3"] = (chr.loc[:, cols_3d].sum(axis=1, skipna=False) >= 2)
+chr["SMD(5D)2-5"] = (chr.loc[:, cols_5d].sum(axis=1, skipna=False) >= 2)
+chr["SMD(5D)3-5"] = (chr.loc[:, cols_5d].sum(axis=1, skipna=False) >= 3)
+chr["PD2-4"] = (chr.loc[:, cols_pd].sum(axis=1, skipna=False) >= 2)
+chr["R <N/A> (n)"] = dpw_snapshots["risk_mental_health_yn"].isna()
+chr["S <N/A> (n)"] = dpw_snapshots["hsn_managing_a_tenancyliving_independently"].isna()
+chr["Total (n)"] = 1
+n = chr.groupby("snapshot_dt", sort=False).sum().T
+pct = chr.groupby("snapshot_dt", sort=False).apply(lambda x: x.sum()/x.count()).T
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct[pct.index.str.contains("(n)", regex=False)] = n.loc[n.index.str.contains("(n)", regex=False)].map(lambda x: f"{x:,.0f}")
+pct.insert(0, "PD", " ")
+pct.insert(0, "5D", " ")
+pct.insert(0, "3D", " ")
+pct.insert(0, "Src", "S")
+pct.loc[risk_rows, "Src"] = "R"
+pct.loc[cols_3d, "3D"] = "*"
+pct.loc[cols_5d, "5D"] = "*"
+pct.loc[cols_pd, "PD"] = "*"
+pct.loc["Homelessness", "Src"] = "1"
+pct["Ref_HSH"] = "-"
+pct.loc["SMD(5D)3-5", "Ref_HSH"] = "36.6%"
+pct.loc["Total (n)", "Ref_HSH"] = "1,044"
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["SMD (ever)"] = pct
+display(pct)
+```
+
+#### Current Severe and Multiple Disadvantage - based on current support needs
+```{python}
+from collections import defaultdict
+ref = {
+    "SMD(3D)2-3 Current Bramley England": 5.7,
+    "SMD(3D)2-3 Current Bramley Bristol": 11.2,
+    "SMD(5D)2-5 Current BCC lo": 10.5,
+    "SMD(5D)2-5 Current BCC hi": 11.1,
+    # "SMD(5D)3-5 Ever Blood Homelessness": 366,
+}
+ref_n = 1044
+chr = dpw_snapshots["snapshot_dt"].to_frame()
+
+risk_rows = []
+cols_3d = []
+cols_5d = []
+cols_pd = []
+# Offending
+chr["Criminal conviction/investigation"] = (
+    dpw_snapshots["risk_crime_current"].eq("Current Risk").mask(dpw_snapshots["risk_crime_yn"].isna()))
+for x in [risk_rows]: x.append("Criminal conviction/investigation")
+chr["Prison leaver, probation or offending"] = dpw_snapshots["hsn_prison_leaveron_probationrisk_of_offending"]
+for x in [cols_3d, cols_5d]: x.append("Prison leaver, probation or offending")
+# Substance misuse
+chr["Use/used drugs or alcohol"] = (
+    dpw_snapshots["risk_drugs_alcohol_current"].eq("Current Risk").mask(dpw_snapshots["risk_drugs_alcohol_yn"].isna()))
+for x in [risk_rows]: x.append("Use/used drugs or alcohol")
+chr["Drug use or Alcohol use"] = dpw_snapshots["hsn_drug_use"] | dpw_snapshots["hsn_alcohol_use"]
+for x in [cols_3d, cols_5d, cols_pd]: x.append("Drug use or Alcohol use")
+# Homelessness
+chr["Homelessness"] = True
+for x in [cols_3d, cols_5d, cols_pd]: x.append("Homelessness")
+# Domestic violence and abuse
+chr["Domestic abuse (victim)"] = dpw_snapshots["hsn_risk_of_violenceabuse_victim"]
+for x in [cols_5d, cols_pd]: x.append("Domestic abuse (victim)")
+# Mental health problems
+chr["Mental health concerns"] = (
+    dpw_snapshots["risk_mental_health_current"].eq("Current Risk").mask(dpw_snapshots["risk_mental_health_yn"].isna()))
+for x in [risk_rows]: x.append("Mental health concerns")
+chr["Mental health"] = dpw_snapshots["hsn_mental_health"]
+for x in [cols_5d, cols_pd]: x.append("Mental health")
+chr = chr.convert_dtypes()  # Use nullable booleans so that NA propogates in >=
+chr["SMD(3D)2 O/~SU/H"] = chr["Prison leaver, probation or offending"] * (~chr["Drug use or Alcohol use"]) * chr["Homelessness"]
+chr["SMD(3D)2 ~O/SU/H"] = (~chr["Prison leaver, probation or offending"]) * chr["Drug use or Alcohol use"] * chr["Homelessness"]
+chr["SMD(3D)3 O/SU/H"] = chr["Prison leaver, probation or offending"] * chr["Drug use or Alcohol use"] * chr["Homelessness"]
+chr["SMD(3D)2-3"] = (chr.loc[:, cols_3d].sum(axis=1, skipna=False) >= 2)
+chr["SMD(5D)2-5"] = (chr.loc[:, cols_5d].sum(axis=1, skipna=False) >= 2)
+chr["SMD(5D)3-5"] = (chr.loc[:, cols_5d].sum(axis=1, skipna=False) >= 3)
+chr["PD2-4"] = (chr.loc[:, cols_pd].sum(axis=1, skipna=False) >= 2)
+chr["R <N/A> (n)"] = dpw_snapshots["risk_mental_health_yn"].isna()
+chr["S <N/A> (n)"] = dpw_snapshots["hsn_mental_health"].isna()
+chr["Total (n)"] = 1
+n = chr.groupby("snapshot_dt", sort=False).sum().T
+pct = chr.groupby("snapshot_dt", sort=False).apply(lambda x: x.sum()/x.count()).T
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct[pct.index.str.contains("(n)", regex=False)] = n.loc[n.index.str.contains("(n)")].map(lambda x: f"{x:,.0f}")
+pct.insert(0, "PD", " ")
+pct.insert(0, "5D", " ")
+pct.insert(0, "3D", " ")
+pct.insert(0, "Src", "S")
+pct.loc[risk_rows, "Src"] = "R"
+pct.loc[cols_3d, "3D"] = "*"
+pct.loc[cols_5d, "5D"] = "*"
+pct.loc[cols_pd, "PD"] = "*"
+pct.loc["Homelessness", "Src"] = "1"
+pct.loc[risk_rows, "Src"] = "R"
+pct.loc["Homelessness", "Src"] = "1"
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Current SMD"] = pct
+display(pct)
+```
+
+#### Religion/beliefs
+```{python}
+import numpy as np
+chr = (
+    dpw_snapshots[["snapshot_dt", "religionbeliefs"]]
+    .replace(["Does not wish to disclose", "Not known", "Rather not state", "Don't Know"], "Unknown")
+    .replace("Any other religion", "Other religion")
+)
+chr.religionbeliefs = chr.religionbeliefs.cat.reorder_categories(sorted(chr.religionbeliefs.cat.categories))
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct.loc["<NA> (n)", :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc["Total (n)", :] = n.sum().map(lambda x: f"{x:,.0f}")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Religions/beliefs"] = pct
+display(pct)
+```
+
+#### Sexual orientation
+```{python}
+import numpy as np
+chr = (
+    dpw_snapshots[["snapshot_dt", "sexual_orientation"]]
+    .replace({"Lesbian": "Gay/Lesbian", "Don't Know": "Unknown", "Rather not state": "Unknown", "other": "Other", "Bi-sexual": "Bisexual"})
+)
+cat_order = ["Heterosexual", "Bisexual", "Gay/Lesbian", "Other", "Unknown"]
+chr.sexual_orientation = chr.sexual_orientation.cat.reorder_categories(cat_order)
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct.loc["<NA> (n)", :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc["Total (n)", :] = n.sum().map(lambda x: f"{x:,.0f}")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Sexual orientations"] = pct
+display(pct)
+```
+
+#### Nationality
+```{python}
+import numpy as np
+chr = (
+    dpw_snapshots[["snapshot_dt", "nationality"]]
+)
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+row_order = [i for i in pct["C/S Mean"].sort_values(ascending=False).index if i not in ["Other country", "Unknown"]] + ["Other country", "Unknown"]
+pct = pct.reindex(row_order)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct.loc["<NA> (n)", :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc["Total (n)", :] = n.sum().map(lambda x: f"{x:,.0f}")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Nationality"] = pct
+display(pct)
+```
+
+#### UK immigration status
+```{python}
+import numpy as np
+chr = (
+    dpw_snapshots[["snapshot_dt", "uk_immigration_status"]]
+)
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+row_order = pct["C/S Mean"].sort_values(ascending=False).index
+pct = pct.reindex(row_order)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+if n.index.isna().sum() != 0: pct.loc["<NA> (n)", :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc["Total (n)", :] = n.sum().map(lambda x: f"{x:,.0f}")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["English 2nd Language"] = pct
+display(pct)
+```
+
+#### English 2nd language
+```{python}
+import numpy as np
+chr = (
+    dpw_snapshots[["snapshot_dt", "english_2nd_language"]]
+)
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+# row_order = [i for i in pct["C/S Mean"].sort_values(ascending=False).index if i not in ["Other country", "Unknown"]] + ["Other country", "Unknown"]
+# pct = pct.reindex(row_order)
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+if n.index.isna().sum() != 0: pct.loc["<NA> (n)", :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc["Total (n)", :] = n.sum().map(lambda x: f"{x:,.0f}")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["English 2nd Language"] = pct
+display(pct)
+```
+
+#### Referrer
+```{python}
+import numpy as np
+chr = dpw_snapshots[["snapshot_dt", "ref_agency"]]
+cats = chr["ref_agency"].cat.categories
+cat_map = {
+    "B.C.C. Homelessness Prevention Team": ["B.C.C. Homelessness Prevention Team"],
+    "Other B.C.C.": list(cats[cats.str.startswith(("B.C.C", "Bcc")) & (cats != "B.C.C. Homelessness Prevention Team")]),
+    "St. Mungo's": ["St. Mungo's", "St Mungo's", "Outreach"],
+    "A.R.A.": ["A.R.A"],
+    "Other BAHSA providers": ["E.C.H.G. Riverside", "Elim", "Livewest", "Missing Link", "Places For People",
+                              "Salvation Army", "Second Step", "Self Help"]
+}
+cat_map["Others"] = cats[~cats.isin(sum(list(cat_map.values()), []))]  # Add any other categories to "Others"
+mapper = {k:v for v,k in pd.Series(cat_map).explode().items()}
+chr["ref_agency"] = chr["ref_agency"].replace(mapper).astype("string").astype("category")
+n = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, dropna=False).unstack(0)
+pct = chr.groupby("snapshot_dt", sort=False).value_counts(sort=False, normalize=True).unstack(0)
+for t in [n, pct]: t["C/S Mean"] = t[t.columns[t.columns.str.startswith("20")]].mean(axis=1)
+pct = pct.sort_values("Longitudinal", ascending=False)
+bcc_rows = pct.index.str.contains("B.C.C.")
+pct.index = pd.MultiIndex.from_tuples([("B.C.C. (combined)", k) if "B.C.C" in k else (k, "") for k, v in pct.iterrows()])
+bcc_pct = pct[bcc_rows].groupby(level=0).sum()
+bcc_pct.index = pd.MultiIndex.from_tuples([(k, "") for k, v in bcc_pct.iterrows()])
+pct = pd.concat([bcc_pct, pct[bcc_rows], pct[~bcc_rows]]).rename_axis(["Referral agency", None])
+pct = pct.mul(100).map(lambda p: f"{p:.1f}%")
+pct.columns = pct.columns.astype("string")
+pct.loc[("<NA> (n)", ""), :] = n.loc[n.index.isna()].iloc[0, :].map(lambda x: f"{x:,.0f}")
+pct.loc[("Total (n)", ""), :] = n.sum().map(lambda x: f"{x:,.0f}")
+for t in [n, pct]: c = t.pop("Longitudinal"); t.insert(0, "Longitudinal", c)
+characteristics["Referral agencies"] = pct
+display(pct)
+```
+
+#### Combine together for Excel file
+```{python}
+extra_cols_start = ["PD", "5D", "3D", "Src"]
+extra_cols_end = ["Ref_HSH", "Ref_HSH cat"]
+for k, v in characteristics.items():
+    for ec in extra_cols_start:
+        if ec not in v.columns:
+            v.insert(0, ec, "", allow_duplicates=True)
+    for ec in extra_cols_end:
+        if ec not in v.columns:
+            v.insert(len(v.columns), ec, "", allow_duplicates=True)
+    if not isinstance(v.index, pd.MultiIndex):
+        v.index = pd.MultiIndex.from_tuples([(k, "") for k, v in v.iterrows()])
+combined = pd.concat(characteristics.values(), keys=characteristics.keys())
+excel_output["Table A.1: Individual characteristics of BAHSA population with comparable reference data"] = combined
+```
+
+### Figure C.1: Years of birth (whole BAHSA population)
+```{python}
+#| output: false
+import seaborn as sns
+import matplotlib.pyplot as plt
+ysob = dpw_clis.groupby("o_cli_id").head(1).yob.rename("Year of birth")
+sns.set()
+sns.histplot(ysob, binwidth=3)
+fig_c_1 = "img_output/Figure_C.1.svg"
+plt.savefig(fig_c_1)
+```
+
+![](`{python} fig_c_1`)
+
+## Tables in an Excel file
+
+```{python}
+#| output: asis
+import os
+sheetname = "Sheet1"
+qmdfile = os.getenv("QUARTO_DOCUMENT_FILE")
+filename = "img_output/"+qmdfile[:-4]+".xlsx"
+with pd.ExcelWriter(filename) as writer:
+    next_row = 0
+    for k, v in excel_output.items():
+        pd.DataFrame([k]).to_excel(writer, sheet_name=sheetname, header=False, index=False, startrow=next_row)
+        next_row += 1
+        v.to_excel(writer, sheet_name=sheetname, startrow=next_row, float_format="%.1f")
+        next_row += (
+            (1 if not isinstance(v.columns, pd.MultiIndex) else 1 + len(v.columns.levels))
+            + len(v) + 1)
+print(f"[Excel file](./{filename})")
+```
