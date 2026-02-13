@@ -128,9 +128,9 @@ p = p.add(
 # Add quantile indicators
 p = add_quantiles(p, "dur_days", limits["x"], limits["y"])
 # p = p.on(ax).plot()
-p = p.on(fig1).plot()
 fig_4_7b = "img_output/Figure_4.7_b.svg"
 p.save(fig_4_7b)
+p = p.on(fig1).plot()
 ax = fig1.axes[0]
 for line in ax.get_lines():
     line.zorder=1.1
@@ -161,9 +161,9 @@ p = (
 )
 p = add_quantiles(p, "dur_years", limits["x"], limits["y"])
 # p = p.on(ax).plot()
-p = p.on(fig0).plot()
 fig_4_7a = "img_output/Figure_4.7_a.svg"
 p.save(fig_4_7a)
+p = p.on(fig0).plot()
 ax = fig0.axes[0]
 sns.rugplot(ax=ax, data=hist_data_lt_10y, x="dur_years", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
 # Add legend
