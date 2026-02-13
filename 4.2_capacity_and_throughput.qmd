@@ -218,6 +218,13 @@ ct = (
     .rename("exits")
     .reset_index()
 )
+ct["End reason"] = ct["End reason"].replace({
+    "To social housing": "Social housing",
+    "To friends/family": "Friends/family",
+    "To private rented": "Private rented",
+    "To care/hospital": "Care/hospital",
+    "To external supported": "Supported¹",
+})
 ct_all = ct.drop(columns="Pathway").groupby(["End reason", "Year"], sort=False).sum().reset_index().assign(Pathway="All")
 n_ends = ct["End reason"].nunique()
 order = ["Social housing", "Private rented", "Friends/family", "Supported¹",

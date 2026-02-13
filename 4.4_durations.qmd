@@ -100,14 +100,18 @@ for (a_u, a_l), (b_u, b_l) in zip(list(days_loglists.items())[:-1], list(days_lo
 # Calculate positions of group labels for log units
 days_loggrp_edges = [0.8] + days_logsep + [30 * days_logunits["year"]]
 days_logpos_grp = list(10 ** ((np.log10(a) + np.log10(b))/2) for a, b in zip(days_loggrp_edges[:-1], days_loggrp_edges[1:]))
+# Set up two subfigures
+#######################
+fig = plt.figure(figsize=(6.2, 2*4.1), layout="constrained")
+fig0, fig1 = fig.subfigures(2)
 # Set up two subplots
 #####################
-f, axs = plt.subplots(nrows=2, figsize=(6.2, 2*4.1), dpi=150)
+# f, axs = plt.subplots(nrows=2, figsize=(6.2, 2*4.1), dpi=150)
 # Plot the log scale chart
 ##########################
-ax = axs[1]
+# ax = axs[1]
 limits = {"x": (0.7, 10**4), "y": (0, 831)}
-plt.subplots_adjust(right=0.95, top=0.98, bottom=0.09, hspace=0.3)
+# plt.subplots_adjust(right=0.95, top=0.98, bottom=0.09, hspace=0.3)
 p = (
     so.Plot(data=hist_data, x="dur_days")
     .label(x="Duration (log scale)", y="Routes")
@@ -123,7 +127,11 @@ p = p.add(
 )
 # Add quantile indicators
 p = add_quantiles(p, "dur_days", limits["x"], limits["y"])
-p = p.on(ax).plot()
+# p = p.on(ax).plot()
+p = p.on(fig1).plot()
+fig_4_7b = "img_output/Figure_4.7_b.svg"
+p.save(fig_4_7b)
+ax = fig1.axes[0]
 for line in ax.get_lines():
     line.zorder=1.1
 # Lines between unit groups
@@ -137,7 +145,7 @@ ax.xaxis.labelpad = 20
 sns.rugplot(ax=ax, data=hist_data, x="dur_days", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
 # Plot the linear scale chart
 #############################
-ax = axs[0]
+# ax = axs[0]
 hist_data_lt_10y = hist_data[hist_data["dur_years"] <= 10]
 limits = {"x": (0, 10.5), "y": (0, 2000)}
 p = (
@@ -152,7 +160,11 @@ p = (
         x="x", y="y", text="text", legend=False)
 )
 p = add_quantiles(p, "dur_years", limits["x"], limits["y"])
-p = p.on(ax).plot()
+# p = p.on(ax).plot()
+p = p.on(fig0).plot()
+fig_4_7a = "img_output/Figure_4.7_a.svg"
+p.save(fig_4_7a)
+ax = fig0.axes[0]
 sns.rugplot(ax=ax, data=hist_data_lt_10y, x="dur_years", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
 # Add legend
 colours = sns.color_palette(as_cmap=False)
