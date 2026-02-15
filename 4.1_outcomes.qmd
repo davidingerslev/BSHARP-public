@@ -29,6 +29,10 @@ matplotlib.rcParams.update({
     'figure.constrained_layout.use': True
 })
 
+asset_themes = {"opaque": "assets_output/",
+                "transparent_lightbg": "assets_transparent_lightbg/",
+                "transparent_darkbg": "assets_transparent_darkbg/"}
+assets_output = asset_themes["opaque"]
 excel_output = {}
 ```
 
@@ -76,27 +80,43 @@ plotdata = (
     .replace({"all_routes": f"Per route (all ended routes)\n$n$={valid_n["all_routes"]:,}",
               "latest_route": f"Per person (latest route)\n$n$={valid_n["latest_route"]:,}"})
 )
-plotlabels = pd.DataFrame({"x": -10, "y": plotdata["rt_end_cat"], "text": plotdata["%"].map(lambda x: f"{x:.1f}%")})
+plotlabels = pd.DataFrame({"x": -8.75, "y": plotdata["rt_end_cat"], "text": plotdata["%"].map(lambda x: f"{x:.1f}%")})
 colors = sns.color_palette()
 colors = colors[4:6]
-p = (
-    so.Plot(data=plotdata, y="rt_end_cat", x="%", color="routes")
-    .theme({"ytick.major.pad": 35, "font.size": 12, "axes.titlesize": "medium"})
-    .add(so.Bar(edgewidth=0), legend=False)
-    .add(so.Text({"clip_on": False}, halign="left"), data=plotlabels, x="x", y="y", text="text", legend=False)
-    .label(y=None, x=None)
-    .scale(x=so.Continuous().label(like="{x:.0f}%"), color=colors)
-    .limit(x=(0, None))
-    .facet(col="routes")
-    .layout(size=(7.2, 3.7), engine="constrained")
-)
-fig_4_1 = "img_output/Figure_4.1.svg"
-p.save(fig_4_1)
+
+
+def cust_plot(rc_params={}):
+    return (
+        so.Plot(data=plotdata, y="rt_end_cat", x="%", color="routes")
+        .theme({"ytick.major.pad": 35, "font.size": 12, "axes.titlesize": "medium"} | rc_params)
+        .add(so.Bar(edgewidth=0), legend=False)
+        .add(so.Text({"clip_on": False}, halign="left"), data=plotlabels, x="x", y="y", text="text", legend=False)
+        .label(y=None, x=None)
+        .scale(x=so.Continuous().label(like="{x:.0f}%"), color=colors)
+        .limit(x=(0, None))
+        .facet(col="routes")
+        .layout(size=(7.2, 3.7), engine="constrained")
+    )
+
+
+fig_4_1 = "Figure_4.1.svg"
+fig_filename = fig_4_1
+cust_plot().save(asset_themes["opaque"] + fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15"}
+cust_plot(lighttheme).save(asset_themes["transparent_lightbg"] + fig_filename, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5}
+cust_plot(darktheme).save(asset_themes["transparent_darkbg"] + fig_filename, transparent=True)
 pass
 ```
 
 #### Figure 4.1
-![](`{python} fig_4_1`)
+![](`{python} assets_output + fig_filename`)
 
 <sub>Notes: Full data table is Table A.3.    “Latest” is the most recent route for each person.</sub>
 
@@ -151,23 +171,39 @@ plotdata = (
 plotlabels = pd.DataFrame({"x": -9, "y": plotdata["rt_end_cat"], "text": plotdata["%"].map(lambda x: f"{x:.1f}%")})
 colors = sns.color_palette()
 colors = colors[6:7]
-p = (
-    so.Plot(data=plotdata, y="rt_end_cat", x="%", color=1)
-    .theme({"ytick.major.pad": 35, "font.size": 12, "axes.titlesize": "medium"})
-    .add(so.Bar(edgewidth=0), legend=False)
-    .add(so.Text({"clip_on": False}, halign="left", fontsize=11), data=plotlabels, x="x", y="y", text="text", legend=False)
-    .label(y=None, x=None, title=f"Per person (first route)\n$n$={valid_n:,}")
-    .scale(x=so.Continuous().label(like="{x:.0f}%"), color=colors)
-    .limit(x=(0, 35))
-    .layout(size=(4.2, 3.7), engine="constrained")
-)
-fig_4_2 = "img_output/Figure_4.2.svg"
-p.save(fig_4_2)
+
+
+def cust_plot(rc_params={}):
+    return (
+        so.Plot(data=plotdata, y="rt_end_cat", x="%", color=1)
+        .theme({"ytick.major.pad": 35, "font.size": 12, "axes.titlesize": "medium"} | rc_params)
+        .add(so.Bar(edgewidth=0), legend=False)
+        .add(so.Text({"clip_on": False}, halign="left", fontsize=11), data=plotlabels, x="x", y="y", text="text", legend=False)
+        .label(y=None, x=None, title=f"Per person (first route)\n$n$={valid_n:,}")
+        .scale(x=so.Continuous().label(like="{x:.0f}%"), color=colors)
+        .limit(x=(0, 35))
+        .layout(size=(4.2, 3.7), engine="constrained")
+    )
+
+
+fig_4_2 = "Figure_4.2.svg"
+fig_filename = fig_4_2
+cust_plot().save(asset_themes["opaque"] + fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15"}
+cust_plot(lighttheme).save(asset_themes["transparent_lightbg"] + fig_filename, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5}
+cust_plot(darktheme).save(asset_themes["transparent_darkbg"] + fig_filename, transparent=True)
 pass
 ```
 
 #### Figure 4.2
-![](`{python} fig_4_2`)
+![](`{python} assets_output + fig_filename`)
 
 <sub>Notes: Full data table is Table A.4.    People with no records of previously using BAHSA services.</sub>
 

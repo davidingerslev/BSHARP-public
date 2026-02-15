@@ -29,6 +29,10 @@ matplotlib.rcParams.update({
     'figure.constrained_layout.use': True
 })
 
+asset_themes = {"opaque": "assets_output/",
+                "transparent_lightbg": "assets_transparent_lightbg/",
+                "transparent_darkbg": "assets_transparent_darkbg/"}
+assets_output = asset_themes["opaque"]
 excel_output = {}
 ```
 
@@ -85,68 +89,95 @@ plotdata["known_apw"] = plotdata["known_apw"].astype("string")
 maxes = ta5_numeric.swaplevel(0, 2, axis=1)["n"].loc["n"].groupby(level=0).sum()
 width_ratios = maxes[["New", "Returned"]]
 width_ratios = width_ratios - (width_ratios.sum()/52.7)
-colours = sns.color_palette(as_cmap=False)
-fig_overall = plt.figure(layout="constrained", figsize=(6.2, 3.1))
-fig_l, fig_r = fig_overall.subfigures(1, 2, width_ratios=width_ratios)
-for grp, fig, col in [("Returned", fig_r, colours[1]),
-                      ("New",      fig_l, colours[0])]:
-    pl_d = plotdata[plotdata["known_apw"] == grp].reset_index(drop=True)
-    pl_d["routes"] = pl_d["routes"].astype("category")
-    textdata_after = (pl_d.groupby("routes", observed=False)[col_x].sum().to_frame()
-                      .assign(text=lambda x: (x/x.sum()).mul(100).map(lambda y: f"{y:,.1f}%")))
-    textdata_after.iloc[-1, -1] += f" (of {grp})"
-    textdata_during = (pl_d.assign(pct_all=pl_d.groupby("routes", observed=False)[col_x]
-                                   .transform(lambda x: (x/pl_d[col_x].sum()).mul(100))))
-    textdata_during = textdata_during[textdata_during["pct_all"] > 15]
-    textdata_during.loc[textdata_during["current"] == "Ended", "x"] = (
-        textdata_during.loc[textdata_during["current"] == "Ended", col_x] / 2)
-    textdata_during.loc[textdata_during["current"] == "Current", "x"] = (
-        textdata_during.loc[textdata_during["current"] == "Current"].join(
-            textdata_during.loc[textdata_during["current"] == "Ended"].set_index("routes")[col_x],
-            on="routes", rsuffix="_end")
-        .apply(lambda x: x[col_x+"_end"] + x[col_x]/2, axis=1))
 
-    textdata_during["text"] = textdata_during["pct_all"].map(lambda y: f"{y:,.1f}%")
-    if grp == "New":
-        textdata_during.iloc[0, -1] += f" of {grp} ({100*textdata_during.iloc[0][col_x]/plotdata[col_x].sum():.1f}% of all)"
-    p = (
-        so.Plot(data=pl_d, y="routes", x=col_x)
-        .add(so.Bars(), so.Stack(), color="current", legend=False)
-        .add(so.Text(color=".4", fontsize=11, halign="left", offset=2, alpha=0.7), data=textdata_after, x=col_x, y="routes", text="text")
-        .label(x="People", title=f"{grp}" + " (${n}$=" + f"{int(maxes[grp]):,})", y="")
-        .limit(x=(0, maxes[grp]))
-        .layout(engine="constrained")
-        .on(fig)
-        .plot()
-    )
-    ax = fig.axes[0]
-    if grp == "New":
+
+def cust_plot(output_dir, fig_filename, rc_params={}, legend_params={}, annot_color=".4", transparent=False):
+    with plt.rc_context():
         colours = sns.color_palette(as_cmap=False)
-        T = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="Ended")
-        F = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="Current")
-        ax.legend(handles=[F, T], loc="lower right")
-    minor_ticks = [((b-a)/2 + a) for a, b in zip(ax.get_yticks()[:-1], ax.get_yticks()[1:])]
-    # labels = ta5.swaplevel(axis=1)["% col"][grp].iloc[:-1].map(lambda x: x[:-1])
-    ax.set_xticks([maxes[grp]], labels=["${n}$"])
-    ax.set_xticks(range(0, int(maxes[grp]), 500), labels=list(range(0, int(maxes[grp]), 500))[:-1] + [".."], minor=True)
-    ax.tick_params("x", which="minor", pad=3, bottom=True, width=0.5, length=5)
-    ax.tick_params("x", which="major", pad=3, bottom=True, width=0.5, length=5)
-    ax.set_yticks(ax.get_yticks(), labels=[])
-    ax.set_yticks(minor_ticks, minor=True)
-    ax.grid(which="minor", axis="y")
-    ax.grid(which="minor", axis="x")
-yticks = fig_l.axes[0].get_yticks()
-sec = fig_l.axes[0].secondary_yaxis(location=0)
-sec.set_yticks(yticks, labels=[y + 1 for y in yticks])
-sec.tick_params("y", length=0, which="both", pad=8)
-sec.set_ylabel("Routes", labelpad=6)
-fig_4_6 = "img_output/Figure_4.6.svg"
-plt.savefig(fig_4_6)
+        plt.rcParams.update(rc_params)
+        fig_overall = plt.figure(layout="constrained", figsize=(6.2, 3.1))
+        fig_l, fig_r = fig_overall.subfigures(1, 2, width_ratios=width_ratios)
+        for grp, fig, col in [("Returned", fig_r, colours[1]),
+                              ("New",      fig_l, colours[0])]:
+            pl_d = plotdata[plotdata["known_apw"] == grp].reset_index(drop=True)
+            pl_d["routes"] = pl_d["routes"].astype("category")
+            textdata_after = (pl_d.groupby("routes", observed=False)[col_x].sum().to_frame()
+                              .assign(text=lambda x: (x/x.sum()).mul(100).map(lambda y: f"{y:,.1f}%")))
+            textdata_after.iloc[-1, -1] += f" (of {grp})"
+            textdata_during = (pl_d.assign(pct_all=pl_d.groupby("routes", observed=False)[col_x]
+                                          .transform(lambda x: (x/pl_d[col_x].sum()).mul(100))))
+            textdata_during = textdata_during[textdata_during["pct_all"] > 15]
+            textdata_during.loc[textdata_during["current"] == "Ended", "x"] = (
+                textdata_during.loc[textdata_during["current"] == "Ended", col_x] / 2)
+            textdata_during.loc[textdata_during["current"] == "Current", "x"] = (
+                textdata_during.loc[textdata_during["current"] == "Current"].join(
+                    textdata_during.loc[textdata_during["current"] == "Ended"].set_index("routes")[col_x],
+                    on="routes", rsuffix="_end")
+                .apply(lambda x: x[col_x+"_end"] + x[col_x]/2, axis=1))
+
+            textdata_during["text"] = textdata_during["pct_all"].map(lambda y: f"{y:,.1f}%")
+            if grp == "New":
+                textdata_during.iloc[0, -1] += f" of {grp} ({100*textdata_during.iloc[0][col_x]/plotdata[col_x].sum():.1f}% of all)"
+            p = (
+                so.Plot(data=pl_d, y="routes", x=col_x)
+                .theme(rc_params)
+                .add(so.Bars(), so.Stack(), color="current", legend=False)
+                .add(so.Text(color=annot_color, fontsize=11, halign="left", offset=2, alpha=0.7), data=textdata_after, x=col_x, y="routes", text="text")
+                .label(x="People", title=f"{grp}" + " (${n}$=" + f"{int(maxes[grp]):,})", y="")
+                .limit(x=(0, maxes[grp]))
+                .layout(engine="constrained")
+                .on(fig)
+                .plot()
+            )
+            ax = fig.axes[0]
+            if grp == "New":
+                colours = sns.color_palette(as_cmap=False)
+                T = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="Ended")
+                F = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="Current")
+                ax.legend(handles=[F, T], loc="lower right")
+            minor_ticks = [((b-a)/2 + a) for a, b in zip(ax.get_yticks()[:-1], ax.get_yticks()[1:])]
+            # labels = ta5.swaplevel(axis=1)["% col"][grp].iloc[:-1].map(lambda x: x[:-1])
+            ax.set_xticks([maxes[grp]], labels=["${n}$"])
+            ax.set_xticks(range(0, int(maxes[grp]), 500), labels=list(range(0, int(maxes[grp]), 500))[:-1] + [".."], minor=True)
+            ax.tick_params("x", which="minor", pad=3, bottom=True, width=0.5, length=5)
+            ax.tick_params("x", which="major", pad=3, bottom=True, width=0.5, length=5)
+            ax.set_yticks(ax.get_yticks(), labels=[])
+            ax.set_yticks(minor_ticks, minor=True)
+            ax.grid(which="minor", axis="y")
+            ax.grid(which="minor", axis="x")
+        yticks = fig_l.axes[0].get_yticks()
+        sec = fig_l.axes[0].secondary_yaxis(location=0)
+        sec.set_yticks(yticks, labels=[y + 1 for y in yticks])
+        sec.tick_params("y", length=0, which="both", pad=8)
+        sec.set_ylabel("Routes", labelpad=6)
+        plt.savefig(output_dir + fig_filename, transparent=transparent)
+
+
+fig_4_6 = "Figure_4.6.svg"
+fig_filename = fig_4_6
+cust_plot(asset_themes["opaque"], fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15",
+              "xtick.color": ".15",
+              "xtick.labelcolor": ".15",
+              "ytick.color": ".15",
+              "ytick.labelcolor": ".15"
+              }
+cust_plot(asset_themes["transparent_lightbg"], fig_filename, lighttheme, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5,
+             "legend.framealpha": 1, "legend.facecolor": ".15"
+             }
+cust_plot(asset_themes["transparent_darkbg"], fig_filename, darktheme, annot_color=".85", transparent=True)
 pass
 ```
 
 #### Figure 4.6
-![](`{python} fig_4_6`)
+![](`{python} assets_output + fig_filename`)
 
 <sub>Notes: X-axis scales are proportionate to New/Returned counts. ‘New’ means no record of using services
 since April 2009. Full data table is Table A.5.</sub>

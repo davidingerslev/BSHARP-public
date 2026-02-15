@@ -30,6 +30,10 @@ matplotlib.rcParams.update({
     'figure.constrained_layout.use': True
 })
 
+asset_themes = {"opaque": "assets_output/",
+                "transparent_lightbg": "assets_transparent_lightbg/",
+                "transparent_darkbg": "assets_transparent_darkbg/"}
+assets_output = asset_themes["opaque"]
 excel_output = {}
 ```
 
@@ -107,44 +111,71 @@ import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
-# ymax = 1060
 ymax = 920
-ratio = 5
-edgecolor = "white"
 alpha = 0.8
 axs = [None]
-# fig, axs = plt.subplots(2, 1, sharey=False, sharex=False, height_ratios=[ratio, 1], figsize=(12, 8))
-plt.rcParams.update({'font.size': 12, 'figure.figsize': (7.1, 4.8), 'figure.constrained_layout.use': True})
-fig, axs[0] = plt.subplots()
-plt.subplots_adjust(bottom=0.13, left=0.13, right=0.95, top=0.95)
-axs[0].stackplot(
-    nightly_ave.day,
-    [nightly_ave.dpw_stays], #, nightly_ave.non_dpw_stays],
-    colors=["C2", "C4"],
-    alpha=alpha,
-    lw=0,
-)
-axs[0].set_ylim(0, ymax)
-axs[0].yaxis.set_label_text("Allocated placements")
-axs[0].xaxis.set_label_text("Date")
-axs[0].legend(loc="lower right", reverse=True)
 
-for ax in axs:
-    ax.set_xlim(first_date, last_date)
-    ax.yaxis.set_minor_locator(locator=matplotlib.ticker.MultipleLocator(100))
-    ax.yaxis.grid(True, which="minor")
-    ax.xaxis.set_major_locator(locator=matplotlib.dates.YearLocator(base=1))
-    ax.xaxis.set_minor_locator(locator=matplotlib.dates.MonthLocator(bymonth=7))
-    ax.xaxis.grid(True, which="minor")
-    ax.tick_params(bottom=True, left=True, color="lightgrey", labelcolor="grey")
 
-fig_4_3 = "img_output/Figure_4.3.svg"
-plt.savefig(fig_4_3)
+def cust_plot(output_dir, fig_filename, rc_params={}, transparent=False):
+    with plt.rc_context():
+        plt.rcParams.update({'font.size': 12,
+                             'figure.figsize': (7.1, 4.8),
+                             'figure.constrained_layout.use': True,
+                             'xtick.color': 'lightgrey',
+                             'xtick.labelcolor': 'grey',
+                             'ytick.color': 'lightgrey',
+                             'ytick.labelcolor': 'grey'
+                             } | rc_params)
+        fig, axs[0] = plt.subplots()
+        axs[0].stackplot(
+            nightly_ave.day,
+            [nightly_ave.dpw_stays],
+            colors=["C2", "C4"],
+            alpha=alpha,
+            lw=0,
+        )
+        axs[0].set_ylim(0, ymax)
+        axs[0].yaxis.set_label_text("Allocated placements")
+        axs[0].xaxis.set_label_text("Date")
+        fig.legends = []
+
+        for ax in axs:
+            ax.set_xlim(first_date, last_date)
+            ax.yaxis.set_minor_locator(locator=matplotlib.ticker.MultipleLocator(100))
+            ax.yaxis.grid(True, which="minor")
+            ax.xaxis.set_major_locator(locator=matplotlib.dates.YearLocator(base=1))
+            ax.xaxis.set_minor_locator(locator=matplotlib.dates.MonthLocator(bymonth=7))
+            ax.xaxis.grid(True, which="minor")
+            ax.tick_params(bottom=True, left=True)
+
+        plt.savefig(output_dir + fig_filename, transparent=transparent)
+
+
+fig_4_3 = "Figure_4.3.svg"
+fig_filename = fig_4_3
+cust_plot(asset_themes["opaque"], fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15",
+              "xtick.color": ".15",
+              "xtick.labelcolor": ".15",
+              "ytick.color": ".15",
+              "ytick.labelcolor": ".15"
+              }
+cust_plot(asset_themes["transparent_lightbg"], fig_filename, lighttheme, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5
+             }
+cust_plot(asset_themes["transparent_darkbg"], fig_filename, darktheme, transparent=True)
+
 pass
 ```
 
 #### Figure 4.3
-![](`{python} fig_4_3`)
+![](`{python} assets_output + fig_filename`)
 
 <sub>Notes: Date range 28/10/2017–30/04/2025</sub>
 
@@ -172,31 +203,49 @@ plotdata = (
     .rename(columns={"end_yr": "x", "exits": "y"})
 )
 limits = (plotdata["y"].min(), plotdata["y"].max())
-p = (
-    so.Plot(plotdata, x="x", y="y")
-    .label(x="Year", y="Exits")
-    .limit(y=(0, 725), x=(2018, 2024))
-)
-limpos = 2022.5
-for lim in limits:
-    p = p.add(so.Line(linestyle=(3,6), color=".6", linewidth=0.8), data=pd.DataFrame({"x": [2018, 2024], "y": [lim] * 2}))
-p = (
-    p.add(so.Line(linewidth=3))
-    .add(so.Dot())
-    .add(so.Area())
-    .add(
-        so.Text({"clip_on": False}, halign="right", valign="center", fontsize=9, color=".6", offset=1),
-        data=pd.DataFrame({"x": [2018] * 2, "y": list(limits), "text": [str(x) for x in limits]}),
-        x="x", y="y", text="text"
+
+
+def cust_plot(rc_params={}, guide_color=".6"):
+    p = (
+        so.Plot(plotdata, x="x", y="y")
+        .label(x="Year", y="Exits")
+        .limit(y=(0, 725), x=(2018, 2024))
+        .theme(rc_params)
     )
-)
-fig_4_4 = "img_output/Figure_4.4.svg"
-p.save(fig_4_4)
+    limpos = 2022.5
+    for lim in limits:
+        p = p.add(so.Line(linestyle=(3,6), color=guide_color, linewidth=0.8), data=pd.DataFrame({"x": [2018, 2024], "y": [lim] * 2}))
+    p = (
+        p.add(so.Line(linewidth=3))
+        .add(so.Dot())
+        .add(so.Area())
+        .add(
+            so.Text({"clip_on": False}, halign="right", valign="center", fontsize=9, color=guide_color, offset=1),
+            data=pd.DataFrame({"x": [2018] * 2, "y": list(limits), "text": [str(x) for x in limits]}),
+            x="x", y="y", text="text"
+        )
+    )
+    return p
+
+
+fig_4_4 = "Figure_4.4.svg"
+fig_filename = fig_4_4
+cust_plot().save(asset_themes["opaque"] + fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15"}
+cust_plot(lighttheme).save(asset_themes["transparent_lightbg"] + fig_filename, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5}
+cust_plot(darktheme, guide_color=".8").save(asset_themes["transparent_darkbg"] + fig_filename, transparent=True)
 pass
 ```
 
 #### Figure 4.4
-![](`{python} fig_4_4`)
+![](`{python} assets_output + fig_filename`)
 
 <sub>Notes: Full data table is Table A.2. People can have more than one exit in a year. Moves within or between
 services and incomplete years (2017 and 2025) are excluded.</sub>
@@ -230,25 +279,41 @@ n_ends = ct["End reason"].nunique()
 order = ["Social housing", "Private rented", "Friends/family", "Supported¹",
          "Evicted", "Abandoned", "Custody", "Care/hospital",
          "Other", "Died", "Missing data/errors"]
-p = (
-    so.Plot(data=ct_all, x="Year", y="exits")
-    .theme({"axes.grid.which": "both"})
-    .label(x="", y="")
-    .layout(size=(7, 4.1))
-    .limit(y=(0, 200), x=(2018, 2024))
-    .add(so.Dot(pointsize=3), legend=False)
-    .add(so.Line(), legend=False)
-    .add(so.Line(color=".6", linestyle=(4, 2)), so.PolyFit(1), legend=False)
-    .scale(x=so.Continuous().tick(every=9, minor=8))
-    .facet("End reason", wrap=4, order=order)
-)
-fig_4_5 = "img_output/Figure_4.5.svg"
-p.save(fig_4_5)
+
+
+def cust_plot(rc_params={}, guide_color=".6", guide_alpha=0.8, line_alpha=0.8):
+    return (
+        so.Plot(data=ct_all, x="Year", y="exits")
+        .theme({"axes.grid.which": "both"} | rc_params)
+        .label(x="", y="")
+        .layout(size=(7, 4.1))
+        .limit(y=(0, 200), x=(2018, 2024))
+        .add(so.Dot(pointsize=3, alpha=line_alpha), legend=False)
+        .add(so.Line(alpha=line_alpha), legend=False)
+        .add(so.Line(color=guide_color, alpha=guide_alpha, linestyle=(4, 2)), so.PolyFit(1), legend=False)
+        .scale(x=so.Continuous().tick(every=9, minor=8))
+        .facet("End reason", wrap=4, order=order)
+    )
+
+
+fig_4_5 = "Figure_4.5.svg"
+fig_filename = fig_4_5
+cust_plot().save(asset_themes["opaque"] + fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15"}
+cust_plot(lighttheme).save(asset_themes["transparent_lightbg"] + fig_filename, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.2}
+cust_plot(darktheme, guide_color=".8", guide_alpha=0.65, line_alpha=1).save(asset_themes["transparent_darkbg"] + fig_filename, transparent=True)
 pass
 ```
 
 #### Figure 4.5
-![](`{python} fig_4_5`)
+![](`{python} assets_output + fig_filename`)
 
 <sub>Notes: Period covered is 2018-2024, vertical gridlines represent years 2019-2023, as in Figure 4.4. Full data
 table is Table A.2. 1. ‘Supported’ is moves to support services outside BAHSA.</sub>

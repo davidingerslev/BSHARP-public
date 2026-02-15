@@ -29,6 +29,10 @@ matplotlib.rcParams.update({
     'figure.constrained_layout.use': True
 })
 
+asset_themes = {"opaque": "assets_output/",
+                "transparent_lightbg": "assets_transparent_lightbg/",
+                "transparent_darkbg": "assets_transparent_darkbg/"}
+assets_output = asset_themes["opaque"]
 excel_output = {}
 ```
 
@@ -150,25 +154,41 @@ grps = plotdata["grp"].unique()
 plotdata = (
     pd.concat([pd.DataFrame({"index": "", "% returned": 0, "years": 0, "grp": grps}, index=[""]*len(grps)), plotdata])
     .reset_index(drop=True))
-p = (
-    so.Plot(data=plotdata, y="% returned", x="years", text="index")
-    .facet(col="grp")
-    .label(x="years since exit")
-    .add(so.Dot(), data=plotdata[plotdata["index"] != ""])
-    .add(so.Line())
-    .add(so.Area(edgewidth=0))
-    .add(so.Text(halign="left", valign="top"))
-    .limit(x=(0, 5.5), y=(0, 40))
-    .scale(x=so.Continuous().tick(minor=1))
-    .theme({"axes.grid.which": "both"})
-    .layout(size=(6.2, 3.6), engine="constrained")
-)
-fig_4_9 = "img_output/Figure_4.9.svg"
-p.save(fig_4_9)
+
+
+def cust_plot(rc_params={}, annot_color="black"):
+    return (
+        so.Plot(data=plotdata, y="% returned", x="years", text="index")
+        .theme({"axes.grid.which": "both"} | rc_params)
+        .facet(col="grp")
+        .label(x="years since exit")
+        .add(so.Dot(), data=plotdata[plotdata["index"] != ""])
+        .add(so.Line())
+        .add(so.Area(edgewidth=0))
+        .add(so.Text(halign="left", valign="top", color=annot_color))
+        .limit(x=(0, 5.5), y=(0, 40))
+        .scale(x=so.Continuous().tick(minor=1))
+        .layout(size=(6.2, 3.6), engine="constrained")
+    )
+
+
+fig_4_9 = "Figure_4.9.svg"
+fig_filename = fig_4_9
+cust_plot().save(asset_themes["opaque"] + fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15"}
+cust_plot(lighttheme).save(asset_themes["transparent_lightbg"] + fig_filename, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5}
+cust_plot(darktheme, annot_color="white").save(asset_themes["transparent_darkbg"] + fig_filename, transparent=True)
 pass
 ```
 
-![](`{python} fig_4_9`)
+![](`{python} assets_output + fig_filename`)
 
 <sup>Note: Data tables are Table 4.3 and Table 4.4.</sup>
 
@@ -229,27 +249,43 @@ zeroes = pd.DataFrame({"index": "", "End reason": plotdata["End reason"].unique(
                       index=range(len(plotdata), len(plotdata) + plotdata["End reason"].nunique()))
 plotdata = pd.concat([zeroes, plotdata])
 facet_order = ta8_n.index.to_list()
-p = (
-    so.Plot(data=plotdata, y="% returned", x="years", text="index")
-    .facet("End reason", wrap=4, order=facet_order)
-    .label(x="", y="")
-    .add(so.Dot(), data=plotdata[plotdata["index"] != ""])
-    .add(so.Line())
-    .add(so.Area(edgewidth=0))
-    .limit(x=(0, 5), y=(0, None))
-    .scale(x=(so.Continuous()
-              .tick(every=1, minor=0)
-              .label(like=lambda x, pos: f"{x:.0f}" if x != 5 else "5y")),
-           y=so.Continuous().tick(minor=1).label(unit=("", "%")))
-    .theme({"axes.grid.which": "both"})
-    .layout(size=(7.2, 4.1), engine="constrained")
-)
-fig_4_10 = "img_output/Figure_4.10.svg"
-p.save(fig_4_10)
+
+
+def cust_plot(rc_params={}, annot_color="black"):
+    return (
+        so.Plot(data=plotdata, y="% returned", x="years", text="index")
+        .facet("End reason", wrap=4, order=facet_order)
+        .label(x="", y="")
+        .add(so.Dot(), data=plotdata[plotdata["index"] != ""])
+        .add(so.Line())
+        .add(so.Area(edgewidth=0))
+        .limit(x=(0, 5), y=(0, None))
+        .scale(x=(so.Continuous()
+                  .tick(every=1, minor=0)
+                  .label(like=lambda x, pos: f"{x:.0f}" if x != 5 else "5y")),
+              y=so.Continuous().tick(minor=1).label(unit=("", "%")))
+        .theme({"axes.grid.which": "both"} | rc_params)
+        .layout(size=(7.2, 4.1), engine="constrained")
+    )
+
+
+fig_4_10 = "Figure_4.10.svg"
+fig_filename = fig_4_10
+cust_plot().save(asset_themes["opaque"] + fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15"}
+cust_plot(lighttheme).save(asset_themes["transparent_lightbg"] + fig_filename, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5}
+cust_plot(darktheme, annot_color="white").save(asset_themes["transparent_darkbg"] + fig_filename, transparent=True)
 pass
 ```
 
-![](`{python} fig_4_10`)
+![](`{python} assets_output + fig_filename`)
 
 <sup>Note: Data table is Table A.8. Figure B.1 shows return and eligible exit counts per end reason.</sup>
 
@@ -275,34 +311,52 @@ plotdata = pd.concat([zeroes, plotdata])
 facet_order = ta8_n.index.to_list()
 plotdata = (plotdata.reset_index().set_index(["index", "years", "End reason"]).stack().reset_index()
             .rename(columns={"level_3": "Returned", 0: "n"}))
-fig = plt.figure(figsize=[7.2, 4.1])
-p = (
-    so.Plot(data=plotdata, y="n", x="years", color="Returned", text="index")
-    .facet("End reason", wrap=4, order=facet_order)
-    .label(x="", y="")
-    .add(so.Dot(), so.Stack(), legend=False)
-    .add(so.Line(), so.Stack(), legend=False)
-    .add(so.Area(edgewidth=0), so.Stack(), legend=False)
-    .limit(x=(0, 5), y=(0, None))
-    .scale(x=(so.Continuous()
-              .tick(every=1, minor=0)
-              .label(like=lambda x, pos: f"{x:.0f}" if x != 5 else "5y")),
-           y=so.Continuous().tick(minor=3))
-    # .scale(x=so.Continuous().tick(every=5, minor=4).label(unit=("", "y")), y=so.Continuous().tick(minor=3))
-    .theme({"axes.grid.which": "both"})
-    .layout(size=(7.2, 4.1), engine="constrained")
-    .on(fig)
-)
-colours = sns.color_palette(as_cmap=False)
-Y = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="$\mathregular{n_{returned}}$")
-N = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="$\mathregular{n_{eligible}}$")
-fig.legend(loc="lower right", handles=[N, Y])
-fig_b_1 = "img_output/Figure_B.1.svg"
-p.save(fig_b_1)
+def cust_plot(rc_params={}, annot_color="black"):
+    fig = plt.figure(figsize=[7.2, 4.1])
+    p = (
+        so.Plot(data=plotdata, y="n", x="years", color="Returned", text="index")
+        .facet("End reason", wrap=4, order=facet_order)
+        .label(x="", y="")
+        .add(so.Dot(), so.Stack(), legend=False)
+        .add(so.Line(), so.Stack(), legend=False)
+        .add(so.Area(edgewidth=0), so.Stack(), legend=False)
+        .limit(x=(0, 5), y=(0, None))
+        .scale(x=(so.Continuous()
+                  .tick(every=1, minor=0)
+                  .label(like=lambda x, pos: f"{x:.0f}" if x != 5 else "5y")),
+              y=so.Continuous().tick(minor=3))
+        # .scale(x=so.Continuous().tick(every=5, minor=4).label(unit=("", "y")), y=so.Continuous().tick(minor=3))
+        .theme({"axes.grid.which": "both"} | rc_params)
+        .layout(size=(7.2, 4.1), engine="constrained")
+        .on(fig)
+    )
+    with plt.rc_context(rc_params):
+        colours = sns.color_palette(as_cmap=False)
+        Y = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="$\mathregular{n_{returned}}$")
+        N = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="$\mathregular{n_{eligible}}$")
+        fig.legend(loc="lower right", handles=[N, Y])
+    return p
+
+
+fig_b_1 = "Figure_B.1.svg"
+fig_filename = fig_b_1
+cust_plot().save(asset_themes["opaque"] + fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15"}
+cust_plot(lighttheme).save(asset_themes["transparent_lightbg"] + fig_filename, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5,
+             "legend.framealpha": 1, "legend.facecolor": ".15"
+             }
+cust_plot(darktheme, annot_color="white").save(asset_themes["transparent_darkbg"] + fig_filename, transparent=True)
 pass
 ```
 
-![](`{python} fig_b_1`)
+![](`{python} assets_output + fig_filename`)
 
 Figure B.1 shows eligible exits and returns, highlighting the effect of lower numbers of
 eligible exits over longer time periods. Figure 4.9 is derived from this set of charts by

@@ -324,7 +324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="3a80e4ce" class="cell" data-execution_count="1">
+<div id="3a3c9e48" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Setup code</span></span>
@@ -360,7 +360,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="figure-4.7-route-durations">Figure 4.7: Route durations</h3>
 <section id="code" class="level4">
 <h4 class="anchored" data-anchor-id="code">Code</h4>
-<div id="5ec83a46" class="cell" data-execution_count="2">
+<div id="324e3fe4" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -424,69 +424,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate positions of group labels for log units</span></span>
 <span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>days_loggrp_edges <span class="op">=</span> [<span class="fl">0.8</span>] <span class="op">+</span> days_logsep <span class="op">+</span> [<span class="dv">30</span> <span class="op">*</span> days_logunits[<span class="st">"year"</span>]]</span>
 <span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>days_logpos_grp <span class="op">=</span> <span class="bu">list</span>(<span class="dv">10</span> <span class="op">**</span> ((np.log10(a) <span class="op">+</span> np.log10(b))<span class="op">/</span><span class="dv">2</span>) <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(days_loggrp_edges[:<span class="op">-</span><span class="dv">1</span>], days_loggrp_edges[<span class="dv">1</span>:]))</span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up two subplots</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="co">#####################</span></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>f, axs <span class="op">=</span> plt.subplots(nrows<span class="op">=</span><span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">6.2</span>, <span class="dv">2</span><span class="op">*</span><span class="fl">4.1</span>), dpi<span class="op">=</span><span class="dv">150</span>)</span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the log scale chart</span></span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="co">##########################</span></span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axs[<span class="dv">1</span>]</span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>limits <span class="op">=</span> {<span class="st">"x"</span>: (<span class="fl">0.7</span>, <span class="dv">10</span><span class="op">**</span><span class="dv">4</span>), <span class="st">"y"</span>: (<span class="dv">0</span>, <span class="dv">831</span>)}</span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(right<span class="op">=</span><span class="fl">0.95</span>, top<span class="op">=</span><span class="fl">0.98</span>, bottom<span class="op">=</span><span class="fl">0.09</span>, hspace<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>hist_data, x<span class="op">=</span><span class="st">"dur_days"</span>)</span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    .label(x<span class="op">=</span><span class="st">"Duration (log scale)"</span>, y<span class="op">=</span><span class="st">"Routes"</span>)</span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    .add(so.Bars(), so.Hist(bins<span class="op">=</span><span class="dv">20</span>), so.Stack(), color<span class="op">=</span><span class="st">"ended"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous(trans<span class="op">=</span><span class="st">"log"</span>).tick(at<span class="op">=</span>days_logscale).label(formatter<span class="op">=</span>days_logformatter), color<span class="op">=</span>so.Nominal(order<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]))</span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>limits[<span class="st">"x"</span>], y<span class="op">=</span>limits[<span class="st">"y"</span>])</span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="co"># Add extra readable unit labels (rotated 90 degrees) at the top</span></span>
-<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.add(</span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>        so.Text({<span class="st">"rotation"</span>: <span class="dv">90</span>, <span class="st">"rotation_mode"</span>: <span class="st">"anchor"</span>}, color<span class="op">=</span><span class="st">".7"</span>, fontsize<span class="op">=</span><span class="dv">8</span>, halign<span class="op">=</span><span class="st">"right"</span>, valign<span class="op">=</span><span class="st">"center"</span>, offset<span class="op">=</span><span class="dv">0</span>),</span>
-<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>        data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: days_logscale, <span class="st">"y"</span>: [limits[<span class="st">"y"</span>][<span class="dv">1</span>]<span class="op">-</span><span class="dv">15</span>] <span class="op">*</span> <span class="bu">len</span>(days_logscale), <span class="st">"text"</span>: days_loglabels_full}),</span>
-<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span></span>
-<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="co"># Add quantile indicators</span></span>
-<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> add_quantiles(p, <span class="st">"dur_days"</span>, limits[<span class="st">"x"</span>], limits[<span class="st">"y"</span>])</span>
-<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.on(ax).plot()</span>
-<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line <span class="kw">in</span> ax.get_lines():</span>
-<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>    line.zorder<span class="op">=</span><span class="fl">1.1</span></span>
-<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Lines between unit groups</span></span>
-<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>ax.vlines(days_logsep, <span class="op">-</span><span class="fl">0.04</span>, <span class="op">-</span><span class="fl">0.15</span>, color<span class="op">=</span><span class="st">"black"</span>, lw<span class="op">=</span><span class="fl">0.5</span>, clip_on<span class="op">=</span><span class="va">False</span>, transform<span class="op">=</span>ax.get_xaxis_transform())</span>
-<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Grouped unit labels</span></span>
-<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pos, text <span class="kw">in</span> <span class="bu">zip</span>(days_logpos_grp, days_loglabels_grp):</span>
-<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    ax.text(pos, <span class="op">-</span><span class="fl">0.14</span>, text, ha<span class="op">=</span><span class="st">"center"</span>, clip_on<span class="op">=</span><span class="va">False</span>, transform<span class="op">=</span>ax.get_xaxis_transform())</span>
-<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="co"># Move x-axis label down</span></span>
-<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>ax.xaxis.labelpad <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a><span class="co"># Add rug plot</span></span>
-<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>sns.rugplot(ax<span class="op">=</span>ax, data<span class="op">=</span>hist_data, x<span class="op">=</span><span class="st">"dur_days"</span>, hue<span class="op">=</span><span class="st">"ended"</span>, height<span class="op">=-</span><span class="fl">.03</span>, clip_on<span class="op">=</span><span class="va">False</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the linear scale chart</span></span>
-<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="co">#############################</span></span>
-<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axs[<span class="dv">0</span>]</span>
-<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>hist_data_lt_10y <span class="op">=</span> hist_data[hist_data[<span class="st">"dur_years"</span>] <span class="op">&lt;=</span> <span class="dv">10</span>]</span>
-<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>limits <span class="op">=</span> {<span class="st">"x"</span>: (<span class="dv">0</span>, <span class="fl">10.5</span>), <span class="st">"y"</span>: (<span class="dv">0</span>, <span class="dv">2000</span>)}</span>
-<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
-<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>hist_data_lt_10y, x<span class="op">=</span><span class="st">"dur_years"</span>)</span>
-<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>    .label(x<span class="op">=</span><span class="st">"Duration (linear: years)"</span>, y<span class="op">=</span><span class="st">"Routes"</span>)</span>
-<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>    .add(so.Bars(), so.Hist(binwidth<span class="op">=</span><span class="fl">0.5</span>), so.Stack(), color<span class="op">=</span><span class="st">"ended"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous().tick(every<span class="op">=</span><span class="dv">1</span>).label(like<span class="op">=</span><span class="st">"</span><span class="sc">{x:.0f}</span><span class="st">"</span>), color<span class="op">=</span>so.Nominal(order<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]))</span>
-<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>limits[<span class="st">"x"</span>], y<span class="op">=</span>limits[<span class="st">"y"</span>])</span>
-<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>    .add(</span>
-<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>        so.Text({<span class="st">"rotation"</span>: <span class="dv">90</span>, <span class="st">"rotation_mode"</span>: <span class="st">"anchor"</span>}, color<span class="op">=</span><span class="st">".7"</span>, fontsize<span class="op">=</span><span class="dv">9</span>, halign<span class="op">=</span><span class="st">"left"</span>, valign<span class="op">=</span><span class="st">"top"</span>, offset<span class="op">=</span><span class="dv">5</span>),</span>
-<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>        data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: [<span class="dv">10</span>], <span class="st">"y"</span>: [<span class="dv">100</span>], <span class="st">"text"</span>: [<span class="st">"2 routes over 10 years not shown"</span>]}),</span>
-<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> add_quantiles(p, <span class="st">"dur_years"</span>, limits[<span class="st">"x"</span>], limits[<span class="st">"y"</span>])</span>
-<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.on(ax).plot()</span>
-<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>sns.rugplot(ax<span class="op">=</span>ax, data<span class="op">=</span>hist_data_lt_10y, x<span class="op">=</span><span class="st">"dur_years"</span>, hue<span class="op">=</span><span class="st">"ended"</span>, height<span class="op">=-</span><span class="fl">.03</span>, clip_on<span class="op">=</span><span class="va">False</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Add legend</span></span>
-<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>colours <span class="op">=</span> sns.color_palette(as_cmap<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> matplotlib.patches.Patch(facecolor<span class="op">=</span>colours[<span class="dv">0</span>], edgecolor<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"Ended"</span>)</span>
-<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> matplotlib.patches.Patch(facecolor<span class="op">=</span>colours[<span class="dv">1</span>], edgecolor<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"Current"</span>)</span>
-<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>ax.legend(handles<span class="op">=</span>[F, T], loc<span class="op">=</span><span class="st">"upper right"</span>)</span>
-<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="co"># Output the chart</span></span>
-<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a><span class="co">##################</span></span>
-<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>fig_4_7 <span class="op">=</span> <span class="st">"img_output/Figure_4.7.svg"</span></span>
-<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>plt.savefig(fig_4_7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up two subfigures</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="co">#######################</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="fl">6.2</span>, <span class="dv">2</span><span class="op">*</span><span class="fl">4.1</span>), layout<span class="op">=</span><span class="st">"constrained"</span>)</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>fig0, fig1 <span class="op">=</span> fig.subfigures(<span class="dv">2</span>)</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up two subplots</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="co">#####################</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="co"># f, axs = plt.subplots(nrows=2, figsize=(6.2, 2*4.1), dpi=150)</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the log scale chart</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="co">##########################</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="co"># ax = axs[1]</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>limits <span class="op">=</span> {<span class="st">"x"</span>: (<span class="fl">0.7</span>, <span class="dv">10</span><span class="op">**</span><span class="dv">4</span>), <span class="st">"y"</span>: (<span class="dv">0</span>, <span class="dv">831</span>)}</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.subplots_adjust(right=0.95, top=0.98, bottom=0.09, hspace=0.3)</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>hist_data, x<span class="op">=</span><span class="st">"dur_days"</span>)</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    .label(x<span class="op">=</span><span class="st">"Duration (log scale)"</span>, y<span class="op">=</span><span class="st">"Routes"</span>)</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    .add(so.Bars(), so.Hist(bins<span class="op">=</span><span class="dv">20</span>), so.Stack(), color<span class="op">=</span><span class="st">"ended"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous(trans<span class="op">=</span><span class="st">"log"</span>).tick(at<span class="op">=</span>days_logscale).label(formatter<span class="op">=</span>days_logformatter), color<span class="op">=</span>so.Nominal(order<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]))</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>limits[<span class="st">"x"</span>], y<span class="op">=</span>limits[<span class="st">"y"</span>])</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="co"># Add extra readable unit labels (rotated 90 degrees) at the top</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.add(</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>        so.Text({<span class="st">"rotation"</span>: <span class="dv">90</span>, <span class="st">"rotation_mode"</span>: <span class="st">"anchor"</span>}, color<span class="op">=</span><span class="st">".7"</span>, fontsize<span class="op">=</span><span class="dv">8</span>, halign<span class="op">=</span><span class="st">"right"</span>, valign<span class="op">=</span><span class="st">"center"</span>, offset<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>        data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: days_logscale, <span class="st">"y"</span>: [limits[<span class="st">"y"</span>][<span class="dv">1</span>]<span class="op">-</span><span class="dv">15</span>] <span class="op">*</span> <span class="bu">len</span>(days_logscale), <span class="st">"text"</span>: days_loglabels_full}),</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a><span class="co"># Add quantile indicators</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> add_quantiles(p, <span class="st">"dur_days"</span>, limits[<span class="st">"x"</span>], limits[<span class="st">"y"</span>])</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a><span class="co"># p = p.on(ax).plot()</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>fig_4_7b <span class="op">=</span> <span class="st">"img_output/Figure_4.7_b.svg"</span></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>p.save(fig_4_7b)</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.on(fig1).plot()</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig1.axes[<span class="dv">0</span>]</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line <span class="kw">in</span> ax.get_lines():</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>    line.zorder<span class="op">=</span><span class="fl">1.1</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a><span class="co"># Lines between unit groups</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>ax.vlines(days_logsep, <span class="op">-</span><span class="fl">0.04</span>, <span class="op">-</span><span class="fl">0.15</span>, color<span class="op">=</span><span class="st">"black"</span>, lw<span class="op">=</span><span class="fl">0.5</span>, clip_on<span class="op">=</span><span class="va">False</span>, transform<span class="op">=</span>ax.get_xaxis_transform())</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="co"># Grouped unit labels</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pos, text <span class="kw">in</span> <span class="bu">zip</span>(days_logpos_grp, days_loglabels_grp):</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>    ax.text(pos, <span class="op">-</span><span class="fl">0.14</span>, text, ha<span class="op">=</span><span class="st">"center"</span>, clip_on<span class="op">=</span><span class="va">False</span>, transform<span class="op">=</span>ax.get_xaxis_transform())</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a><span class="co"># Move x-axis label down</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>ax.xaxis.labelpad <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a><span class="co"># Add rug plot</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>sns.rugplot(ax<span class="op">=</span>ax, data<span class="op">=</span>hist_data, x<span class="op">=</span><span class="st">"dur_days"</span>, hue<span class="op">=</span><span class="st">"ended"</span>, height<span class="op">=-</span><span class="fl">.03</span>, clip_on<span class="op">=</span><span class="va">False</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the linear scale chart</span></span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a><span class="co">#############################</span></span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="co"># ax = axs[0]</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>hist_data_lt_10y <span class="op">=</span> hist_data[hist_data[<span class="st">"dur_years"</span>] <span class="op">&lt;=</span> <span class="dv">10</span>]</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>limits <span class="op">=</span> {<span class="st">"x"</span>: (<span class="dv">0</span>, <span class="fl">10.5</span>), <span class="st">"y"</span>: (<span class="dv">0</span>, <span class="dv">2000</span>)}</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>hist_data_lt_10y, x<span class="op">=</span><span class="st">"dur_years"</span>)</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>    .label(x<span class="op">=</span><span class="st">"Duration (linear: years)"</span>, y<span class="op">=</span><span class="st">"Routes"</span>)</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>    .add(so.Bars(), so.Hist(binwidth<span class="op">=</span><span class="fl">0.5</span>), so.Stack(), color<span class="op">=</span><span class="st">"ended"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous().tick(every<span class="op">=</span><span class="dv">1</span>).label(like<span class="op">=</span><span class="st">"</span><span class="sc">{x:.0f}</span><span class="st">"</span>), color<span class="op">=</span>so.Nominal(order<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]))</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>limits[<span class="st">"x"</span>], y<span class="op">=</span>limits[<span class="st">"y"</span>])</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>    .add(</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>        so.Text({<span class="st">"rotation"</span>: <span class="dv">90</span>, <span class="st">"rotation_mode"</span>: <span class="st">"anchor"</span>}, color<span class="op">=</span><span class="st">".7"</span>, fontsize<span class="op">=</span><span class="dv">9</span>, halign<span class="op">=</span><span class="st">"left"</span>, valign<span class="op">=</span><span class="st">"top"</span>, offset<span class="op">=</span><span class="dv">5</span>),</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>        data<span class="op">=</span>pd.DataFrame({<span class="st">"x"</span>: [<span class="dv">10</span>], <span class="st">"y"</span>: [<span class="dv">100</span>], <span class="st">"text"</span>: [<span class="st">"2 routes over 10 years not shown"</span>]}),</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> add_quantiles(p, <span class="st">"dur_years"</span>, limits[<span class="st">"x"</span>], limits[<span class="st">"y"</span>])</span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a><span class="co"># p = p.on(ax).plot()</span></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>fig_4_7a <span class="op">=</span> <span class="st">"img_output/Figure_4.7_a.svg"</span></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>p.save(fig_4_7a)</span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> p.on(fig0).plot()</span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig0.axes[<span class="dv">0</span>]</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>sns.rugplot(ax<span class="op">=</span>ax, data<span class="op">=</span>hist_data_lt_10y, x<span class="op">=</span><span class="st">"dur_years"</span>, hue<span class="op">=</span><span class="st">"ended"</span>, height<span class="op">=-</span><span class="fl">.03</span>, clip_on<span class="op">=</span><span class="va">False</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a><span class="co"># Add legend</span></span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>colours <span class="op">=</span> sns.color_palette(as_cmap<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> matplotlib.patches.Patch(facecolor<span class="op">=</span>colours[<span class="dv">0</span>], edgecolor<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"Ended"</span>)</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> matplotlib.patches.Patch(facecolor<span class="op">=</span>colours[<span class="dv">1</span>], edgecolor<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"Current"</span>)</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a>ax.legend(handles<span class="op">=</span>[F, T], loc<span class="op">=</span><span class="st">"upper right"</span>)</span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a><span class="co"># Output the chart</span></span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a><span class="co">##################</span></span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>fig_4_7 <span class="op">=</span> <span class="st">"img_output/Figure_4.7.svg"</span></span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a>plt.savefig(fig_4_7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -497,7 +509,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="table-a.6" class="level4">
 <h4 class="anchored" data-anchor-id="table-a.6">Table A.6</h4>
-<div id="afc30c83" class="cell" data-execution_count="3">
+<div id="25af6268" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tbl_data <span class="op">=</span> hist_data.copy()</span>
@@ -642,7 +654,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="figure-4.8-route-durations-by-end-reason">Figure 4.8: Route durations by end reason</h3>
 <section id="code-1" class="level4">
 <h4 class="anchored" data-anchor-id="code-1">Code</h4>
-<div id="dc0b6688" class="cell" data-execution_count="4">
+<div id="0be9367f" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -728,7 +740,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="table-a.7" class="level4">
 <h4 class="anchored" data-anchor-id="table-a.7">Table A.7</h4>
-<div id="2fb792d1" class="cell" data-execution_count="5">
+<div id="d974fdc3" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tbl_data <span class="op">=</span> hist_data.copy()</span>

@@ -29,6 +29,10 @@ matplotlib.rcParams.update({
     'figure.constrained_layout.use': True
 })
 
+asset_themes = {"opaque": "assets_output/",
+                "transparent_lightbg": "assets_transparent_lightbg/",
+                "transparent_darkbg": "assets_transparent_darkbg/"}
+assets_output = asset_themes["opaque"]
 excel_output = {}
 ```
 
@@ -100,85 +104,113 @@ for (a_u, a_l), (b_u, b_l) in zip(list(days_loglists.items())[:-1], list(days_lo
 # Calculate positions of group labels for log units
 days_loggrp_edges = [0.8] + days_logsep + [30 * days_logunits["year"]]
 days_logpos_grp = list(10 ** ((np.log10(a) + np.log10(b))/2) for a, b in zip(days_loggrp_edges[:-1], days_loggrp_edges[1:]))
-# Set up two subfigures
-#######################
-fig = plt.figure(figsize=(6.2, 2*4.1), layout="constrained")
-fig0, fig1 = fig.subfigures(2)
-# Set up two subplots
-#####################
-# f, axs = plt.subplots(nrows=2, figsize=(6.2, 2*4.1), dpi=150)
-# Plot the log scale chart
-##########################
-# ax = axs[1]
-limits = {"x": (0.7, 10**4), "y": (0, 831)}
-# plt.subplots_adjust(right=0.95, top=0.98, bottom=0.09, hspace=0.3)
-p = (
-    so.Plot(data=hist_data, x="dur_days")
-    .label(x="Duration (log scale)", y="Routes")
-    .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
-    .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter), color=so.Nominal(order=[True, False]))
-    .limit(x=limits["x"], y=limits["y"])
-)
-# Add extra readable unit labels (rotated 90 degrees) at the top
-p = p.add(
-        so.Text({"rotation": 90, "rotation_mode": "anchor"}, color=".7", fontsize=8, halign="right", valign="center", offset=0),
-        data=pd.DataFrame({"x": days_logscale, "y": [limits["y"][1]-15] * len(days_logscale), "text": days_loglabels_full}),
-        x="x", y="y", text="text", legend=False
-)
-# Add quantile indicators
-p = add_quantiles(p, "dur_days", limits["x"], limits["y"])
-# p = p.on(ax).plot()
-fig_4_7b = "img_output/Figure_4.7_b.svg"
-p.save(fig_4_7b)
-p = p.on(fig1).plot()
-ax = fig1.axes[0]
-for line in ax.get_lines():
-    line.zorder=1.1
-# Lines between unit groups
-ax.vlines(days_logsep, -0.04, -0.15, color="black", lw=0.5, clip_on=False, transform=ax.get_xaxis_transform())
-# Grouped unit labels
-for pos, text in zip(days_logpos_grp, days_loglabels_grp):
-    ax.text(pos, -0.14, text, ha="center", clip_on=False, transform=ax.get_xaxis_transform())
-# Move x-axis label down
-ax.xaxis.labelpad = 20
-# Add rug plot
-sns.rugplot(ax=ax, data=hist_data, x="dur_days", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
-# Plot the linear scale chart
-#############################
-# ax = axs[0]
-hist_data_lt_10y = hist_data[hist_data["dur_years"] <= 10]
-limits = {"x": (0, 10.5), "y": (0, 2000)}
-p = (
-    so.Plot(data=hist_data_lt_10y, x="dur_years")
-    .label(x="Duration (linear: years)", y="Routes")
-    .add(so.Bars(), so.Hist(binwidth=0.5), so.Stack(), color="ended", legend=False)
-    .scale(x=so.Continuous().tick(every=1).label(like="{x:.0f}"), color=so.Nominal(order=[True, False]))
-    .limit(x=limits["x"], y=limits["y"])
-    .add(
-        so.Text({"rotation": 90, "rotation_mode": "anchor"}, color=".7", fontsize=9, halign="left", valign="top", offset=5),
-        data=pd.DataFrame({"x": [10], "y": [100], "text": ["2 routes over 10 years not shown"]}),
-        x="x", y="y", text="text", legend=False)
-)
-p = add_quantiles(p, "dur_years", limits["x"], limits["y"])
-# p = p.on(ax).plot()
-fig_4_7a = "img_output/Figure_4.7_a.svg"
-p.save(fig_4_7a)
-p = p.on(fig0).plot()
-ax = fig0.axes[0]
-sns.rugplot(ax=ax, data=hist_data_lt_10y, x="dur_years", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
-# Add legend
-colours = sns.color_palette(as_cmap=False)
-T = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="Ended")
-F = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="Current")
-ax.legend(handles=[F, T], loc="upper right")
-# Output the chart
-##################
-fig_4_7 = "img_output/Figure_4.7.svg"
-plt.savefig(fig_4_7)
+
+
+def cust_plot(output_dir, fig_filename, rc_params={}, annot_color=".7", sep_color="black", transparent=False):
+    with plt.rc_context():
+        plt.rcParams.update(rc_params)
+        # Set up two subfigures
+        #######################
+        fig = plt.figure(figsize=(6.2, 2*4.1), layout="constrained")
+        fig0, fig1 = fig.subfigures(2)
+        # Set up two subplots
+        #####################
+        # f, axs = plt.subplots(nrows=2, figsize=(6.2, 2*4.1), dpi=150)
+        # Plot the log scale chart
+        ##########################
+        # ax = axs[1]
+        limits = {"x": (0.7, 10**4), "y": (0, 831)}
+        # plt.subplots_adjust(right=0.95, top=0.98, bottom=0.09, hspace=0.3)
+        p = (
+            so.Plot(data=hist_data, x="dur_days")
+            .theme(rc_params)
+            .label(x="Duration (log scale)", y="Routes")
+            .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
+            .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter), color=so.Nominal(order=[True, False]))
+            .limit(x=limits["x"], y=limits["y"])
+        )
+        # Add extra readable unit labels (rotated 90 degrees) at the top
+        p = p.add(
+                so.Text({"rotation": 90, "rotation_mode": "anchor"}, color=annot_color, fontsize=8, halign="right", valign="center", offset=0),
+                data=pd.DataFrame({"x": days_logscale, "y": [limits["y"][1]-15] * len(days_logscale), "text": days_loglabels_full}),
+                x="x", y="y", text="text", legend=False
+        )
+        # Add quantile indicators
+        p = add_quantiles(p, "dur_days", limits["x"], limits["y"])
+        # p = p.on(ax).plot()
+        fig_4_7b = "Figure_4.7_b.svg"
+        p.save(output_dir + fig_4_7b, transparent=transparent)
+        p = p.on(fig1).plot()
+        ax = fig1.axes[0]
+        for line in ax.get_lines():
+            line.zorder=1.1
+        # Lines between unit groups
+        ax.vlines(days_logsep, -0.04, -0.15, color=sep_color, lw=0.5, clip_on=False, transform=ax.get_xaxis_transform())
+        # Grouped unit labels
+        for pos, text in zip(days_logpos_grp, days_loglabels_grp):
+            ax.text(pos, -0.14, text, ha="center", clip_on=False, transform=ax.get_xaxis_transform())
+        # Move x-axis label down
+        ax.xaxis.labelpad = 20
+        # Add rug plot
+        sns.rugplot(ax=ax, data=hist_data, x="dur_days", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
+        # Plot the linear scale chart
+        #############################
+        # ax = axs[0]
+        hist_data_lt_10y = hist_data[hist_data["dur_years"] <= 10]
+        limits = {"x": (0, 10.5), "y": (0, 2000)}
+        p = (
+            so.Plot(data=hist_data_lt_10y, x="dur_years")
+            .theme(rc_params)
+            .label(x="Duration (linear: years)", y="Routes")
+            .add(so.Bars(), so.Hist(binwidth=0.5), so.Stack(), color="ended", legend=False)
+            .scale(x=so.Continuous().tick(every=1).label(like="{x:.0f}"), color=so.Nominal(order=[True, False]))
+            .limit(x=limits["x"], y=limits["y"])
+            .add(
+                so.Text({"rotation": 90, "rotation_mode": "anchor"}, color=annot_color, fontsize=9, halign="left", valign="top", offset=5),
+                data=pd.DataFrame({"x": [10], "y": [100], "text": ["2 routes over 10 years not shown"]}),
+                x="x", y="y", text="text", legend=False)
+        )
+        p = add_quantiles(p, "dur_years", limits["x"], limits["y"])
+        # p = p.on(ax).plot()
+        fig_4_7a = "Figure_4.7_a.svg"
+        p.save(output_dir + fig_4_7a, transparent=transparent)
+        p = p.on(fig0).plot()
+        ax = fig0.axes[0]
+        sns.rugplot(ax=ax, data=hist_data_lt_10y, x="dur_years", hue="ended", height=-.03, clip_on=False, alpha=0.7, legend=False)
+        # Add legend
+        colours = sns.color_palette(as_cmap=False)
+        T = matplotlib.patches.Patch(facecolor=colours[0], edgecolor="white", alpha=0.8, label="Ended")
+        F = matplotlib.patches.Patch(facecolor=colours[1], edgecolor="white", alpha=0.8, label="Current")
+        ax.legend(handles=[F, T], loc="upper right")
+        # Output the chart
+        ##################
+        plt.savefig(output_dir + fig_filename, transparent=transparent)
+
+
+fig_4_7 = "Figure_4.7.svg"
+fig_filename = fig_4_7
+cust_plot(asset_themes["opaque"], fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15",
+              "xtick.color": ".15",
+              "xtick.labelcolor": ".15",
+              "ytick.color": ".15",
+              "ytick.labelcolor": ".15"
+              }
+cust_plot(asset_themes["transparent_lightbg"], fig_filename, lighttheme, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5,
+             "legend.framealpha": 1, "legend.facecolor": ".15"
+             }
+cust_plot(asset_themes["transparent_darkbg"], fig_filename, darktheme, annot_color=".85", sep_color="white", transparent=True)
 ```
 
 #### Figure 4.7
-![](`{python} fig_4_7`)
+![](`{python} asets_output + fig_filename`)
 
 <sub>Notes: 3,755 people; 5,072 routes. 10% at 35 days, 90% at 3.08 years. Descriptive statistics are in Table A.6.</sub>
 
@@ -268,36 +300,69 @@ days_logformatter = matplotlib.ticker.FixedFormatter(days_loglabels_u)
 # Plot log scale charts
 #######################
 limits = {"x": (0.014*365.25, 10*365.25), "y": (None, 100)}
-fig_4_8_a = "img_output/Figure_4.8_a.svg"
-p = (
-    so.Plot(data=hist_data, x="dur_days")
-    # .label(x="Duration (log scale)", y="Routes")
-    .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
-    .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter),
-           color=so.Nominal(order=[True, False]))
-    .facet("rt_end_cat", wrap=4, order=facet_order)
-    .limit(x=limits["x"])
-    .save(fig_4_8_a)
-)
-fig_4_8_b = "img_output/Figure_4.8_b.svg"
-p = (
-    so.Plot(data=hist_data, x="dur_days")
-    # .label(x="Duration (log scale)", y="Routes")
-    .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
-    .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter),
-           color=so.Nominal(order=[True, False]))
-    .facet("rt_end_cat", wrap=4, order=facet_order)
-    .limit(x=limits["x"], y=limits["y"])
-    .save(fig_4_8_b)
-)
+fig_4_8_a = "Figure_4.8_a.svg"
+fig_4_8_b = "Figure_4.8_b.svg"
+
+
+def cust_plot_a(output_dir=assets_output, fig_filname=None, rc_params={}, transparent=False):
+    p = (
+        so.Plot(data=hist_data, x="dur_days")
+        .theme(rc_params)
+        .label(x="")
+        .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
+        .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter),
+              color=so.Nominal(order=[True, False]))
+        .facet("rt_end_cat", wrap=4, order=facet_order)
+        .limit(x=limits["x"])
+        .save(output_dir + fig_4_8_a, transparent=transparent)
+    )
+
+
+def cust_plot_b(output_dir=assets_output, fig_filname=None, rc_params={}, transparent=False):
+    p = (
+        so.Plot(data=hist_data, x="dur_days")
+        .theme(rc_params)
+        .label(x="")
+        .add(so.Bars(), so.Hist(bins=20), so.Stack(), color="ended", legend=False)
+        .scale(x=so.Continuous(trans="log").tick(at=days_logscale).label(formatter=days_logformatter),
+              color=so.Nominal(order=[True, False]))
+        .facet("rt_end_cat", wrap=4, order=facet_order)
+        .limit(x=limits["x"], y=limits["y"])
+        .save(output_dir + fig_4_8_b, transparent=transparent)
+    )
+
+
+cust_plot_a(asset_themes["opaque"], fig_filename)
+cust_plot_b(asset_themes["opaque"], fig_filename)
+lighttheme = {"axes.edgecolor": (1,1,1,0),
+              "grid.alpha": 0.5,
+              "grid.color": ".15",
+              "xtick.color": ".15",
+              "xtick.labelcolor": ".15",
+              "ytick.color": ".15",
+              "ytick.labelcolor": ".15"
+              }
+cust_plot_a(asset_themes["transparent_lightbg"], fig_filename, lighttheme, transparent=True)
+cust_plot_b(asset_themes["transparent_lightbg"], fig_filename, lighttheme, transparent=True)
+darktheme = {"text.color": "white",
+             "axes.edgecolor": (1,1,1,0), "axes.labelcolor": "white",
+             "xtick.color": "white", "xtick.labelcolor": "white",
+             "ytick.color": "white", "ytick.labelcolor": "white",
+             "grid.alpha": 0.5,
+             "legend.framealpha": 1, "legend.facecolor": ".15"
+             }
+cust_plot_a(asset_themes["transparent_darkbg"], fig_filename, darktheme, transparent=True)
+cust_plot_b(asset_themes["transparent_darkbg"], fig_filename, darktheme, transparent=True)
+
+
 ```
 
 #### Figure 4.8
-![](`{python} fig_4_8_a`)
+![](`{python} assets_output + fig_4_8_a`)
 
 Increased-scale y-axis (zoomed in):
 
-![](`{python} fig_4_8_b`)
+![](`{python} assets_output + fig_4_8_b`)
 
 <sub>Note: Descriptive statistics are in Table A.7.</sub>
 

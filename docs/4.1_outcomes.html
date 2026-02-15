@@ -324,7 +324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="ac8658f5" class="cell" data-execution_count="1">
+<div id="63b0266b" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Setup code</span></span>
@@ -351,7 +351,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'figure.constrained_layout.use'</span>: <span class="va">True</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>excel_output <span class="op">=</span> {}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>asset_themes <span class="op">=</span> {<span class="st">"opaque"</span>: <span class="st">"assets_output/"</span>,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>                <span class="st">"transparent_lightbg"</span>: <span class="st">"assets_transparent_lightbg/"</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                <span class="st">"transparent_darkbg"</span>: <span class="st">"assets_transparent_darkbg/"</span>}</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>assets_output <span class="op">=</span> asset_themes[<span class="st">"opaque"</span>]</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>excel_output <span class="op">=</span> {}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="outcomes-rq1" class="level2">
@@ -360,7 +364,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="figure-4.1-route-end-reason-proportions">Figure 4.1: Route end reason proportions</h3>
 <section id="code" class="level4">
 <h4 class="anchored" data-anchor-id="code">Code</h4>
-<div id="268fe6da" class="cell" data-execution_count="2">
+<div id="0513822b" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Table A.3</span></span>
@@ -401,34 +405,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    .replace({<span class="st">"all_routes"</span>: <span class="ss">f"Per route (all ended routes)</span><span class="ch">\n</span><span class="ss">$n$=</span><span class="sc">{</span>valid_n[<span class="st">"all_routes"</span>]<span class="sc">:,}</span><span class="ss">"</span>,</span>
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>              <span class="st">"latest_route"</span>: <span class="ss">f"Per person (latest route)</span><span class="ch">\n</span><span class="ss">$n$=</span><span class="sc">{</span>valid_n[<span class="st">"latest_route"</span>]<span class="sc">:,}</span><span class="ss">"</span>})</span>
 <span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>plotlabels <span class="op">=</span> pd.DataFrame({<span class="st">"x"</span>: <span class="op">-</span><span class="dv">10</span>, <span class="st">"y"</span>: plotdata[<span class="st">"rt_end_cat"</span>], <span class="st">"text"</span>: plotdata[<span class="st">"%"</span>].<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:.1f}</span><span class="ss">%"</span>)})</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>plotlabels <span class="op">=</span> pd.DataFrame({<span class="st">"x"</span>: <span class="op">-</span><span class="fl">8.75</span>, <span class="st">"y"</span>: plotdata[<span class="st">"rt_end_cat"</span>], <span class="st">"text"</span>: plotdata[<span class="st">"%"</span>].<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:.1f}</span><span class="ss">%"</span>)})</span>
 <span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> sns.color_palette()</span>
 <span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> colors[<span class="dv">4</span>:<span class="dv">6</span>]</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>plotdata, y<span class="op">=</span><span class="st">"rt_end_cat"</span>, x<span class="op">=</span><span class="st">"%"</span>, color<span class="op">=</span><span class="st">"routes"</span>)</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    .theme({<span class="st">"ytick.major.pad"</span>: <span class="dv">35</span>, <span class="st">"font.size"</span>: <span class="dv">12</span>, <span class="st">"axes.titlesize"</span>: <span class="st">"medium"</span>})</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    .add(so.Bar(edgewidth<span class="op">=</span><span class="dv">0</span>), legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    .add(so.Text({<span class="st">"clip_on"</span>: <span class="va">False</span>}, halign<span class="op">=</span><span class="st">"left"</span>), data<span class="op">=</span>plotlabels, x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    .label(y<span class="op">=</span><span class="va">None</span>, x<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous().label(like<span class="op">=</span><span class="st">"</span><span class="sc">{x:.0f}</span><span class="st">%"</span>), color<span class="op">=</span>colors)</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>(<span class="dv">0</span>, <span class="va">None</span>))</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    .facet(col<span class="op">=</span><span class="st">"routes"</span>)</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    .layout(size<span class="op">=</span>(<span class="fl">7.2</span>, <span class="fl">3.7</span>), engine<span class="op">=</span><span class="st">"constrained"</span>)</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>fig_4_1 <span class="op">=</span> <span class="st">"img_output/Figure_4.1.svg"</span></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>p.save(fig_4_1)</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cust_plot(rc_params<span class="op">=</span>{}):</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        so.Plot(data<span class="op">=</span>plotdata, y<span class="op">=</span><span class="st">"rt_end_cat"</span>, x<span class="op">=</span><span class="st">"%"</span>, color<span class="op">=</span><span class="st">"routes"</span>)</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        .theme({<span class="st">"ytick.major.pad"</span>: <span class="dv">35</span>, <span class="st">"font.size"</span>: <span class="dv">12</span>, <span class="st">"axes.titlesize"</span>: <span class="st">"medium"</span>} <span class="op">|</span> rc_params)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        .add(so.Bar(edgewidth<span class="op">=</span><span class="dv">0</span>), legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>        .add(so.Text({<span class="st">"clip_on"</span>: <span class="va">False</span>}, halign<span class="op">=</span><span class="st">"left"</span>), data<span class="op">=</span>plotlabels, x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>        .label(y<span class="op">=</span><span class="va">None</span>, x<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>        .scale(x<span class="op">=</span>so.Continuous().label(like<span class="op">=</span><span class="st">"</span><span class="sc">{x:.0f}</span><span class="st">%"</span>), color<span class="op">=</span>colors)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>        .limit(x<span class="op">=</span>(<span class="dv">0</span>, <span class="va">None</span>))</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>        .facet(col<span class="op">=</span><span class="st">"routes"</span>)</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>        .layout(size<span class="op">=</span>(<span class="fl">7.2</span>, <span class="fl">3.7</span>), engine<span class="op">=</span><span class="st">"constrained"</span>)</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>fig_4_1 <span class="op">=</span> <span class="st">"Figure_4.1.svg"</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>fig_filename <span class="op">=</span> fig_4_1</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>cust_plot().save(asset_themes[<span class="st">"opaque"</span>] <span class="op">+</span> fig_filename)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>lighttheme <span class="op">=</span> {<span class="st">"axes.edgecolor"</span>: (<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>              <span class="st">"grid.alpha"</span>: <span class="fl">0.5</span>,</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>              <span class="st">"grid.color"</span>: <span class="st">".15"</span>}</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>cust_plot(lighttheme).save(asset_themes[<span class="st">"transparent_lightbg"</span>] <span class="op">+</span> fig_filename, transparent<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>darktheme <span class="op">=</span> {<span class="st">"text.color"</span>: <span class="st">"white"</span>,</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>             <span class="st">"axes.edgecolor"</span>: (<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>), <span class="st">"axes.labelcolor"</span>: <span class="st">"white"</span>,</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>             <span class="st">"xtick.color"</span>: <span class="st">"white"</span>, <span class="st">"xtick.labelcolor"</span>: <span class="st">"white"</span>,</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>             <span class="st">"ytick.color"</span>: <span class="st">"white"</span>, <span class="st">"ytick.labelcolor"</span>: <span class="st">"white"</span>,</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>             <span class="st">"grid.alpha"</span>: <span class="fl">0.5</span>}</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>cust_plot(darktheme).save(asset_themes[<span class="st">"transparent_darkbg"</span>] <span class="op">+</span> fig_filename, transparent<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="figure-4.1" class="level4">
 <h4 class="anchored" data-anchor-id="figure-4.1">Figure 4.1</h4>
-<p><img src="img_output/Figure_4.1.svg" class="img-fluid"></p>
+<p><img src="assets_output/Figure_4.1.svg" class="img-fluid"></p>
 <p><sub>Notes: Full data table is Table A.3. “Latest” is the most recent route for each person.</sub></p>
 </section>
 <section id="table-a.3" class="level4">
 <h4 class="anchored" data-anchor-id="table-a.3">Table A.3</h4>
-<div id="d338f7a0" class="cell" data-execution_count="3">
+<div id="a14611cf" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -566,7 +586,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="figure-4.2-end-reason-proportions-for-new-peoples-first-routes">Figure 4.2: End reason proportions for new people’s first routes</h3>
 <section id="code-1" class="level4">
 <h4 class="anchored" data-anchor-id="code-1">Code</h4>
-<div id="2196ca8b" class="cell" data-execution_count="4">
+<div id="a857d599" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Table A.4</span></span>
@@ -610,30 +630,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>plotlabels <span class="op">=</span> pd.DataFrame({<span class="st">"x"</span>: <span class="op">-</span><span class="dv">9</span>, <span class="st">"y"</span>: plotdata[<span class="st">"rt_end_cat"</span>], <span class="st">"text"</span>: plotdata[<span class="st">"%"</span>].<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:.1f}</span><span class="ss">%"</span>)})</span>
 <span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> sns.color_palette()</span>
 <span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> colors[<span class="dv">6</span>:<span class="dv">7</span>]</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    so.Plot(data<span class="op">=</span>plotdata, y<span class="op">=</span><span class="st">"rt_end_cat"</span>, x<span class="op">=</span><span class="st">"%"</span>, color<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    .theme({<span class="st">"ytick.major.pad"</span>: <span class="dv">35</span>, <span class="st">"font.size"</span>: <span class="dv">12</span>, <span class="st">"axes.titlesize"</span>: <span class="st">"medium"</span>})</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    .add(so.Bar(edgewidth<span class="op">=</span><span class="dv">0</span>), legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    .add(so.Text({<span class="st">"clip_on"</span>: <span class="va">False</span>}, halign<span class="op">=</span><span class="st">"left"</span>, fontsize<span class="op">=</span><span class="dv">11</span>), data<span class="op">=</span>plotlabels, x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    .label(y<span class="op">=</span><span class="va">None</span>, x<span class="op">=</span><span class="va">None</span>, title<span class="op">=</span><span class="ss">f"Per person (first route)</span><span class="ch">\n</span><span class="ss">$n$=</span><span class="sc">{</span>valid_n<span class="sc">:,}</span><span class="ss">"</span>)</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    .scale(x<span class="op">=</span>so.Continuous().label(like<span class="op">=</span><span class="st">"</span><span class="sc">{x:.0f}</span><span class="st">%"</span>), color<span class="op">=</span>colors)</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    .limit(x<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">35</span>))</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    .layout(size<span class="op">=</span>(<span class="fl">4.2</span>, <span class="fl">3.7</span>), engine<span class="op">=</span><span class="st">"constrained"</span>)</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>fig_4_2 <span class="op">=</span> <span class="st">"img_output/Figure_4.2.svg"</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>p.save(fig_4_2)</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cust_plot(rc_params<span class="op">=</span>{}):</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>        so.Plot(data<span class="op">=</span>plotdata, y<span class="op">=</span><span class="st">"rt_end_cat"</span>, x<span class="op">=</span><span class="st">"%"</span>, color<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>        .theme({<span class="st">"ytick.major.pad"</span>: <span class="dv">35</span>, <span class="st">"font.size"</span>: <span class="dv">12</span>, <span class="st">"axes.titlesize"</span>: <span class="st">"medium"</span>} <span class="op">|</span> rc_params)</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>        .add(so.Bar(edgewidth<span class="op">=</span><span class="dv">0</span>), legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>        .add(so.Text({<span class="st">"clip_on"</span>: <span class="va">False</span>}, halign<span class="op">=</span><span class="st">"left"</span>, fontsize<span class="op">=</span><span class="dv">11</span>), data<span class="op">=</span>plotlabels, x<span class="op">=</span><span class="st">"x"</span>, y<span class="op">=</span><span class="st">"y"</span>, text<span class="op">=</span><span class="st">"text"</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>        .label(y<span class="op">=</span><span class="va">None</span>, x<span class="op">=</span><span class="va">None</span>, title<span class="op">=</span><span class="ss">f"Per person (first route)</span><span class="ch">\n</span><span class="ss">$n$=</span><span class="sc">{</span>valid_n<span class="sc">:,}</span><span class="ss">"</span>)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>        .scale(x<span class="op">=</span>so.Continuous().label(like<span class="op">=</span><span class="st">"</span><span class="sc">{x:.0f}</span><span class="st">%"</span>), color<span class="op">=</span>colors)</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>        .limit(x<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">35</span>))</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>        .layout(size<span class="op">=</span>(<span class="fl">4.2</span>, <span class="fl">3.7</span>), engine<span class="op">=</span><span class="st">"constrained"</span>)</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>fig_4_2 <span class="op">=</span> <span class="st">"Figure_4.2.svg"</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>fig_filename <span class="op">=</span> fig_4_2</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>cust_plot().save(asset_themes[<span class="st">"opaque"</span>] <span class="op">+</span> fig_filename)</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>lighttheme <span class="op">=</span> {<span class="st">"axes.edgecolor"</span>: (<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>              <span class="st">"grid.alpha"</span>: <span class="fl">0.5</span>,</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>              <span class="st">"grid.color"</span>: <span class="st">".15"</span>}</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>cust_plot(lighttheme).save(asset_themes[<span class="st">"transparent_lightbg"</span>] <span class="op">+</span> fig_filename, transparent<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>darktheme <span class="op">=</span> {<span class="st">"text.color"</span>: <span class="st">"white"</span>,</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>             <span class="st">"axes.edgecolor"</span>: (<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>), <span class="st">"axes.labelcolor"</span>: <span class="st">"white"</span>,</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>             <span class="st">"xtick.color"</span>: <span class="st">"white"</span>, <span class="st">"xtick.labelcolor"</span>: <span class="st">"white"</span>,</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>             <span class="st">"ytick.color"</span>: <span class="st">"white"</span>, <span class="st">"ytick.labelcolor"</span>: <span class="st">"white"</span>,</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>             <span class="st">"grid.alpha"</span>: <span class="fl">0.5</span>}</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>cust_plot(darktheme).save(asset_themes[<span class="st">"transparent_darkbg"</span>] <span class="op">+</span> fig_filename, transparent<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="figure-4.2" class="level4">
 <h4 class="anchored" data-anchor-id="figure-4.2">Figure 4.2</h4>
-<p><img src="img_output/Figure_4.2.svg" class="img-fluid"></p>
+<p><img src="assets_output/Figure_4.2.svg" class="img-fluid"></p>
 <p><sub>Notes: Full data table is Table A.4. People with no records of previously using BAHSA services.</sub></p>
 </section>
 <section id="table-a.4" class="level4">
 <h4 class="anchored" data-anchor-id="table-a.4">Table A.4</h4>
-<div id="7f714bf6" class="cell" data-execution_count="5">
+<div id="1c1977d5" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div>
 
